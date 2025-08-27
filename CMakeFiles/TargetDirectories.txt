@@ -1,0 +1,5 @@
+/home/test/CMakeFiles/hello.dir
+/home/test/CMakeFiles/edit_cache.dir
+/home/test/CMakeFiles/rebuild_cache.dir
+/home/test/CMakeFiles/hello_autogen_timestamp_deps.dir
+/home/test/CMakeFiles/hello_autogen.dir
