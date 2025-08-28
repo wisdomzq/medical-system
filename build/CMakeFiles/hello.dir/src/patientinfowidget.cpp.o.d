@@ -278,9 +278,27 @@ CMakeFiles/hello.dir/src/patientinfowidget.cpp.o: \
  /opt/Qt/5.15.2/gcc_64/include/QtCore/qmap.h \
  /opt/Qt/5.15.2/gcc_64/include/QtGui/qpen.h \
  /opt/Qt/5.15.2/gcc_64/include/QtGui/qtextoption.h \
- /home/test/src/dbmanager.h /usr/include/sqlite3.h \
- /opt/Qt/5.15.2/gcc_64/include/QtCore/QString \
- /opt/Qt/5.15.2/gcc_64/include/QtCore/qstring.h \
+ /home/test/src/tcpclient.h /opt/Qt/5.15.2/gcc_64/include/QtCore/QObject \
+ /opt/Qt/5.15.2/gcc_64/include/QtCore/qobject.h \
+ /opt/Qt/5.15.2/gcc_64/include/QtNetwork/QTcpSocket \
+ /opt/Qt/5.15.2/gcc_64/include/QtNetwork/qtcpsocket.h \
+ /opt/Qt/5.15.2/gcc_64/include/QtNetwork/qtnetworkglobal.h \
+ /opt/Qt/5.15.2/gcc_64/include/QtNetwork/qtnetwork-config.h \
+ /opt/Qt/5.15.2/gcc_64/include/QtNetwork/qabstractsocket.h \
+ /opt/Qt/5.15.2/gcc_64/include/QtCore/qdebug.h \
+ /opt/Qt/5.15.2/gcc_64/include/QtCore/qtextstream.h \
+ /opt/Qt/5.15.2/gcc_64/include/QtCore/qlocale.h \
+ /opt/Qt/5.15.2/gcc_64/include/QtCore/qset.h \
+ /opt/Qt/5.15.2/gcc_64/include/QtCore/qcontiguouscache.h \
+ /opt/Qt/5.15.2/gcc_64/include/QtCore/QJsonObject \
+ /opt/Qt/5.15.2/gcc_64/include/QtCore/qjsonobject.h \
+ /opt/Qt/5.15.2/gcc_64/include/QtCore/qjsonvalue.h \
+ /opt/Qt/5.15.2/gcc_64/include/QtCore/qcborvalue.h \
+ /opt/Qt/5.15.2/gcc_64/include/QtCore/qdatetime.h \
+ /opt/Qt/5.15.2/gcc_64/include/QtCore/qcborcommon.h \
+ /opt/Qt/5.15.2/gcc_64/include/QtCore/qregularexpression.h \
+ /opt/Qt/5.15.2/gcc_64/include/QtCore/qurl.h \
+ /opt/Qt/5.15.2/gcc_64/include/QtCore/quuid.h \
  /opt/Qt/5.15.2/gcc_64/include/QtWidgets/QVBoxLayout \
  /opt/Qt/5.15.2/gcc_64/include/QtWidgets/qboxlayout.h \
  /opt/Qt/5.15.2/gcc_64/include/QtWidgets/qlayout.h \

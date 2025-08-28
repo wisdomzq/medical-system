@@ -1,14 +1,20 @@
 #include "doctorinfowidget.h"
+#include "tcpclient.h"
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QTabWidget>
 #include <QFormLayout>
 #include <QPushButton>
 #include <QMessageBox>
+#include <QJsonObject>
 
 DoctorInfoWidget::DoctorInfoWidget(QWidget *parent)
     : QWidget(parent)
 {
+    m_tcpClient = new TcpClient(this);
+    m_tcpClient->connectToServer("127.0.0.1", 12345);
+    connect(m_tcpClient, &TcpClient::responseReceived, this, &DoctorInfoWidget::onResponseReceived);
+
     setWindowTitle("医生工作台");
     setMinimumSize(800, 600);
 
@@ -91,32 +97,45 @@ QWidget* DoctorInfoWidget::createProfilePage()
 
 void DoctorInfoWidget::loadProfile()
 {
-    DBManager db("user.db");
-    QString department, phone;
-    if (db.getDoctorDetails(currentDoctorName, department, phone)) {
-        nameEdit->setText(currentDoctorName);
-        departmentEdit->setText(department);
-        phoneEdit->setText(phone);
-    }
+    QJsonObject request;
+    request["type"] = "get_doctor_info";
+    request["username"] = currentDoctorName;
+    m_tcpClient->sendRequest(request);
 }
 
 void DoctorInfoWidget::updateProfile()
 {
-    QString newName = nameEdit->text();
-    QString department = departmentEdit->text();
-    QString phone = phoneEdit->text();
+    QJsonObject request;
+    request["type"] = "update_doctor_info";
+    request["username"] = currentDoctorName;
 
-    if (newName.isEmpty()) {
-        QMessageBox::warning(this, "更新失败", "姓名不能为空！");
-        return;
+    QJsonObject data;
+    data["name"] = nameEdit->text();
+    data["department"] = departmentEdit->text();
+    data["phone"] = phoneEdit->text();
+    request["data"] = data;
+
+    m_tcpClient->sendRequest(request);
+}
+
+void DoctorInfoWidget::onResponseReceived(const QJsonObject &response)
+{
+    QString type = response["type"].toString();
+    if (type == "doctor_info_response" && response["success"].toBool())
+    {
+        QJsonObject data = response["data"].toObject();
+        nameEdit->setText(data["name"].toString());
+        departmentEdit->setText(data["department"].toString());
+        phoneEdit->setText(data["phone"].toString());
     }
-
-    DBManager db("user.db");
-    if (db.updateDoctorProfile(currentDoctorName, newName, department, phone)) {
-        QMessageBox::information(this, "成功", "个人信息更新成功！");
-        currentDoctorName = newName;
-        setWindowTitle("医生工作台 - " + currentDoctorName);
-    } else {
-        QMessageBox::warning(this, "失败", "个人信息更新失败！");
+    else if (type == "update_doctor_info_response")
+    {
+        if (response["success"].toBool()) {
+            QMessageBox::information(this, "成功", "个人信息更新成功！");
+            currentDoctorName = nameEdit->text();
+            setWindowTitle("医生工作台 - " + currentDoctorName);
+        } else {
+            QMessageBox::warning(this, "失败", "个人信息更新失败。");
+        }
     }
 }

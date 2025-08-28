@@ -3,3 +3,4 @@
 #include "UVLADIE3JM/moc_hello.cpp"
 #include "UVLADIE3JM/moc_loginwidget.cpp"
 #include "UVLADIE3JM/moc_patientinfowidget.cpp"
+#include "UVLADIE3JM/moc_tcpclient.cpp"

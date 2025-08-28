@@ -1,50 +1,80 @@
 [
 {
   "directory": "/home/test/build",
-  "command": "/usr/bin/g++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I/home/test/build -I/home/test -I/home/test/build/hello_autogen/include -isystem /opt/Qt/5.15.2/gcc_64/include -isystem /opt/Qt/5.15.2/gcc_64/include/QtWidgets -isystem /opt/Qt/5.15.2/gcc_64/include/QtGui -isystem /opt/Qt/5.15.2/gcc_64/include/QtCore -isystem /opt/Qt/5.15.2/gcc_64/./mkspecs/linux-g++ -g -std=gnu++11 -fPIC -o CMakeFiles/hello.dir/hello_autogen/mocs_compilation.cpp.o -c /home/test/build/hello_autogen/mocs_compilation.cpp",
+  "command": "/usr/bin/g++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_WIDGETS_LIB -I/home/test/build -I/home/test -I/home/test/build/hello_autogen/include -isystem /opt/Qt/5.15.2/gcc_64/include -isystem /opt/Qt/5.15.2/gcc_64/include/QtWidgets -isystem /opt/Qt/5.15.2/gcc_64/include/QtGui -isystem /opt/Qt/5.15.2/gcc_64/include/QtCore -isystem /opt/Qt/5.15.2/gcc_64/./mkspecs/linux-g++ -isystem /opt/Qt/5.15.2/gcc_64/include/QtNetwork -g -std=gnu++11 -fPIC -o CMakeFiles/hello.dir/hello_autogen/mocs_compilation.cpp.o -c /home/test/build/hello_autogen/mocs_compilation.cpp",
   "file": "/home/test/build/hello_autogen/mocs_compilation.cpp",
   "output": "CMakeFiles/hello.dir/hello_autogen/mocs_compilation.cpp.o"
 },
 {
   "directory": "/home/test/build",
-  "command": "/usr/bin/g++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I/home/test/build -I/home/test -I/home/test/build/hello_autogen/include -isystem /opt/Qt/5.15.2/gcc_64/include -isystem /opt/Qt/5.15.2/gcc_64/include/QtWidgets -isystem /opt/Qt/5.15.2/gcc_64/include/QtGui -isystem /opt/Qt/5.15.2/gcc_64/include/QtCore -isystem /opt/Qt/5.15.2/gcc_64/./mkspecs/linux-g++ -g -std=gnu++11 -fPIC -o CMakeFiles/hello.dir/src/authdialog.cpp.o -c /home/test/src/authdialog.cpp",
+  "command": "/usr/bin/g++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_WIDGETS_LIB -I/home/test/build -I/home/test -I/home/test/build/hello_autogen/include -isystem /opt/Qt/5.15.2/gcc_64/include -isystem /opt/Qt/5.15.2/gcc_64/include/QtWidgets -isystem /opt/Qt/5.15.2/gcc_64/include/QtGui -isystem /opt/Qt/5.15.2/gcc_64/include/QtCore -isystem /opt/Qt/5.15.2/gcc_64/./mkspecs/linux-g++ -isystem /opt/Qt/5.15.2/gcc_64/include/QtNetwork -g -std=gnu++11 -fPIC -o CMakeFiles/hello.dir/src/authdialog.cpp.o -c /home/test/src/authdialog.cpp",
   "file": "/home/test/src/authdialog.cpp",
   "output": "CMakeFiles/hello.dir/src/authdialog.cpp.o"
 },
 {
   "directory": "/home/test/build",
-  "command": "/usr/bin/g++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I/home/test/build -I/home/test -I/home/test/build/hello_autogen/include -isystem /opt/Qt/5.15.2/gcc_64/include -isystem /opt/Qt/5.15.2/gcc_64/include/QtWidgets -isystem /opt/Qt/5.15.2/gcc_64/include/QtGui -isystem /opt/Qt/5.15.2/gcc_64/include/QtCore -isystem /opt/Qt/5.15.2/gcc_64/./mkspecs/linux-g++ -g -std=gnu++11 -fPIC -o CMakeFiles/hello.dir/src/dbmanager.cpp.o -c /home/test/src/dbmanager.cpp",
+  "command": "/usr/bin/g++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_WIDGETS_LIB -I/home/test/build -I/home/test -I/home/test/build/hello_autogen/include -isystem /opt/Qt/5.15.2/gcc_64/include -isystem /opt/Qt/5.15.2/gcc_64/include/QtWidgets -isystem /opt/Qt/5.15.2/gcc_64/include/QtGui -isystem /opt/Qt/5.15.2/gcc_64/include/QtCore -isystem /opt/Qt/5.15.2/gcc_64/./mkspecs/linux-g++ -isystem /opt/Qt/5.15.2/gcc_64/include/QtNetwork -g -std=gnu++11 -fPIC -o CMakeFiles/hello.dir/src/dbmanager.cpp.o -c /home/test/src/dbmanager.cpp",
   "file": "/home/test/src/dbmanager.cpp",
   "output": "CMakeFiles/hello.dir/src/dbmanager.cpp.o"
 },
 {
   "directory": "/home/test/build",
-  "command": "/usr/bin/g++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I/home/test/build -I/home/test -I/home/test/build/hello_autogen/include -isystem /opt/Qt/5.15.2/gcc_64/include -isystem /opt/Qt/5.15.2/gcc_64/include/QtWidgets -isystem /opt/Qt/5.15.2/gcc_64/include/QtGui -isystem /opt/Qt/5.15.2/gcc_64/include/QtCore -isystem /opt/Qt/5.15.2/gcc_64/./mkspecs/linux-g++ -g -std=gnu++11 -fPIC -o CMakeFiles/hello.dir/src/doctorinfowidget.cpp.o -c /home/test/src/doctorinfowidget.cpp",
+  "command": "/usr/bin/g++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_WIDGETS_LIB -I/home/test/build -I/home/test -I/home/test/build/hello_autogen/include -isystem /opt/Qt/5.15.2/gcc_64/include -isystem /opt/Qt/5.15.2/gcc_64/include/QtWidgets -isystem /opt/Qt/5.15.2/gcc_64/include/QtGui -isystem /opt/Qt/5.15.2/gcc_64/include/QtCore -isystem /opt/Qt/5.15.2/gcc_64/./mkspecs/linux-g++ -isystem /opt/Qt/5.15.2/gcc_64/include/QtNetwork -g -std=gnu++11 -fPIC -o CMakeFiles/hello.dir/src/doctorinfowidget.cpp.o -c /home/test/src/doctorinfowidget.cpp",
   "file": "/home/test/src/doctorinfowidget.cpp",
   "output": "CMakeFiles/hello.dir/src/doctorinfowidget.cpp.o"
 },
 {
   "directory": "/home/test/build",
-  "command": "/usr/bin/g++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I/home/test/build -I/home/test -I/home/test/build/hello_autogen/include -isystem /opt/Qt/5.15.2/gcc_64/include -isystem /opt/Qt/5.15.2/gcc_64/include/QtWidgets -isystem /opt/Qt/5.15.2/gcc_64/include/QtGui -isystem /opt/Qt/5.15.2/gcc_64/include/QtCore -isystem /opt/Qt/5.15.2/gcc_64/./mkspecs/linux-g++ -g -std=gnu++11 -fPIC -o CMakeFiles/hello.dir/src/hello.cpp.o -c /home/test/src/hello.cpp",
+  "command": "/usr/bin/g++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_WIDGETS_LIB -I/home/test/build -I/home/test -I/home/test/build/hello_autogen/include -isystem /opt/Qt/5.15.2/gcc_64/include -isystem /opt/Qt/5.15.2/gcc_64/include/QtWidgets -isystem /opt/Qt/5.15.2/gcc_64/include/QtGui -isystem /opt/Qt/5.15.2/gcc_64/include/QtCore -isystem /opt/Qt/5.15.2/gcc_64/./mkspecs/linux-g++ -isystem /opt/Qt/5.15.2/gcc_64/include/QtNetwork -g -std=gnu++11 -fPIC -o CMakeFiles/hello.dir/src/hello.cpp.o -c /home/test/src/hello.cpp",
   "file": "/home/test/src/hello.cpp",
   "output": "CMakeFiles/hello.dir/src/hello.cpp.o"
 },
 {
   "directory": "/home/test/build",
-  "command": "/usr/bin/g++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I/home/test/build -I/home/test -I/home/test/build/hello_autogen/include -isystem /opt/Qt/5.15.2/gcc_64/include -isystem /opt/Qt/5.15.2/gcc_64/include/QtWidgets -isystem /opt/Qt/5.15.2/gcc_64/include/QtGui -isystem /opt/Qt/5.15.2/gcc_64/include/QtCore -isystem /opt/Qt/5.15.2/gcc_64/./mkspecs/linux-g++ -g -std=gnu++11 -fPIC -o CMakeFiles/hello.dir/src/loginwidget.cpp.o -c /home/test/src/loginwidget.cpp",
+  "command": "/usr/bin/g++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_WIDGETS_LIB -I/home/test/build -I/home/test -I/home/test/build/hello_autogen/include -isystem /opt/Qt/5.15.2/gcc_64/include -isystem /opt/Qt/5.15.2/gcc_64/include/QtWidgets -isystem /opt/Qt/5.15.2/gcc_64/include/QtGui -isystem /opt/Qt/5.15.2/gcc_64/include/QtCore -isystem /opt/Qt/5.15.2/gcc_64/./mkspecs/linux-g++ -isystem /opt/Qt/5.15.2/gcc_64/include/QtNetwork -g -std=gnu++11 -fPIC -o CMakeFiles/hello.dir/src/loginwidget.cpp.o -c /home/test/src/loginwidget.cpp",
   "file": "/home/test/src/loginwidget.cpp",
   "output": "CMakeFiles/hello.dir/src/loginwidget.cpp.o"
 },
 {
   "directory": "/home/test/build",
-  "command": "/usr/bin/g++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I/home/test/build -I/home/test -I/home/test/build/hello_autogen/include -isystem /opt/Qt/5.15.2/gcc_64/include -isystem /opt/Qt/5.15.2/gcc_64/include/QtWidgets -isystem /opt/Qt/5.15.2/gcc_64/include/QtGui -isystem /opt/Qt/5.15.2/gcc_64/include/QtCore -isystem /opt/Qt/5.15.2/gcc_64/./mkspecs/linux-g++ -g -std=gnu++11 -fPIC -o CMakeFiles/hello.dir/src/main.cpp.o -c /home/test/src/main.cpp",
+  "command": "/usr/bin/g++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_WIDGETS_LIB -I/home/test/build -I/home/test -I/home/test/build/hello_autogen/include -isystem /opt/Qt/5.15.2/gcc_64/include -isystem /opt/Qt/5.15.2/gcc_64/include/QtWidgets -isystem /opt/Qt/5.15.2/gcc_64/include/QtGui -isystem /opt/Qt/5.15.2/gcc_64/include/QtCore -isystem /opt/Qt/5.15.2/gcc_64/./mkspecs/linux-g++ -isystem /opt/Qt/5.15.2/gcc_64/include/QtNetwork -g -std=gnu++11 -fPIC -o CMakeFiles/hello.dir/src/main.cpp.o -c /home/test/src/main.cpp",
   "file": "/home/test/src/main.cpp",
   "output": "CMakeFiles/hello.dir/src/main.cpp.o"
 },
 {
   "directory": "/home/test/build",
-  "command": "/usr/bin/g++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I/home/test/build -I/home/test -I/home/test/build/hello_autogen/include -isystem /opt/Qt/5.15.2/gcc_64/include -isystem /opt/Qt/5.15.2/gcc_64/include/QtWidgets -isystem /opt/Qt/5.15.2/gcc_64/include/QtGui -isystem /opt/Qt/5.15.2/gcc_64/include/QtCore -isystem /opt/Qt/5.15.2/gcc_64/./mkspecs/linux-g++ -g -std=gnu++11 -fPIC -o CMakeFiles/hello.dir/src/patientinfowidget.cpp.o -c /home/test/src/patientinfowidget.cpp",
+  "command": "/usr/bin/g++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_WIDGETS_LIB -I/home/test/build -I/home/test -I/home/test/build/hello_autogen/include -isystem /opt/Qt/5.15.2/gcc_64/include -isystem /opt/Qt/5.15.2/gcc_64/include/QtWidgets -isystem /opt/Qt/5.15.2/gcc_64/include/QtGui -isystem /opt/Qt/5.15.2/gcc_64/include/QtCore -isystem /opt/Qt/5.15.2/gcc_64/./mkspecs/linux-g++ -isystem /opt/Qt/5.15.2/gcc_64/include/QtNetwork -g -std=gnu++11 -fPIC -o CMakeFiles/hello.dir/src/patientinfowidget.cpp.o -c /home/test/src/patientinfowidget.cpp",
   "file": "/home/test/src/patientinfowidget.cpp",
   "output": "CMakeFiles/hello.dir/src/patientinfowidget.cpp.o"
+},
+{
+  "directory": "/home/test/build",
+  "command": "/usr/bin/g++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_WIDGETS_LIB -I/home/test/build -I/home/test -I/home/test/build/hello_autogen/include -isystem /opt/Qt/5.15.2/gcc_64/include -isystem /opt/Qt/5.15.2/gcc_64/include/QtWidgets -isystem /opt/Qt/5.15.2/gcc_64/include/QtGui -isystem /opt/Qt/5.15.2/gcc_64/include/QtCore -isystem /opt/Qt/5.15.2/gcc_64/./mkspecs/linux-g++ -isystem /opt/Qt/5.15.2/gcc_64/include/QtNetwork -g -std=gnu++11 -fPIC -o CMakeFiles/hello.dir/src/tcpclient.cpp.o -c /home/test/src/tcpclient.cpp",
+  "file": "/home/test/src/tcpclient.cpp",
+  "output": "CMakeFiles/hello.dir/src/tcpclient.cpp.o"
+},
+{
+  "directory": "/home/test/build",
+  "command": "/usr/bin/g++ -DQT_CORE_LIB -DQT_NETWORK_LIB -DQT_SQL_LIB -I/home/test/build -I/home/test -I/home/test/build/server_autogen/include -I/home/test/src -isystem /opt/Qt/5.15.2/gcc_64/include -isystem /opt/Qt/5.15.2/gcc_64/include/QtCore -isystem /opt/Qt/5.15.2/gcc_64/./mkspecs/linux-g++ -isystem /opt/Qt/5.15.2/gcc_64/include/QtNetwork -isystem /opt/Qt/5.15.2/gcc_64/include/QtSql -g -std=gnu++11 -fPIC -o CMakeFiles/server.dir/server_autogen/mocs_compilation.cpp.o -c /home/test/build/server_autogen/mocs_compilation.cpp",
+  "file": "/home/test/build/server_autogen/mocs_compilation.cpp",
+  "output": "CMakeFiles/server.dir/server_autogen/mocs_compilation.cpp.o"
+},
+{
+  "directory": "/home/test/build",
+  "command": "/usr/bin/g++ -DQT_CORE_LIB -DQT_NETWORK_LIB -DQT_SQL_LIB -I/home/test/build -I/home/test -I/home/test/build/server_autogen/include -I/home/test/src -isystem /opt/Qt/5.15.2/gcc_64/include -isystem /opt/Qt/5.15.2/gcc_64/include/QtCore -isystem /opt/Qt/5.15.2/gcc_64/./mkspecs/linux-g++ -isystem /opt/Qt/5.15.2/gcc_64/include/QtNetwork -isystem /opt/Qt/5.15.2/gcc_64/include/QtSql -g -std=gnu++11 -fPIC -o CMakeFiles/server.dir/server/server.cpp.o -c /home/test/server/server.cpp",
+  "file": "/home/test/server/server.cpp",
+  "output": "CMakeFiles/server.dir/server/server.cpp.o"
+},
+{
+  "directory": "/home/test/build",
+  "command": "/usr/bin/g++ -DQT_CORE_LIB -DQT_NETWORK_LIB -DQT_SQL_LIB -I/home/test/build -I/home/test -I/home/test/build/server_autogen/include -I/home/test/src -isystem /opt/Qt/5.15.2/gcc_64/include -isystem /opt/Qt/5.15.2/gcc_64/include/QtCore -isystem /opt/Qt/5.15.2/gcc_64/./mkspecs/linux-g++ -isystem /opt/Qt/5.15.2/gcc_64/include/QtNetwork -isystem /opt/Qt/5.15.2/gcc_64/include/QtSql -g -std=gnu++11 -fPIC -o CMakeFiles/server.dir/server/tcpserver.cpp.o -c /home/test/server/tcpserver.cpp",
+  "file": "/home/test/server/tcpserver.cpp",
+  "output": "CMakeFiles/server.dir/server/tcpserver.cpp.o"
+},
+{
+  "directory": "/home/test/build",
+  "command": "/usr/bin/g++ -DQT_CORE_LIB -DQT_NETWORK_LIB -DQT_SQL_LIB -I/home/test/build -I/home/test -I/home/test/build/server_autogen/include -I/home/test/src -isystem /opt/Qt/5.15.2/gcc_64/include -isystem /opt/Qt/5.15.2/gcc_64/include/QtCore -isystem /opt/Qt/5.15.2/gcc_64/./mkspecs/linux-g++ -isystem /opt/Qt/5.15.2/gcc_64/include/QtNetwork -isystem /opt/Qt/5.15.2/gcc_64/include/QtSql -g -std=gnu++11 -fPIC -o CMakeFiles/server.dir/server/database.cpp.o -c /home/test/server/database.cpp",
+  "file": "/home/test/server/database.cpp",
+  "output": "CMakeFiles/server.dir/server/database.cpp.o"
 }
 ]

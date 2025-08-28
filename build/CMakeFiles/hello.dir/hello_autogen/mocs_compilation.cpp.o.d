@@ -277,9 +277,28 @@ CMakeFiles/hello.dir/hello_autogen/mocs_compilation.cpp.o: \
  /opt/Qt/5.15.2/gcc_64/include/QtCore/qmap.h \
  /opt/Qt/5.15.2/gcc_64/include/QtGui/qpen.h \
  /opt/Qt/5.15.2/gcc_64/include/QtGui/qtextoption.h \
- /home/test/build/hello_autogen/UVLADIE3JM/../../../src/dbmanager.h \
- /usr/include/sqlite3.h /opt/Qt/5.15.2/gcc_64/include/QtCore/QString \
- /opt/Qt/5.15.2/gcc_64/include/QtCore/qstring.h \
+ /home/test/build/hello_autogen/UVLADIE3JM/../../../src/tcpclient.h \
+ /opt/Qt/5.15.2/gcc_64/include/QtCore/QObject \
+ /opt/Qt/5.15.2/gcc_64/include/QtCore/qobject.h \
+ /opt/Qt/5.15.2/gcc_64/include/QtNetwork/QTcpSocket \
+ /opt/Qt/5.15.2/gcc_64/include/QtNetwork/qtcpsocket.h \
+ /opt/Qt/5.15.2/gcc_64/include/QtNetwork/qtnetworkglobal.h \
+ /opt/Qt/5.15.2/gcc_64/include/QtNetwork/qtnetwork-config.h \
+ /opt/Qt/5.15.2/gcc_64/include/QtNetwork/qabstractsocket.h \
+ /opt/Qt/5.15.2/gcc_64/include/QtCore/qdebug.h \
+ /opt/Qt/5.15.2/gcc_64/include/QtCore/qtextstream.h \
+ /opt/Qt/5.15.2/gcc_64/include/QtCore/qlocale.h \
+ /opt/Qt/5.15.2/gcc_64/include/QtCore/qset.h \
+ /opt/Qt/5.15.2/gcc_64/include/QtCore/qcontiguouscache.h \
+ /opt/Qt/5.15.2/gcc_64/include/QtCore/QJsonObject \
+ /opt/Qt/5.15.2/gcc_64/include/QtCore/qjsonobject.h \
+ /opt/Qt/5.15.2/gcc_64/include/QtCore/qjsonvalue.h \
+ /opt/Qt/5.15.2/gcc_64/include/QtCore/qcborvalue.h \
+ /opt/Qt/5.15.2/gcc_64/include/QtCore/qdatetime.h \
+ /opt/Qt/5.15.2/gcc_64/include/QtCore/qcborcommon.h \
+ /opt/Qt/5.15.2/gcc_64/include/QtCore/qregularexpression.h \
+ /opt/Qt/5.15.2/gcc_64/include/QtCore/qurl.h \
+ /opt/Qt/5.15.2/gcc_64/include/QtCore/quuid.h \
  /home/test/build/hello_autogen/UVLADIE3JM/moc_hello.cpp \
  /home/test/build/hello_autogen/UVLADIE3JM/../../../src/hello.h \
  /home/test/build/hello_autogen/UVLADIE3JM/../../../src/loginwidget.h \
@@ -309,4 +328,6 @@ CMakeFiles/hello.dir/hello_autogen/mocs_compilation.cpp.o: \
  /opt/Qt/5.15.2/gcc_64/include/QtWidgets/qtabwidget.h \
  /home/test/build/hello_autogen/UVLADIE3JM/moc_loginwidget.cpp \
  /home/test/build/hello_autogen/UVLADIE3JM/moc_patientinfowidget.cpp \
- /home/test/build/hello_autogen/UVLADIE3JM/../../../src/patientinfowidget.h
+ /home/test/build/hello_autogen/UVLADIE3JM/../../../src/patientinfowidget.h \
+ /home/test/build/hello_autogen/UVLADIE3JM/moc_tcpclient.cpp \
+ /home/test/build/hello_autogen/UVLADIE3JM/../../../src/tcpclient.h

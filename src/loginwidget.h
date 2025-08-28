@@ -7,6 +7,7 @@
 #include <QLineEdit>
 #include <QStackedWidget>
 #include <QFormLayout>
+#include "tcpclient.h"
 
 class LoginWidget : public QWidget {
     Q_OBJECT
@@ -49,6 +50,8 @@ private:
     QPushButton* patientRegisterButton;
     QPushButton* backToPatientLoginButton;
 
+    TcpClient* m_tcpClient;
+
 private:
     // Helper function to create the main title label
     QLabel* createTitleLabel();
@@ -66,6 +69,7 @@ private slots:
     void onPatientLogin();
     void onDoctorRegister();
     void onPatientRegister();
+    void onResponseReceived(const QJsonObject &response);
 
 signals:
     void doctorLoggedIn(const QString &doctorName);

@@ -297,10 +297,28 @@ CMakeFiles/hello.dir/src/main.cpp.o: /home/test/src/main.cpp \
  /opt/Qt/5.15.2/gcc_64/include/QtWidgets/qformlayout.h \
  /opt/Qt/5.15.2/gcc_64/include/QtWidgets/QLayout \
  /opt/Qt/5.15.2/gcc_64/include/QtWidgets/qlayout.h \
- /home/test/src/doctorinfowidget.h /home/test/src/dbmanager.h \
- /usr/include/sqlite3.h /opt/Qt/5.15.2/gcc_64/include/QtCore/QString \
- /opt/Qt/5.15.2/gcc_64/include/QtCore/qstring.h \
- /home/test/src/patientinfowidget.h \
+ /home/test/src/tcpclient.h /opt/Qt/5.15.2/gcc_64/include/QtCore/QObject \
+ /opt/Qt/5.15.2/gcc_64/include/QtCore/qobject.h \
+ /opt/Qt/5.15.2/gcc_64/include/QtNetwork/QTcpSocket \
+ /opt/Qt/5.15.2/gcc_64/include/QtNetwork/qtcpsocket.h \
+ /opt/Qt/5.15.2/gcc_64/include/QtNetwork/qtnetworkglobal.h \
+ /opt/Qt/5.15.2/gcc_64/include/QtNetwork/qtnetwork-config.h \
+ /opt/Qt/5.15.2/gcc_64/include/QtNetwork/qabstractsocket.h \
+ /opt/Qt/5.15.2/gcc_64/include/QtCore/qdebug.h \
+ /opt/Qt/5.15.2/gcc_64/include/QtCore/qtextstream.h \
+ /opt/Qt/5.15.2/gcc_64/include/QtCore/qlocale.h \
+ /opt/Qt/5.15.2/gcc_64/include/QtCore/qset.h \
+ /opt/Qt/5.15.2/gcc_64/include/QtCore/qcontiguouscache.h \
+ /opt/Qt/5.15.2/gcc_64/include/QtCore/QJsonObject \
+ /opt/Qt/5.15.2/gcc_64/include/QtCore/qjsonobject.h \
+ /opt/Qt/5.15.2/gcc_64/include/QtCore/qjsonvalue.h \
+ /opt/Qt/5.15.2/gcc_64/include/QtCore/qcborvalue.h \
+ /opt/Qt/5.15.2/gcc_64/include/QtCore/qdatetime.h \
+ /opt/Qt/5.15.2/gcc_64/include/QtCore/qcborcommon.h \
+ /opt/Qt/5.15.2/gcc_64/include/QtCore/qregularexpression.h \
+ /opt/Qt/5.15.2/gcc_64/include/QtCore/qurl.h \
+ /opt/Qt/5.15.2/gcc_64/include/QtCore/quuid.h \
+ /home/test/src/doctorinfowidget.h /home/test/src/patientinfowidget.h \
  /opt/Qt/5.15.2/gcc_64/include/QtWidgets/QMainWindow \
  /opt/Qt/5.15.2/gcc_64/include/QtWidgets/qmainwindow.h \
  /opt/Qt/5.15.2/gcc_64/include/QtWidgets/qtabwidget.h \
@@ -310,5 +328,4 @@ CMakeFiles/hello.dir/src/main.cpp.o: /home/test/src/main.cpp \
  /opt/Qt/5.15.2/gcc_64/include/QtCore/qcoreevent.h \
  /opt/Qt/5.15.2/gcc_64/include/QtCore/qeventloop.h \
  /opt/Qt/5.15.2/gcc_64/include/QtGui/qguiapplication.h \
- /opt/Qt/5.15.2/gcc_64/include/QtGui/qinputmethod.h \
- /opt/Qt/5.15.2/gcc_64/include/QtCore/qlocale.h
+ /opt/Qt/5.15.2/gcc_64/include/QtGui/qinputmethod.h

@@ -17,7 +17,10 @@
 					[
 						0,
 						1,
-						2
+						2,
+						3,
+						4,
+						5
 					]
 				}
 			],
@@ -34,7 +37,10 @@
 					[
 						0,
 						1,
-						2
+						2,
+						3,
+						4,
+						5
 					]
 				}
 			],
@@ -43,7 +49,7 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "hello::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-hello-Debug-ec0ddac9cb4e0ab09bee.json",
+					"jsonFile" : "target-hello-Debug-71ff89deadba3c3a3090.json",
 					"name" : "hello",
 					"projectIndex" : 0
 				},
@@ -59,6 +65,27 @@
 					"id" : "hello_autogen_timestamp_deps::@6890427a1f51a3e7e1df",
 					"jsonFile" : "target-hello_autogen_timestamp_deps-Debug-2b0711955e111f0e48a1.json",
 					"name" : "hello_autogen_timestamp_deps",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "server::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-server-Debug-59f3f0e720a9f0734319.json",
+					"name" : "server",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "server_autogen::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-server_autogen-Debug-3ca4eb89f6f118b99cb6.json",
+					"name" : "server_autogen",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "server_autogen_timestamp_deps::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-server_autogen_timestamp_deps-Debug-1db86788f1e659049db0.json",
+					"name" : "server_autogen_timestamp_deps",
 					"projectIndex" : 0
 				}
 			]

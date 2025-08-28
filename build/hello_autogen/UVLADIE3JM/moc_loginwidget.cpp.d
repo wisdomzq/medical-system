@@ -1,5 +1,8 @@
 /home/test/build/hello_autogen/UVLADIE3JM/moc_loginwidget.cpp: /home/test/src/loginwidget.h \
   /home/test/build/hello_autogen/moc_predefs.h \
+  /home/test/src/tcpclient.h \
+  /opt/Qt/5.15.2/gcc_64/include/QtCore/QJsonObject \
+  /opt/Qt/5.15.2/gcc_64/include/QtCore/QObject \
   /opt/Qt/5.15.2/gcc_64/include/QtCore/qalgorithms.h \
   /opt/Qt/5.15.2/gcc_64/include/QtCore/qarraydata.h \
   /opt/Qt/5.15.2/gcc_64/include/QtCore/qatomic.h \
@@ -7,12 +10,17 @@
   /opt/Qt/5.15.2/gcc_64/include/QtCore/qbasicatomic.h \
   /opt/Qt/5.15.2/gcc_64/include/QtCore/qbytearray.h \
   /opt/Qt/5.15.2/gcc_64/include/QtCore/qbytearraylist.h \
+  /opt/Qt/5.15.2/gcc_64/include/QtCore/qcborcommon.h \
+  /opt/Qt/5.15.2/gcc_64/include/QtCore/qcborvalue.h \
   /opt/Qt/5.15.2/gcc_64/include/QtCore/qchar.h \
   /opt/Qt/5.15.2/gcc_64/include/QtCore/qcompilerdetection.h \
   /opt/Qt/5.15.2/gcc_64/include/QtCore/qconfig.h \
   /opt/Qt/5.15.2/gcc_64/include/QtCore/qcontainerfwd.h \
   /opt/Qt/5.15.2/gcc_64/include/QtCore/qcontainertools_impl.h \
+  /opt/Qt/5.15.2/gcc_64/include/QtCore/qcontiguouscache.h \
   /opt/Qt/5.15.2/gcc_64/include/QtCore/qdatastream.h \
+  /opt/Qt/5.15.2/gcc_64/include/QtCore/qdatetime.h \
+  /opt/Qt/5.15.2/gcc_64/include/QtCore/qdebug.h \
   /opt/Qt/5.15.2/gcc_64/include/QtCore/qflags.h \
   /opt/Qt/5.15.2/gcc_64/include/QtCore/qgenericatomic.h \
   /opt/Qt/5.15.2/gcc_64/include/QtCore/qglobal.h \
@@ -21,8 +29,11 @@
   /opt/Qt/5.15.2/gcc_64/include/QtCore/qhashfunctions.h \
   /opt/Qt/5.15.2/gcc_64/include/QtCore/qiodevice.h \
   /opt/Qt/5.15.2/gcc_64/include/QtCore/qiterator.h \
+  /opt/Qt/5.15.2/gcc_64/include/QtCore/qjsonobject.h \
+  /opt/Qt/5.15.2/gcc_64/include/QtCore/qjsonvalue.h \
   /opt/Qt/5.15.2/gcc_64/include/QtCore/qline.h \
   /opt/Qt/5.15.2/gcc_64/include/QtCore/qlist.h \
+  /opt/Qt/5.15.2/gcc_64/include/QtCore/qlocale.h \
   /opt/Qt/5.15.2/gcc_64/include/QtCore/qlogging.h \
   /opt/Qt/5.15.2/gcc_64/include/QtCore/qmap.h \
   /opt/Qt/5.15.2/gcc_64/include/QtCore/qmargins.h \
@@ -39,7 +50,9 @@
   /opt/Qt/5.15.2/gcc_64/include/QtCore/qrect.h \
   /opt/Qt/5.15.2/gcc_64/include/QtCore/qrefcount.h \
   /opt/Qt/5.15.2/gcc_64/include/QtCore/qregexp.h \
+  /opt/Qt/5.15.2/gcc_64/include/QtCore/qregularexpression.h \
   /opt/Qt/5.15.2/gcc_64/include/QtCore/qscopedpointer.h \
+  /opt/Qt/5.15.2/gcc_64/include/QtCore/qset.h \
   /opt/Qt/5.15.2/gcc_64/include/QtCore/qshareddata.h \
   /opt/Qt/5.15.2/gcc_64/include/QtCore/qsharedpointer.h \
   /opt/Qt/5.15.2/gcc_64/include/QtCore/qsharedpointer_impl.h \
@@ -53,7 +66,10 @@
   /opt/Qt/5.15.2/gcc_64/include/QtCore/qsysinfo.h \
   /opt/Qt/5.15.2/gcc_64/include/QtCore/qsystemdetection.h \
   /opt/Qt/5.15.2/gcc_64/include/QtCore/qtcore-config.h \
+  /opt/Qt/5.15.2/gcc_64/include/QtCore/qtextstream.h \
   /opt/Qt/5.15.2/gcc_64/include/QtCore/qtypeinfo.h \
+  /opt/Qt/5.15.2/gcc_64/include/QtCore/qurl.h \
+  /opt/Qt/5.15.2/gcc_64/include/QtCore/quuid.h \
   /opt/Qt/5.15.2/gcc_64/include/QtCore/qvariant.h \
   /opt/Qt/5.15.2/gcc_64/include/QtCore/qvarlengtharray.h \
   /opt/Qt/5.15.2/gcc_64/include/QtCore/qvector.h \
@@ -84,6 +100,11 @@
   /opt/Qt/5.15.2/gcc_64/include/QtGui/qtguiglobal.h \
   /opt/Qt/5.15.2/gcc_64/include/QtGui/qtransform.h \
   /opt/Qt/5.15.2/gcc_64/include/QtGui/qwindowdefs.h \
+  /opt/Qt/5.15.2/gcc_64/include/QtNetwork/QTcpSocket \
+  /opt/Qt/5.15.2/gcc_64/include/QtNetwork/qabstractsocket.h \
+  /opt/Qt/5.15.2/gcc_64/include/QtNetwork/qtcpsocket.h \
+  /opt/Qt/5.15.2/gcc_64/include/QtNetwork/qtnetwork-config.h \
+  /opt/Qt/5.15.2/gcc_64/include/QtNetwork/qtnetworkglobal.h \
   /opt/Qt/5.15.2/gcc_64/include/QtWidgets/QFormLayout \
   /opt/Qt/5.15.2/gcc_64/include/QtWidgets/QHBoxLayout \
   /opt/Qt/5.15.2/gcc_64/include/QtWidgets/QLabel \
@@ -276,6 +297,7 @@
   /usr/include/sched.h \
   /usr/include/stdc-predef.h \
   /usr/include/stdint.h \
+  /usr/include/stdio.h \
   /usr/include/stdlib.h \
   /usr/include/string.h \
   /usr/include/strings.h \
@@ -315,6 +337,7 @@
   /usr/include/x86_64-linux-gnu/bits/stdint-intn.h \
   /usr/include/x86_64-linux-gnu/bits/stdint-least.h \
   /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h \
+  /usr/include/x86_64-linux-gnu/bits/stdio_lim.h \
   /usr/include/x86_64-linux-gnu/bits/stdlib-float.h \
   /usr/include/x86_64-linux-gnu/bits/struct_mutex.h \
   /usr/include/x86_64-linux-gnu/bits/struct_rwlock.h \
@@ -327,15 +350,19 @@
   /usr/include/x86_64-linux-gnu/bits/types.h \
   /usr/include/x86_64-linux-gnu/bits/types/FILE.h \
   /usr/include/x86_64-linux-gnu/bits/types/__FILE.h \
+  /usr/include/x86_64-linux-gnu/bits/types/__fpos64_t.h \
+  /usr/include/x86_64-linux-gnu/bits/types/__fpos_t.h \
   /usr/include/x86_64-linux-gnu/bits/types/__locale_t.h \
   /usr/include/x86_64-linux-gnu/bits/types/__mbstate_t.h \
   /usr/include/x86_64-linux-gnu/bits/types/__sigset_t.h \
   /usr/include/x86_64-linux-gnu/bits/types/clock_t.h \
   /usr/include/x86_64-linux-gnu/bits/types/clockid_t.h \
+  /usr/include/x86_64-linux-gnu/bits/types/cookie_io_functions_t.h \
   /usr/include/x86_64-linux-gnu/bits/types/error_t.h \
   /usr/include/x86_64-linux-gnu/bits/types/locale_t.h \
   /usr/include/x86_64-linux-gnu/bits/types/mbstate_t.h \
   /usr/include/x86_64-linux-gnu/bits/types/sigset_t.h \
+  /usr/include/x86_64-linux-gnu/bits/types/struct_FILE.h \
   /usr/include/x86_64-linux-gnu/bits/types/struct___jmp_buf_tag.h \
   /usr/include/x86_64-linux-gnu/bits/types/struct_itimerspec.h \
   /usr/include/x86_64-linux-gnu/bits/types/struct_sched_param.h \

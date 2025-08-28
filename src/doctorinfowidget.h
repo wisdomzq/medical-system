@@ -3,7 +3,7 @@
 
 #include <QWidget>
 #include <QLineEdit>
-#include "dbmanager.h"
+#include "tcpclient.h"
 
 class QTabWidget;
 
@@ -22,6 +22,7 @@ private:
     QLineEdit *nameEdit;
     QLineEdit *departmentEdit;
     QLineEdit *phoneEdit;
+    TcpClient *m_tcpClient;
 
     QWidget *createAppointmentPage();
     QWidget *createCasePage();
@@ -31,6 +32,7 @@ private:
 
 private slots:
     void updateProfile();
+    void onResponseReceived(const QJsonObject &response);
 
 signals:
     void backToLogin();

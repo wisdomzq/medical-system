@@ -18,6 +18,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/hello.dir/src/main.cpp.o.d"
   "CMakeFiles/hello.dir/src/patientinfowidget.cpp.o"
   "CMakeFiles/hello.dir/src/patientinfowidget.cpp.o.d"
+  "CMakeFiles/hello.dir/src/tcpclient.cpp.o"
+  "CMakeFiles/hello.dir/src/tcpclient.cpp.o.d"
   "hello"
   "hello.pdb"
   "hello_autogen/mocs_compilation.cpp"

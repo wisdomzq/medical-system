@@ -17,6 +17,7 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/test/src/loginwidget.cpp" "CMakeFiles/hello.dir/src/loginwidget.cpp.o" "gcc" "CMakeFiles/hello.dir/src/loginwidget.cpp.o.d"
   "/home/test/src/main.cpp" "CMakeFiles/hello.dir/src/main.cpp.o" "gcc" "CMakeFiles/hello.dir/src/main.cpp.o.d"
   "/home/test/src/patientinfowidget.cpp" "CMakeFiles/hello.dir/src/patientinfowidget.cpp.o" "gcc" "CMakeFiles/hello.dir/src/patientinfowidget.cpp.o.d"
+  "/home/test/src/tcpclient.cpp" "CMakeFiles/hello.dir/src/tcpclient.cpp.o" "gcc" "CMakeFiles/hello.dir/src/tcpclient.cpp.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

@@ -1,13 +1,24 @@
 #include "loginwidget.h"
-#include "dbmanager.h" // Assuming dbmanager.h has login functions
 #include "doctorinfowidget.h"
 #include "patientinfowidget.h"
+#include "tcpclient.h"
 #include <QFont>
 #include <QMessageBox>
+#include <QJsonObject>
 
 LoginWidget::LoginWidget(QWidget* parent)
     : QWidget(parent)
 {
+    m_tcpClient = new TcpClient(this);
+    connect(m_tcpClient, &TcpClient::connected, this, [this](){
+        QMessageBox::information(this, "连接成功", "已成功连接到服务器。");
+    });
+    connect(m_tcpClient, &TcpClient::disconnected, this, [this](){
+        QMessageBox::warning(this, "连接断开", "与服务器的连接已断开。");
+    });
+    m_tcpClient->connectToServer("127.0.0.1", 12345);
+    connect(m_tcpClient, &TcpClient::responseReceived, this, &LoginWidget::onResponseReceived);
+
     // Main layout containing only the stacked widget
     QVBoxLayout* mainLayout = new QVBoxLayout(this);
     stackedWidget = new QStackedWidget(this);
@@ -204,12 +215,12 @@ void LoginWidget::onDoctorLogin() {
         return;
     }
 
-    DBManager db("user.db");
-    if (db.loginDoctor(name, password)) {
-        emit doctorLoggedIn(name);
-    } else {
-        QMessageBox::warning(this, "登录失败", "用户名或密码错误！");
-    }
+    QJsonObject request;
+    request["type"] = "login";
+    request["username"] = name;
+    request["password"] = password;
+    request["role"] = "doctor";
+    m_tcpClient->sendRequest(request);
 }
 
 void LoginWidget::onPatientLogin() {
@@ -221,12 +232,12 @@ void LoginWidget::onPatientLogin() {
         return;
     }
 
-    DBManager db("user.db");
-    if (db.loginPatient(name, password)) {
-        emit patientLoggedIn(name);
-    } else {
-        QMessageBox::warning(this, "登录失败", "用户名或密码错误！");
-    }
+    QJsonObject request;
+    request["type"] = "login";
+    request["username"] = name;
+    request["password"] = password;
+    request["role"] = "patient";
+    m_tcpClient->sendRequest(request);
 }
 
 void LoginWidget::onDoctorRegister() {
@@ -242,17 +253,14 @@ void LoginWidget::onDoctorRegister() {
         return;
     }
 
-    DBManager db("user.db");
-    // initTables() 最好在程序启动时调用一次，但在这里调用也能确保表存在
-    db.initTables();
-
-    // 直接传递 QString 给数据库管理器
-    if (db.registerDoctor(name, password, department, phone)) {
-        QMessageBox::information(this, "注册成功", "医生注册成功！请返回登录。");
-        showDoctorLogin(); // 注册成功后自动返回登录页面
-    } else {
-        QMessageBox::warning(this, "注册失败", "医生注册失败！可能是用户名已存在。");
-    }
+    QJsonObject request;
+    request["type"] = "register";
+    request["username"] = name;
+    request["password"] = password;
+    request["role"] = "doctor";
+    request["department"] = department;
+    request["phone"] = phone;
+    m_tcpClient->sendRequest(request);
 }
 
 void LoginWidget::onPatientRegister() {
@@ -277,14 +285,59 @@ void LoginWidget::onPatientRegister() {
         return;
     }
 
-    DBManager db("user.db");
-    db.initTables();
+    QJsonObject request;
+    request["type"] = "register";
+    request["username"] = name;
+    request["password"] = password;
+    request["role"] = "patient";
+    request["age"] = age;
+    request["phone"] = phone;
+    request["address"] = address;
+    m_tcpClient->sendRequest(request);
+}
 
-    // 直接传递 QString 给数据库管理器
-    if (db.registerPatient(name, password, age, phone, address)) {
-        QMessageBox::information(this, "注册成功", "病人注册成功！请返回登录。");
-        showPatientLogin(); // 注册成功后自动返回登录页面
-    } else {
-        QMessageBox::warning(this, "注册失败", "病人注册失败！可能是用户名已存在。");
+void LoginWidget::onResponseReceived(const QJsonObject &response)
+{
+    QString type = response["type"].toString();
+    bool success = response["success"].toBool();
+
+    if (type == "login_response")
+    {
+        if (success)
+        {
+            QString role = response["role"].toString();
+            QString username = response["username"].toString();
+            if (role == "doctor")
+            {
+                emit doctorLoggedIn(username);
+            }
+            else
+            {
+                emit patientLoggedIn(username);
+            }
+        }
+        else
+        {
+            QMessageBox::warning(this, "登录失败", "用户名或密码错误！");
+        }
+    }
+    else if (type == "register_response")
+    {
+        if (success)
+        {
+            QMessageBox::information(this, "注册成功", "注册成功！请返回登录。");
+            if (response["role"].toString() == "doctor")
+            {
+                showDoctorLogin();
+            }
+            else
+            {
+                showPatientLogin();
+            }
+        }
+        else
+        {
+            QMessageBox::warning(this, "注册失败", "注册失败！可能是用户名已存在。");
+        }
     }
 }

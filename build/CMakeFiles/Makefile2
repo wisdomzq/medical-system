@@ -64,6 +64,7 @@ CMAKE_BINARY_DIR = /home/test/build
 
 # The main recursive "all" target.
 all: CMakeFiles/hello.dir/all
+all: CMakeFiles/server.dir/all
 .PHONY : all
 
 # The main recursive "preinstall" target.
@@ -72,8 +73,11 @@ preinstall:
 
 # The main recursive "clean" target.
 clean: CMakeFiles/hello.dir/clean
+clean: CMakeFiles/server.dir/clean
 clean: CMakeFiles/hello_autogen_timestamp_deps.dir/clean
 clean: CMakeFiles/hello_autogen.dir/clean
+clean: CMakeFiles/server_autogen_timestamp_deps.dir/clean
+clean: CMakeFiles/server_autogen.dir/clean
 .PHONY : clean
 
 #=============================================================================
@@ -84,12 +88,12 @@ CMakeFiles/hello.dir/all: CMakeFiles/hello_autogen_timestamp_deps.dir/all
 CMakeFiles/hello.dir/all: CMakeFiles/hello_autogen.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/hello.dir/build.make CMakeFiles/hello.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/hello.dir/build.make CMakeFiles/hello.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/test/build/CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10 "Built target hello"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/test/build/CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10,11 "Built target hello"
 .PHONY : CMakeFiles/hello.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/hello.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/test/build/CMakeFiles 11
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/test/build/CMakeFiles 12
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/hello.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/test/build/CMakeFiles 0
 .PHONY : CMakeFiles/hello.dir/rule
@@ -102,6 +106,33 @@ hello: CMakeFiles/hello.dir/rule
 CMakeFiles/hello.dir/clean:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/hello.dir/build.make CMakeFiles/hello.dir/clean
 .PHONY : CMakeFiles/hello.dir/clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/server.dir
+
+# All Build rule for target.
+CMakeFiles/server.dir/all: CMakeFiles/server_autogen_timestamp_deps.dir/all
+CMakeFiles/server.dir/all: CMakeFiles/server_autogen.dir/all
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/test/build/CMakeFiles --progress-num=13,14,15,16,17,18 "Built target server"
+.PHONY : CMakeFiles/server.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/server.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/test/build/CMakeFiles 7
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/server.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/test/build/CMakeFiles 0
+.PHONY : CMakeFiles/server.dir/rule
+
+# Convenience name for target.
+server: CMakeFiles/server.dir/rule
+.PHONY : server
+
+# clean rule for target.
+CMakeFiles/server.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/clean
+.PHONY : CMakeFiles/server.dir/clean
 
 #=============================================================================
 # Target rules for target CMakeFiles/hello_autogen_timestamp_deps.dir
@@ -136,7 +167,7 @@ CMakeFiles/hello_autogen_timestamp_deps.dir/clean:
 CMakeFiles/hello_autogen.dir/all: CMakeFiles/hello_autogen_timestamp_deps.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/hello_autogen.dir/build.make CMakeFiles/hello_autogen.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/hello_autogen.dir/build.make CMakeFiles/hello_autogen.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/test/build/CMakeFiles --progress-num=11 "Built target hello_autogen"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/test/build/CMakeFiles --progress-num=12 "Built target hello_autogen"
 .PHONY : CMakeFiles/hello_autogen.dir/all
 
 # Build rule for subdir invocation for target.
@@ -154,6 +185,58 @@ hello_autogen: CMakeFiles/hello_autogen.dir/rule
 CMakeFiles/hello_autogen.dir/clean:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/hello_autogen.dir/build.make CMakeFiles/hello_autogen.dir/clean
 .PHONY : CMakeFiles/hello_autogen.dir/clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/server_autogen_timestamp_deps.dir
+
+# All Build rule for target.
+CMakeFiles/server_autogen_timestamp_deps.dir/all:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/server_autogen_timestamp_deps.dir/build.make CMakeFiles/server_autogen_timestamp_deps.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/server_autogen_timestamp_deps.dir/build.make CMakeFiles/server_autogen_timestamp_deps.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/test/build/CMakeFiles --progress-num= "Built target server_autogen_timestamp_deps"
+.PHONY : CMakeFiles/server_autogen_timestamp_deps.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/server_autogen_timestamp_deps.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/test/build/CMakeFiles 0
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/server_autogen_timestamp_deps.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/test/build/CMakeFiles 0
+.PHONY : CMakeFiles/server_autogen_timestamp_deps.dir/rule
+
+# Convenience name for target.
+server_autogen_timestamp_deps: CMakeFiles/server_autogen_timestamp_deps.dir/rule
+.PHONY : server_autogen_timestamp_deps
+
+# clean rule for target.
+CMakeFiles/server_autogen_timestamp_deps.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/server_autogen_timestamp_deps.dir/build.make CMakeFiles/server_autogen_timestamp_deps.dir/clean
+.PHONY : CMakeFiles/server_autogen_timestamp_deps.dir/clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/server_autogen.dir
+
+# All Build rule for target.
+CMakeFiles/server_autogen.dir/all: CMakeFiles/server_autogen_timestamp_deps.dir/all
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/server_autogen.dir/build.make CMakeFiles/server_autogen.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/server_autogen.dir/build.make CMakeFiles/server_autogen.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/test/build/CMakeFiles --progress-num=19 "Built target server_autogen"
+.PHONY : CMakeFiles/server_autogen.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/server_autogen.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/test/build/CMakeFiles 1
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/server_autogen.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/test/build/CMakeFiles 0
+.PHONY : CMakeFiles/server_autogen.dir/rule
+
+# Convenience name for target.
+server_autogen: CMakeFiles/server_autogen.dir/rule
+.PHONY : server_autogen
+
+# clean rule for target.
+CMakeFiles/server_autogen.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/server_autogen.dir/build.make CMakeFiles/server_autogen.dir/clean
+.PHONY : CMakeFiles/server_autogen.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

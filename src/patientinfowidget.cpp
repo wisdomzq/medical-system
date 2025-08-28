@@ -1,14 +1,20 @@
 #include "patientinfowidget.h"
+#include "tcpclient.h"
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QTabWidget>
 #include <QFormLayout>
 #include <QPushButton>
 #include <QMessageBox>
+#include <QJsonObject>
 
 PatientInfoWidget::PatientInfoWidget(QWidget *parent)
     : QWidget(parent)
 {
+    m_tcpClient = new TcpClient(this);
+    m_tcpClient->connectToServer("127.0.0.1", 12345);
+    connect(m_tcpClient, &TcpClient::responseReceived, this, &PatientInfoWidget::onResponseReceived);
+
     setWindowTitle("患者中心");
     setMinimumSize(800, 600);
 
@@ -93,35 +99,27 @@ QWidget* PatientInfoWidget::createProfilePage()
 
 void PatientInfoWidget::loadProfile()
 {
-    DBManager db("user.db");
-    int age;
-    QString phone, address;
-    if (db.getPatientDetails(currentPatientName, age, phone, address)) {
-        nameEdit->setText(currentPatientName);
-        ageEdit->setText(QString::number(age));
-        phoneEdit->setText(phone);
-        addressEdit->setText(address);
-    }
+    QJsonObject request;
+    request["type"] = "get_patient_info";
+    request["username"] = currentPatientName;
+    m_tcpClient->sendRequest(request);
 }
 
 void PatientInfoWidget::updateProfile()
 {
-    QString newName = nameEdit->text();
-    int age = ageEdit->text().toInt();
-    QString phone = phoneEdit->text();
-    QString address = addressEdit->text();
+    // This would be a new request type, e.g., "update_patient_info"
+    QMessageBox::information(this, "提示", "更新功能需要服务器端实现。");
+}
 
-    if (newName.isEmpty()) {
-        QMessageBox::warning(this, "更新失败", "姓名不能为空！");
-        return;
-    }
-
-    DBManager db("user.db");
-    if (db.updatePatientProfile(currentPatientName, newName, age, phone, address)) {
-        QMessageBox::information(this, "成功", "个人信息更新成功！");
-        currentPatientName = newName;
-        setWindowTitle("患者中心 - " + currentPatientName);
-    } else {
-        QMessageBox::warning(this, "失败", "个人信息更新失败！");
+void PatientInfoWidget::onResponseReceived(const QJsonObject &response)
+{
+    QString type = response["type"].toString();
+    if (type == "patient_info_response" && response["success"].toBool())
+    {
+        QJsonObject data = response["data"].toObject();
+        nameEdit->setText(data["name"].toString());
+        ageEdit->setText(QString::number(data["age"].toInt()));
+        phoneEdit->setText(data["phone"].toString());
+        addressEdit->setText(data["address"].toString());
     }
 }
