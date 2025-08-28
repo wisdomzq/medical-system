@@ -1,7 +1,0 @@
-{
-    "qtConfigure.qtKitDir": "/opt/Qt/5.15.2/gcc_64",
-
-"workbench.editorAssociations": {
-    "*.ui": "default"
-}
-}
