@@ -17,6 +17,7 @@ set(srcs ${srcs}
     src/doctorinfowidget.cpp
     src/patientinfowidget.cpp
     src/tcpclient.cpp
+    src/resources.qrc
 )
 add_executable(hello
     WIN32

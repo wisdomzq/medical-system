@@ -49,7 +49,7 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "hello::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-hello-Debug-71ff89deadba3c3a3090.json",
+					"jsonFile" : "target-hello-Debug-7caeaedb7f6946e62de9.json",
 					"name" : "hello",
 					"projectIndex" : 0
 				},
@@ -70,7 +70,7 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "server::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-server-Debug-59f3f0e720a9f0734319.json",
+					"jsonFile" : "target-server-Debug-591a603db6dd9573c973.json",
 					"name" : "server",
 					"projectIndex" : 0
 				},

@@ -10,6 +10,7 @@ TcpServer::TcpServer(QObject *parent) : QTcpServer(parent), m_dbManager("user.db
 
 void TcpServer::incomingConnection(qintptr socketDescriptor)
 {
+    qDebug() << "New connection with descriptor:" << socketDescriptor;
     QTcpSocket *socket = new QTcpSocket(this);
     socket->setSocketDescriptor(socketDescriptor);
 
@@ -22,7 +23,9 @@ void TcpServer::onReadyRead()
     QTcpSocket *socket = qobject_cast<QTcpSocket *>(sender());
     if (socket)
     {
-        processRequest(socket, socket->readAll());
+        QByteArray data = socket->readAll();
+        qDebug() << "Received data:" << data;
+        processRequest(socket, data);
     }
 }
 

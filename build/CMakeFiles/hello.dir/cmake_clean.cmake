@@ -2,6 +2,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/hello_autogen.dir/AutogenUsed.txt"
   "CMakeFiles/hello_autogen.dir/ParseCache.txt"
   "hello_autogen"
+  "CMakeFiles/hello.dir/hello_autogen/UVLADIE3JM/qrc_resources.cpp.o"
+  "CMakeFiles/hello.dir/hello_autogen/UVLADIE3JM/qrc_resources.cpp.o.d"
   "CMakeFiles/hello.dir/hello_autogen/mocs_compilation.cpp.o"
   "CMakeFiles/hello.dir/hello_autogen/mocs_compilation.cpp.o.d"
   "CMakeFiles/hello.dir/src/authdialog.cpp.o"
@@ -22,6 +24,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/hello.dir/src/tcpclient.cpp.o.d"
   "hello"
   "hello.pdb"
+  "hello_autogen/UVLADIE3JM/qrc_resources.cpp"
   "hello_autogen/mocs_compilation.cpp"
   "hello_autogen/timestamp"
 )

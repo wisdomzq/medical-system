@@ -16,6 +16,7 @@ hello_autogen/timestamp: \
 	/home/test/src/main.cpp \
 	/home/test/src/patientinfowidget.cpp \
 	/home/test/src/patientinfowidget.h \
+	/home/test/src/resources.qrc \
 	/home/test/src/tcpclient.cpp \
 	/home/test/src/tcpclient.h \
 	/opt/Qt/5.15.2/gcc_64/include/QtCore/QJsonObject \

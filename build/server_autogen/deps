@@ -8,6 +8,7 @@ server_autogen/timestamp: \
 	/home/test/server/server.cpp \
 	/home/test/server/tcpserver.cpp \
 	/home/test/server/tcpserver.h \
+	/home/test/src/resources.qrc \
 	/opt/Qt/5.15.2/gcc_64/include/QtCore/QDataStream \
 	/opt/Qt/5.15.2/gcc_64/include/QtCore/QJsonObject \
 	/opt/Qt/5.15.2/gcc_64/include/QtCore/qalgorithms.h \

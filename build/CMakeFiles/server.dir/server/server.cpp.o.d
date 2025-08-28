@@ -269,4 +269,6 @@ CMakeFiles/server.dir/server/server.cpp.o: /home/test/server/server.cpp \
  /opt/Qt/5.15.2/gcc_64/include/QtCore/QCoreApplication \
  /opt/Qt/5.15.2/gcc_64/include/QtCore/qcoreapplication.h \
  /opt/Qt/5.15.2/gcc_64/include/QtCore/qcoreevent.h \
- /opt/Qt/5.15.2/gcc_64/include/QtCore/qeventloop.h
+ /opt/Qt/5.15.2/gcc_64/include/QtCore/qeventloop.h \
+ /opt/Qt/5.15.2/gcc_64/include/QtCore/QDebug \
+ /opt/Qt/5.15.2/gcc_64/include/QtCore/qdebug.h

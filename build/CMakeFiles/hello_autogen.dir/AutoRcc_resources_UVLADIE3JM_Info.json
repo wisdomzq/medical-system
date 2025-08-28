@@ -1,0 +1,20 @@
+{
+	"BUILD_DIR" : "/home/test/build/hello_autogen",
+	"CMAKE_BINARY_DIR" : "/home/test/build",
+	"CMAKE_CURRENT_BINARY_DIR" : "/home/test/build",
+	"CMAKE_CURRENT_SOURCE_DIR" : "/home/test",
+	"CMAKE_SOURCE_DIR" : "/home/test",
+	"GENERATOR" : "Unix Makefiles",
+	"INCLUDE_DIR" : "/home/test/build/hello_autogen/include",
+	"INPUTS" : [ "/home/test/src/style.qss" ],
+	"LOCK_FILE" : "/home/test/build/CMakeFiles/hello_autogen.dir/AutoRcc_resources_UVLADIE3JM_Lock.lock",
+	"MULTI_CONFIG" : false,
+	"OPTIONS" : [ "-name", "resources" ],
+	"OUTPUT_CHECKSUM" : "UVLADIE3JM",
+	"OUTPUT_NAME" : "qrc_resources.cpp",
+	"RCC_EXECUTABLE" : "/opt/Qt/5.15.2/gcc_64/bin/rcc",
+	"RCC_LIST_OPTIONS" : [ "--list" ],
+	"SETTINGS_FILE" : "/home/test/build/CMakeFiles/hello_autogen.dir/AutoRcc_resources_UVLADIE3JM_Used.txt",
+	"SOURCE" : "/home/test/src/resources.qrc",
+	"VERBOSITY" : 0
+}

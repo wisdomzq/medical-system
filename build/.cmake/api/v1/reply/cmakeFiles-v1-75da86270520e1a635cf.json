@@ -348,6 +348,9 @@
 		{
 			"isExternal" : true,
 			"path" : "/opt/Qt/5.15.2/gcc_64/lib/cmake/Qt5Sql/Qt5Sql_QSQLiteDriverPlugin.cmake"
+		},
+		{
+			"path" : "src/resources.qrc"
 		}
 	],
 	"kind" : "cmakeFiles",

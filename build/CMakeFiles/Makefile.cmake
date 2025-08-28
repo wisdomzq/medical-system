@@ -10,6 +10,7 @@ set(CMAKE_MAKEFILE_DEPENDS
   "/home/test/CMakeLists.txt"
   "CMakeFiles/3.28.3/CMakeCXXCompiler.cmake"
   "CMakeFiles/3.28.3/CMakeSystem.cmake"
+  "/home/test/src/resources.qrc"
   "/opt/Qt/5.15.2/gcc_64/lib/cmake/Qt5/Qt5Config.cmake"
   "/opt/Qt/5.15.2/gcc_64/lib/cmake/Qt5/Qt5ConfigVersion.cmake"
   "/opt/Qt/5.15.2/gcc_64/lib/cmake/Qt5/Qt5ModuleLocation.cmake"
@@ -100,6 +101,7 @@ set(CMAKE_MAKEFILE_OUTPUTS
 # Byproducts of CMake generate step:
 set(CMAKE_MAKEFILE_PRODUCTS
   "CMakeFiles/hello_autogen.dir/AutogenInfo.json"
+  "CMakeFiles/hello_autogen.dir/AutoRcc_resources_UVLADIE3JM_Info.json"
   "CMakeFiles/server_autogen.dir/AutogenInfo.json"
   "CMakeFiles/CMakeDirectoryInformation.cmake"
   )

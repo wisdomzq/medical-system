@@ -30,13 +30,13 @@
 			{
 				"command" : 0,
 				"file" : 0,
-				"line" : 21,
+				"line" : 22,
 				"parent" : 0
 			},
 			{
 				"command" : 1,
 				"file" : 0,
-				"line" : 25,
+				"line" : 26,
 				"parent" : 0
 			},
 			{
@@ -167,7 +167,8 @@
 				5,
 				6,
 				7,
-				8
+				8,
+				11
 			]
 		}
 	],
@@ -247,21 +248,24 @@
 				5,
 				6,
 				7,
-				8
+				8,
+				11
 			]
 		},
 		{
 			"name" : "",
 			"sourceIndexes" : 
 			[
-				9
+				9,
+				10
 			]
 		},
 		{
 			"name" : "CMake Rules",
 			"sourceIndexes" : 
 			[
-				10
+				12,
+				13
 			]
 		}
 	],
@@ -323,6 +327,11 @@
 			"sourceGroupIndex" : 0
 		},
 		{
+			"backtrace" : 1,
+			"path" : "src/resources.qrc",
+			"sourceGroupIndex" : 1
+		},
+		{
 			"backtrace" : 0,
 			"isGenerated" : true,
 			"path" : "build/hello_autogen/timestamp",
@@ -330,8 +339,21 @@
 		},
 		{
 			"backtrace" : 0,
+			"compileGroupIndex" : 0,
+			"isGenerated" : true,
+			"path" : "build/hello_autogen/UVLADIE3JM/qrc_resources.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 0,
 			"isGenerated" : true,
 			"path" : "build/hello_autogen/timestamp.rule",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "build/hello_autogen/UVLADIE3JM/qrc_resources.cpp.rule",
 			"sourceGroupIndex" : 2
 		}
 	],

@@ -67,10 +67,10 @@ include CMakeFiles/server_autogen_timestamp_deps.dir/compiler_depend.make
 include CMakeFiles/server_autogen_timestamp_deps.dir/progress.make
 
 CMakeFiles/server_autogen_timestamp_deps: /opt/Qt/5.15.2/gcc_64/bin/uic
-CMakeFiles/server_autogen_timestamp_deps: /opt/Qt/5.15.2/gcc_64/lib/libQt5Sql.so.5.15.2
 CMakeFiles/server_autogen_timestamp_deps: /opt/Qt/5.15.2/gcc_64/lib/libQt5Network.so.5.15.2
 CMakeFiles/server_autogen_timestamp_deps: /opt/Qt/5.15.2/gcc_64/lib/libQt5Core.so.5.15.2
 CMakeFiles/server_autogen_timestamp_deps: /opt/Qt/5.15.2/gcc_64/bin/moc
+CMakeFiles/server_autogen_timestamp_deps: /opt/Qt/5.15.2/gcc_64/lib/libQt5Sql.so.5.15.2
 
 server_autogen_timestamp_deps: CMakeFiles/server_autogen_timestamp_deps
 server_autogen_timestamp_deps: CMakeFiles/server_autogen_timestamp_deps.dir/build.make

@@ -1,0 +1,48 @@
+/* General Window Styles */
+QWidget {
+    background-color: #f0f0f0;
+}
+
+/* Button Styles */
+QPushButton {
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 14px;
+    margin: 4px 2px;
+    border-radius: 8px;
+}
+
+QPushButton:hover {
+    background-color: #45a049; /* Darker Green */
+}
+
+QPushButton:pressed {
+    background-color: #3e8e41;
+}
+
+/* Text Box (LineEdit) Styles */
+QLineEdit {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+QLineEdit:focus {
+    border-color: #4CAF50;
+}
+
+/* Label Styles */
+QLabel {
+    font-size: 14px;
+    color: #333;
+}
+
+/* Main Window Specifics if needed */
+#MainWindow {
+    background-color: #e8e8e8;
+}

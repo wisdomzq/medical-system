@@ -76,10 +76,17 @@ hello_autogen/timestamp: CMakeFiles/hello.dir/compiler_depend.ts
 	/usr/bin/cmake -E cmake_autogen /home/test/build/CMakeFiles/hello_autogen.dir/AutogenInfo.json Debug
 	/usr/bin/cmake -E touch /home/test/build/hello_autogen/timestamp
 
+hello_autogen/UVLADIE3JM/qrc_resources.cpp: /home/test/src/resources.qrc
+hello_autogen/UVLADIE3JM/qrc_resources.cpp: CMakeFiles/hello_autogen.dir/AutoRcc_resources_UVLADIE3JM_Info.json
+hello_autogen/UVLADIE3JM/qrc_resources.cpp: /home/test/src/style.qss
+hello_autogen/UVLADIE3JM/qrc_resources.cpp: /opt/Qt/5.15.2/gcc_64/bin/rcc
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/test/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Automatic RCC for src/resources.qrc"
+	/usr/bin/cmake -E cmake_autorcc /home/test/build/CMakeFiles/hello_autogen.dir/AutoRcc_resources_UVLADIE3JM_Info.json Debug
+
 CMakeFiles/hello.dir/hello_autogen/mocs_compilation.cpp.o: CMakeFiles/hello.dir/flags.make
 CMakeFiles/hello.dir/hello_autogen/mocs_compilation.cpp.o: hello_autogen/mocs_compilation.cpp
 CMakeFiles/hello.dir/hello_autogen/mocs_compilation.cpp.o: CMakeFiles/hello.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/test/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/hello.dir/hello_autogen/mocs_compilation.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/test/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/hello.dir/hello_autogen/mocs_compilation.cpp.o"
 	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/hello.dir/hello_autogen/mocs_compilation.cpp.o -MF CMakeFiles/hello.dir/hello_autogen/mocs_compilation.cpp.o.d -o CMakeFiles/hello.dir/hello_autogen/mocs_compilation.cpp.o -c /home/test/build/hello_autogen/mocs_compilation.cpp
 
 CMakeFiles/hello.dir/hello_autogen/mocs_compilation.cpp.i: cmake_force
@@ -93,7 +100,7 @@ CMakeFiles/hello.dir/hello_autogen/mocs_compilation.cpp.s: cmake_force
 CMakeFiles/hello.dir/src/authdialog.cpp.o: CMakeFiles/hello.dir/flags.make
 CMakeFiles/hello.dir/src/authdialog.cpp.o: /home/test/src/authdialog.cpp
 CMakeFiles/hello.dir/src/authdialog.cpp.o: CMakeFiles/hello.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/test/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/hello.dir/src/authdialog.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/test/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/hello.dir/src/authdialog.cpp.o"
 	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/hello.dir/src/authdialog.cpp.o -MF CMakeFiles/hello.dir/src/authdialog.cpp.o.d -o CMakeFiles/hello.dir/src/authdialog.cpp.o -c /home/test/src/authdialog.cpp
 
 CMakeFiles/hello.dir/src/authdialog.cpp.i: cmake_force
@@ -107,7 +114,7 @@ CMakeFiles/hello.dir/src/authdialog.cpp.s: cmake_force
 CMakeFiles/hello.dir/src/dbmanager.cpp.o: CMakeFiles/hello.dir/flags.make
 CMakeFiles/hello.dir/src/dbmanager.cpp.o: /home/test/src/dbmanager.cpp
 CMakeFiles/hello.dir/src/dbmanager.cpp.o: CMakeFiles/hello.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/test/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/hello.dir/src/dbmanager.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/test/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/hello.dir/src/dbmanager.cpp.o"
 	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/hello.dir/src/dbmanager.cpp.o -MF CMakeFiles/hello.dir/src/dbmanager.cpp.o.d -o CMakeFiles/hello.dir/src/dbmanager.cpp.o -c /home/test/src/dbmanager.cpp
 
 CMakeFiles/hello.dir/src/dbmanager.cpp.i: cmake_force
@@ -121,7 +128,7 @@ CMakeFiles/hello.dir/src/dbmanager.cpp.s: cmake_force
 CMakeFiles/hello.dir/src/doctorinfowidget.cpp.o: CMakeFiles/hello.dir/flags.make
 CMakeFiles/hello.dir/src/doctorinfowidget.cpp.o: /home/test/src/doctorinfowidget.cpp
 CMakeFiles/hello.dir/src/doctorinfowidget.cpp.o: CMakeFiles/hello.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/test/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/hello.dir/src/doctorinfowidget.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/test/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/hello.dir/src/doctorinfowidget.cpp.o"
 	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/hello.dir/src/doctorinfowidget.cpp.o -MF CMakeFiles/hello.dir/src/doctorinfowidget.cpp.o.d -o CMakeFiles/hello.dir/src/doctorinfowidget.cpp.o -c /home/test/src/doctorinfowidget.cpp
 
 CMakeFiles/hello.dir/src/doctorinfowidget.cpp.i: cmake_force
@@ -135,7 +142,7 @@ CMakeFiles/hello.dir/src/doctorinfowidget.cpp.s: cmake_force
 CMakeFiles/hello.dir/src/hello.cpp.o: CMakeFiles/hello.dir/flags.make
 CMakeFiles/hello.dir/src/hello.cpp.o: /home/test/src/hello.cpp
 CMakeFiles/hello.dir/src/hello.cpp.o: CMakeFiles/hello.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/test/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/hello.dir/src/hello.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/test/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/hello.dir/src/hello.cpp.o"
 	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/hello.dir/src/hello.cpp.o -MF CMakeFiles/hello.dir/src/hello.cpp.o.d -o CMakeFiles/hello.dir/src/hello.cpp.o -c /home/test/src/hello.cpp
 
 CMakeFiles/hello.dir/src/hello.cpp.i: cmake_force
@@ -149,7 +156,7 @@ CMakeFiles/hello.dir/src/hello.cpp.s: cmake_force
 CMakeFiles/hello.dir/src/loginwidget.cpp.o: CMakeFiles/hello.dir/flags.make
 CMakeFiles/hello.dir/src/loginwidget.cpp.o: /home/test/src/loginwidget.cpp
 CMakeFiles/hello.dir/src/loginwidget.cpp.o: CMakeFiles/hello.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/test/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/hello.dir/src/loginwidget.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/test/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/hello.dir/src/loginwidget.cpp.o"
 	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/hello.dir/src/loginwidget.cpp.o -MF CMakeFiles/hello.dir/src/loginwidget.cpp.o.d -o CMakeFiles/hello.dir/src/loginwidget.cpp.o -c /home/test/src/loginwidget.cpp
 
 CMakeFiles/hello.dir/src/loginwidget.cpp.i: cmake_force
@@ -163,7 +170,7 @@ CMakeFiles/hello.dir/src/loginwidget.cpp.s: cmake_force
 CMakeFiles/hello.dir/src/main.cpp.o: CMakeFiles/hello.dir/flags.make
 CMakeFiles/hello.dir/src/main.cpp.o: /home/test/src/main.cpp
 CMakeFiles/hello.dir/src/main.cpp.o: CMakeFiles/hello.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/test/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/hello.dir/src/main.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/test/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/hello.dir/src/main.cpp.o"
 	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/hello.dir/src/main.cpp.o -MF CMakeFiles/hello.dir/src/main.cpp.o.d -o CMakeFiles/hello.dir/src/main.cpp.o -c /home/test/src/main.cpp
 
 CMakeFiles/hello.dir/src/main.cpp.i: cmake_force
@@ -177,7 +184,7 @@ CMakeFiles/hello.dir/src/main.cpp.s: cmake_force
 CMakeFiles/hello.dir/src/patientinfowidget.cpp.o: CMakeFiles/hello.dir/flags.make
 CMakeFiles/hello.dir/src/patientinfowidget.cpp.o: /home/test/src/patientinfowidget.cpp
 CMakeFiles/hello.dir/src/patientinfowidget.cpp.o: CMakeFiles/hello.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/test/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/hello.dir/src/patientinfowidget.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/test/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/hello.dir/src/patientinfowidget.cpp.o"
 	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/hello.dir/src/patientinfowidget.cpp.o -MF CMakeFiles/hello.dir/src/patientinfowidget.cpp.o.d -o CMakeFiles/hello.dir/src/patientinfowidget.cpp.o -c /home/test/src/patientinfowidget.cpp
 
 CMakeFiles/hello.dir/src/patientinfowidget.cpp.i: cmake_force
@@ -191,7 +198,7 @@ CMakeFiles/hello.dir/src/patientinfowidget.cpp.s: cmake_force
 CMakeFiles/hello.dir/src/tcpclient.cpp.o: CMakeFiles/hello.dir/flags.make
 CMakeFiles/hello.dir/src/tcpclient.cpp.o: /home/test/src/tcpclient.cpp
 CMakeFiles/hello.dir/src/tcpclient.cpp.o: CMakeFiles/hello.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/test/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/hello.dir/src/tcpclient.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/test/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/hello.dir/src/tcpclient.cpp.o"
 	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/hello.dir/src/tcpclient.cpp.o -MF CMakeFiles/hello.dir/src/tcpclient.cpp.o.d -o CMakeFiles/hello.dir/src/tcpclient.cpp.o -c /home/test/src/tcpclient.cpp
 
 CMakeFiles/hello.dir/src/tcpclient.cpp.i: cmake_force
@@ -201,6 +208,20 @@ CMakeFiles/hello.dir/src/tcpclient.cpp.i: cmake_force
 CMakeFiles/hello.dir/src/tcpclient.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/hello.dir/src/tcpclient.cpp.s"
 	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/test/src/tcpclient.cpp -o CMakeFiles/hello.dir/src/tcpclient.cpp.s
+
+CMakeFiles/hello.dir/hello_autogen/UVLADIE3JM/qrc_resources.cpp.o: CMakeFiles/hello.dir/flags.make
+CMakeFiles/hello.dir/hello_autogen/UVLADIE3JM/qrc_resources.cpp.o: hello_autogen/UVLADIE3JM/qrc_resources.cpp
+CMakeFiles/hello.dir/hello_autogen/UVLADIE3JM/qrc_resources.cpp.o: CMakeFiles/hello.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/test/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/hello.dir/hello_autogen/UVLADIE3JM/qrc_resources.cpp.o"
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/hello.dir/hello_autogen/UVLADIE3JM/qrc_resources.cpp.o -MF CMakeFiles/hello.dir/hello_autogen/UVLADIE3JM/qrc_resources.cpp.o.d -o CMakeFiles/hello.dir/hello_autogen/UVLADIE3JM/qrc_resources.cpp.o -c /home/test/build/hello_autogen/UVLADIE3JM/qrc_resources.cpp
+
+CMakeFiles/hello.dir/hello_autogen/UVLADIE3JM/qrc_resources.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/hello.dir/hello_autogen/UVLADIE3JM/qrc_resources.cpp.i"
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/test/build/hello_autogen/UVLADIE3JM/qrc_resources.cpp > CMakeFiles/hello.dir/hello_autogen/UVLADIE3JM/qrc_resources.cpp.i
+
+CMakeFiles/hello.dir/hello_autogen/UVLADIE3JM/qrc_resources.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/hello.dir/hello_autogen/UVLADIE3JM/qrc_resources.cpp.s"
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/test/build/hello_autogen/UVLADIE3JM/qrc_resources.cpp -o CMakeFiles/hello.dir/hello_autogen/UVLADIE3JM/qrc_resources.cpp.s
 
 # Object files for target hello
 hello_OBJECTS = \
@@ -212,7 +233,8 @@ hello_OBJECTS = \
 "CMakeFiles/hello.dir/src/loginwidget.cpp.o" \
 "CMakeFiles/hello.dir/src/main.cpp.o" \
 "CMakeFiles/hello.dir/src/patientinfowidget.cpp.o" \
-"CMakeFiles/hello.dir/src/tcpclient.cpp.o"
+"CMakeFiles/hello.dir/src/tcpclient.cpp.o" \
+"CMakeFiles/hello.dir/hello_autogen/UVLADIE3JM/qrc_resources.cpp.o"
 
 # External object files for target hello
 hello_EXTERNAL_OBJECTS =
@@ -226,13 +248,14 @@ hello: CMakeFiles/hello.dir/src/loginwidget.cpp.o
 hello: CMakeFiles/hello.dir/src/main.cpp.o
 hello: CMakeFiles/hello.dir/src/patientinfowidget.cpp.o
 hello: CMakeFiles/hello.dir/src/tcpclient.cpp.o
+hello: CMakeFiles/hello.dir/hello_autogen/UVLADIE3JM/qrc_resources.cpp.o
 hello: CMakeFiles/hello.dir/build.make
 hello: /opt/Qt/5.15.2/gcc_64/lib/libQt5Widgets.so.5.15.2
 hello: /opt/Qt/5.15.2/gcc_64/lib/libQt5Network.so.5.15.2
 hello: /opt/Qt/5.15.2/gcc_64/lib/libQt5Gui.so.5.15.2
 hello: /opt/Qt/5.15.2/gcc_64/lib/libQt5Core.so.5.15.2
 hello: CMakeFiles/hello.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/test/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Linking CXX executable hello"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/test/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Linking CXX executable hello"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/hello.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -243,6 +266,7 @@ CMakeFiles/hello.dir/clean:
 	$(CMAKE_COMMAND) -P CMakeFiles/hello.dir/cmake_clean.cmake
 .PHONY : CMakeFiles/hello.dir/clean
 
+CMakeFiles/hello.dir/depend: hello_autogen/UVLADIE3JM/qrc_resources.cpp
 CMakeFiles/hello.dir/depend: hello_autogen/timestamp
 	cd /home/test/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/test /home/test /home/test/build /home/test/build /home/test/build/CMakeFiles/hello.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/hello.dir/depend

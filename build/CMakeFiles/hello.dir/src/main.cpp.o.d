@@ -328,4 +328,9 @@ CMakeFiles/hello.dir/src/main.cpp.o: /home/test/src/main.cpp \
  /opt/Qt/5.15.2/gcc_64/include/QtCore/qcoreevent.h \
  /opt/Qt/5.15.2/gcc_64/include/QtCore/qeventloop.h \
  /opt/Qt/5.15.2/gcc_64/include/QtGui/qguiapplication.h \
- /opt/Qt/5.15.2/gcc_64/include/QtGui/qinputmethod.h
+ /opt/Qt/5.15.2/gcc_64/include/QtGui/qinputmethod.h \
+ /opt/Qt/5.15.2/gcc_64/include/QtCore/QFile \
+ /opt/Qt/5.15.2/gcc_64/include/QtCore/qfile.h \
+ /opt/Qt/5.15.2/gcc_64/include/QtCore/qfiledevice.h \
+ /opt/Qt/5.15.2/gcc_64/include/QtCore/QTextStream \
+ /opt/Qt/5.15.2/gcc_64/include/QtCore/qtextstream.h

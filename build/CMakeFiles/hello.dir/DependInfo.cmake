@@ -9,6 +9,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "" "hello_autogen/timestamp" "custom" "hello_autogen/deps"
+  "/home/test/build/hello_autogen/UVLADIE3JM/qrc_resources.cpp" "CMakeFiles/hello.dir/hello_autogen/UVLADIE3JM/qrc_resources.cpp.o" "gcc" "CMakeFiles/hello.dir/hello_autogen/UVLADIE3JM/qrc_resources.cpp.o.d"
   "/home/test/build/hello_autogen/mocs_compilation.cpp" "CMakeFiles/hello.dir/hello_autogen/mocs_compilation.cpp.o" "gcc" "CMakeFiles/hello.dir/hello_autogen/mocs_compilation.cpp.o.d"
   "/home/test/src/authdialog.cpp" "CMakeFiles/hello.dir/src/authdialog.cpp.o" "gcc" "CMakeFiles/hello.dir/src/authdialog.cpp.o.d"
   "/home/test/src/dbmanager.cpp" "CMakeFiles/hello.dir/src/dbmanager.cpp.o" "gcc" "CMakeFiles/hello.dir/src/dbmanager.cpp.o.d"

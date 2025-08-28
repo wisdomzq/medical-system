@@ -55,6 +55,12 @@
 },
 {
   "directory": "/home/test/build",
+  "command": "/usr/bin/g++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_WIDGETS_LIB -I/home/test/build -I/home/test -I/home/test/build/hello_autogen/include -isystem /opt/Qt/5.15.2/gcc_64/include -isystem /opt/Qt/5.15.2/gcc_64/include/QtWidgets -isystem /opt/Qt/5.15.2/gcc_64/include/QtGui -isystem /opt/Qt/5.15.2/gcc_64/include/QtCore -isystem /opt/Qt/5.15.2/gcc_64/./mkspecs/linux-g++ -isystem /opt/Qt/5.15.2/gcc_64/include/QtNetwork -g -std=gnu++11 -fPIC -o CMakeFiles/hello.dir/hello_autogen/UVLADIE3JM/qrc_resources.cpp.o -c /home/test/build/hello_autogen/UVLADIE3JM/qrc_resources.cpp",
+  "file": "/home/test/build/hello_autogen/UVLADIE3JM/qrc_resources.cpp",
+  "output": "CMakeFiles/hello.dir/hello_autogen/UVLADIE3JM/qrc_resources.cpp.o"
+},
+{
+  "directory": "/home/test/build",
   "command": "/usr/bin/g++ -DQT_CORE_LIB -DQT_NETWORK_LIB -DQT_SQL_LIB -I/home/test/build -I/home/test -I/home/test/build/server_autogen/include -I/home/test/src -isystem /opt/Qt/5.15.2/gcc_64/include -isystem /opt/Qt/5.15.2/gcc_64/include/QtCore -isystem /opt/Qt/5.15.2/gcc_64/./mkspecs/linux-g++ -isystem /opt/Qt/5.15.2/gcc_64/include/QtNetwork -isystem /opt/Qt/5.15.2/gcc_64/include/QtSql -g -std=gnu++11 -fPIC -o CMakeFiles/server.dir/server_autogen/mocs_compilation.cpp.o -c /home/test/build/server_autogen/mocs_compilation.cpp",
   "file": "/home/test/build/server_autogen/mocs_compilation.cpp",
   "output": "CMakeFiles/server.dir/server_autogen/mocs_compilation.cpp.o"

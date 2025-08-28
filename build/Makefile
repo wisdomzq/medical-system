@@ -194,6 +194,30 @@ server_autogen/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/server_autogen.dir/build.make CMakeFiles/server_autogen.dir/build
 .PHONY : server_autogen/fast
 
+hello_autogen/UVLADIE3JM/qrc_resources.o: hello_autogen/UVLADIE3JM/qrc_resources.cpp.o
+.PHONY : hello_autogen/UVLADIE3JM/qrc_resources.o
+
+# target to build an object file
+hello_autogen/UVLADIE3JM/qrc_resources.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/hello.dir/build.make CMakeFiles/hello.dir/hello_autogen/UVLADIE3JM/qrc_resources.cpp.o
+.PHONY : hello_autogen/UVLADIE3JM/qrc_resources.cpp.o
+
+hello_autogen/UVLADIE3JM/qrc_resources.i: hello_autogen/UVLADIE3JM/qrc_resources.cpp.i
+.PHONY : hello_autogen/UVLADIE3JM/qrc_resources.i
+
+# target to preprocess a source file
+hello_autogen/UVLADIE3JM/qrc_resources.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/hello.dir/build.make CMakeFiles/hello.dir/hello_autogen/UVLADIE3JM/qrc_resources.cpp.i
+.PHONY : hello_autogen/UVLADIE3JM/qrc_resources.cpp.i
+
+hello_autogen/UVLADIE3JM/qrc_resources.s: hello_autogen/UVLADIE3JM/qrc_resources.cpp.s
+.PHONY : hello_autogen/UVLADIE3JM/qrc_resources.s
+
+# target to generate assembly for a file
+hello_autogen/UVLADIE3JM/qrc_resources.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/hello.dir/build.make CMakeFiles/hello.dir/hello_autogen/UVLADIE3JM/qrc_resources.cpp.s
+.PHONY : hello_autogen/UVLADIE3JM/qrc_resources.cpp.s
+
 hello_autogen/mocs_compilation.o: hello_autogen/mocs_compilation.cpp.o
 .PHONY : hello_autogen/mocs_compilation.o
 
@@ -520,6 +544,9 @@ help:
 	@echo "... server_autogen_timestamp_deps"
 	@echo "... hello"
 	@echo "... server"
+	@echo "... hello_autogen/UVLADIE3JM/qrc_resources.o"
+	@echo "... hello_autogen/UVLADIE3JM/qrc_resources.i"
+	@echo "... hello_autogen/UVLADIE3JM/qrc_resources.s"
 	@echo "... hello_autogen/mocs_compilation.o"
 	@echo "... hello_autogen/mocs_compilation.i"
 	@echo "... hello_autogen/mocs_compilation.s"
