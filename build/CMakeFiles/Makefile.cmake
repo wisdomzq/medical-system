@@ -7,10 +7,12 @@ set(CMAKE_DEPENDS_GENERATOR "Unix Makefiles")
 # The top level Makefile was generated from the following files:
 set(CMAKE_MAKEFILE_DEPENDS
   "CMakeCache.txt"
-  "/home/test/CMakeLists.txt"
+  "/home/zephyr/medical-system/CMakeLists.txt"
   "CMakeFiles/3.28.3/CMakeCXXCompiler.cmake"
   "CMakeFiles/3.28.3/CMakeSystem.cmake"
-  "/home/test/src/resources.qrc"
+  "/home/zephyr/medical-system/client/CMakeLists.txt"
+  "/home/zephyr/medical-system/client/resources/resources.qrc"
+  "/home/zephyr/medical-system/server/CMakeLists.txt"
   "/opt/Qt/5.15.2/gcc_64/lib/cmake/Qt5/Qt5Config.cmake"
   "/opt/Qt/5.15.2/gcc_64/lib/cmake/Qt5/Qt5ConfigVersion.cmake"
   "/opt/Qt/5.15.2/gcc_64/lib/cmake/Qt5/Qt5ModuleLocation.cmake"
@@ -100,18 +102,20 @@ set(CMAKE_MAKEFILE_OUTPUTS
 
 # Byproducts of CMake generate step:
 set(CMAKE_MAKEFILE_PRODUCTS
-  "CMakeFiles/hello_autogen.dir/AutogenInfo.json"
-  "CMakeFiles/hello_autogen.dir/AutoRcc_resources_UVLADIE3JM_Info.json"
-  "CMakeFiles/server_autogen.dir/AutogenInfo.json"
   "CMakeFiles/CMakeDirectoryInformation.cmake"
+  "client/CMakeFiles/hello_autogen.dir/AutogenInfo.json"
+  "client/CMakeFiles/hello_autogen.dir/AutoRcc_resources_3YJK5W5UP7_Info.json"
+  "client/CMakeFiles/CMakeDirectoryInformation.cmake"
+  "server/CMakeFiles/server_autogen.dir/AutogenInfo.json"
+  "server/CMakeFiles/CMakeDirectoryInformation.cmake"
   )
 
 # Dependency information for all targets:
 set(CMAKE_DEPEND_INFO_FILES
-  "CMakeFiles/hello.dir/DependInfo.cmake"
-  "CMakeFiles/server.dir/DependInfo.cmake"
-  "CMakeFiles/hello_autogen_timestamp_deps.dir/DependInfo.cmake"
-  "CMakeFiles/hello_autogen.dir/DependInfo.cmake"
-  "CMakeFiles/server_autogen_timestamp_deps.dir/DependInfo.cmake"
-  "CMakeFiles/server_autogen.dir/DependInfo.cmake"
+  "client/CMakeFiles/hello.dir/DependInfo.cmake"
+  "client/CMakeFiles/hello_autogen_timestamp_deps.dir/DependInfo.cmake"
+  "client/CMakeFiles/hello_autogen.dir/DependInfo.cmake"
+  "server/CMakeFiles/server.dir/DependInfo.cmake"
+  "server/CMakeFiles/server_autogen_timestamp_deps.dir/DependInfo.cmake"
+  "server/CMakeFiles/server_autogen.dir/DependInfo.cmake"
   )

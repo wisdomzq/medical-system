@@ -57,10 +57,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/test
+CMAKE_SOURCE_DIR = /home/zephyr/medical-system
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/test/build
+CMAKE_BINARY_DIR = /home/zephyr/medical-system/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -87,9 +87,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/test/build/CMakeFiles /home/test/build//CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/zephyr/medical-system/build/CMakeFiles /home/zephyr/medical-system/build//CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/test/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/zephyr/medical-system/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -126,21 +126,8 @@ hello: cmake_check_build_system
 
 # fast build rule for target.
 hello/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/hello.dir/build.make CMakeFiles/hello.dir/build
+	$(MAKE) $(MAKESILENT) -f client/CMakeFiles/hello.dir/build.make client/CMakeFiles/hello.dir/build
 .PHONY : hello/fast
-
-#=============================================================================
-# Target rules for targets named server
-
-# Build rule for target.
-server: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 server
-.PHONY : server
-
-# fast build rule for target.
-server/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/build
-.PHONY : server/fast
 
 #=============================================================================
 # Target rules for targets named hello_autogen_timestamp_deps
@@ -152,7 +139,7 @@ hello_autogen_timestamp_deps: cmake_check_build_system
 
 # fast build rule for target.
 hello_autogen_timestamp_deps/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/hello_autogen_timestamp_deps.dir/build.make CMakeFiles/hello_autogen_timestamp_deps.dir/build
+	$(MAKE) $(MAKESILENT) -f client/CMakeFiles/hello_autogen_timestamp_deps.dir/build.make client/CMakeFiles/hello_autogen_timestamp_deps.dir/build
 .PHONY : hello_autogen_timestamp_deps/fast
 
 #=============================================================================
@@ -165,8 +152,21 @@ hello_autogen: cmake_check_build_system
 
 # fast build rule for target.
 hello_autogen/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/hello_autogen.dir/build.make CMakeFiles/hello_autogen.dir/build
+	$(MAKE) $(MAKESILENT) -f client/CMakeFiles/hello_autogen.dir/build.make client/CMakeFiles/hello_autogen.dir/build
 .PHONY : hello_autogen/fast
+
+#=============================================================================
+# Target rules for targets named server
+
+# Build rule for target.
+server: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 server
+.PHONY : server
+
+# fast build rule for target.
+server/fast:
+	$(MAKE) $(MAKESILENT) -f server/CMakeFiles/server.dir/build.make server/CMakeFiles/server.dir/build
+.PHONY : server/fast
 
 #=============================================================================
 # Target rules for targets named server_autogen_timestamp_deps
@@ -178,7 +178,7 @@ server_autogen_timestamp_deps: cmake_check_build_system
 
 # fast build rule for target.
 server_autogen_timestamp_deps/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/server_autogen_timestamp_deps.dir/build.make CMakeFiles/server_autogen_timestamp_deps.dir/build
+	$(MAKE) $(MAKESILENT) -f server/CMakeFiles/server_autogen_timestamp_deps.dir/build.make server/CMakeFiles/server_autogen_timestamp_deps.dir/build
 .PHONY : server_autogen_timestamp_deps/fast
 
 #=============================================================================
@@ -191,344 +191,8 @@ server_autogen: cmake_check_build_system
 
 # fast build rule for target.
 server_autogen/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/server_autogen.dir/build.make CMakeFiles/server_autogen.dir/build
+	$(MAKE) $(MAKESILENT) -f server/CMakeFiles/server_autogen.dir/build.make server/CMakeFiles/server_autogen.dir/build
 .PHONY : server_autogen/fast
-
-hello_autogen/UVLADIE3JM/qrc_resources.o: hello_autogen/UVLADIE3JM/qrc_resources.cpp.o
-.PHONY : hello_autogen/UVLADIE3JM/qrc_resources.o
-
-# target to build an object file
-hello_autogen/UVLADIE3JM/qrc_resources.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/hello.dir/build.make CMakeFiles/hello.dir/hello_autogen/UVLADIE3JM/qrc_resources.cpp.o
-.PHONY : hello_autogen/UVLADIE3JM/qrc_resources.cpp.o
-
-hello_autogen/UVLADIE3JM/qrc_resources.i: hello_autogen/UVLADIE3JM/qrc_resources.cpp.i
-.PHONY : hello_autogen/UVLADIE3JM/qrc_resources.i
-
-# target to preprocess a source file
-hello_autogen/UVLADIE3JM/qrc_resources.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/hello.dir/build.make CMakeFiles/hello.dir/hello_autogen/UVLADIE3JM/qrc_resources.cpp.i
-.PHONY : hello_autogen/UVLADIE3JM/qrc_resources.cpp.i
-
-hello_autogen/UVLADIE3JM/qrc_resources.s: hello_autogen/UVLADIE3JM/qrc_resources.cpp.s
-.PHONY : hello_autogen/UVLADIE3JM/qrc_resources.s
-
-# target to generate assembly for a file
-hello_autogen/UVLADIE3JM/qrc_resources.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/hello.dir/build.make CMakeFiles/hello.dir/hello_autogen/UVLADIE3JM/qrc_resources.cpp.s
-.PHONY : hello_autogen/UVLADIE3JM/qrc_resources.cpp.s
-
-hello_autogen/mocs_compilation.o: hello_autogen/mocs_compilation.cpp.o
-.PHONY : hello_autogen/mocs_compilation.o
-
-# target to build an object file
-hello_autogen/mocs_compilation.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/hello.dir/build.make CMakeFiles/hello.dir/hello_autogen/mocs_compilation.cpp.o
-.PHONY : hello_autogen/mocs_compilation.cpp.o
-
-hello_autogen/mocs_compilation.i: hello_autogen/mocs_compilation.cpp.i
-.PHONY : hello_autogen/mocs_compilation.i
-
-# target to preprocess a source file
-hello_autogen/mocs_compilation.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/hello.dir/build.make CMakeFiles/hello.dir/hello_autogen/mocs_compilation.cpp.i
-.PHONY : hello_autogen/mocs_compilation.cpp.i
-
-hello_autogen/mocs_compilation.s: hello_autogen/mocs_compilation.cpp.s
-.PHONY : hello_autogen/mocs_compilation.s
-
-# target to generate assembly for a file
-hello_autogen/mocs_compilation.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/hello.dir/build.make CMakeFiles/hello.dir/hello_autogen/mocs_compilation.cpp.s
-.PHONY : hello_autogen/mocs_compilation.cpp.s
-
-server/database.o: server/database.cpp.o
-.PHONY : server/database.o
-
-# target to build an object file
-server/database.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/server/database.cpp.o
-.PHONY : server/database.cpp.o
-
-server/database.i: server/database.cpp.i
-.PHONY : server/database.i
-
-# target to preprocess a source file
-server/database.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/server/database.cpp.i
-.PHONY : server/database.cpp.i
-
-server/database.s: server/database.cpp.s
-.PHONY : server/database.s
-
-# target to generate assembly for a file
-server/database.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/server/database.cpp.s
-.PHONY : server/database.cpp.s
-
-server/server.o: server/server.cpp.o
-.PHONY : server/server.o
-
-# target to build an object file
-server/server.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/server/server.cpp.o
-.PHONY : server/server.cpp.o
-
-server/server.i: server/server.cpp.i
-.PHONY : server/server.i
-
-# target to preprocess a source file
-server/server.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/server/server.cpp.i
-.PHONY : server/server.cpp.i
-
-server/server.s: server/server.cpp.s
-.PHONY : server/server.s
-
-# target to generate assembly for a file
-server/server.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/server/server.cpp.s
-.PHONY : server/server.cpp.s
-
-server/tcpserver.o: server/tcpserver.cpp.o
-.PHONY : server/tcpserver.o
-
-# target to build an object file
-server/tcpserver.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/server/tcpserver.cpp.o
-.PHONY : server/tcpserver.cpp.o
-
-server/tcpserver.i: server/tcpserver.cpp.i
-.PHONY : server/tcpserver.i
-
-# target to preprocess a source file
-server/tcpserver.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/server/tcpserver.cpp.i
-.PHONY : server/tcpserver.cpp.i
-
-server/tcpserver.s: server/tcpserver.cpp.s
-.PHONY : server/tcpserver.s
-
-# target to generate assembly for a file
-server/tcpserver.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/server/tcpserver.cpp.s
-.PHONY : server/tcpserver.cpp.s
-
-server_autogen/mocs_compilation.o: server_autogen/mocs_compilation.cpp.o
-.PHONY : server_autogen/mocs_compilation.o
-
-# target to build an object file
-server_autogen/mocs_compilation.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/server_autogen/mocs_compilation.cpp.o
-.PHONY : server_autogen/mocs_compilation.cpp.o
-
-server_autogen/mocs_compilation.i: server_autogen/mocs_compilation.cpp.i
-.PHONY : server_autogen/mocs_compilation.i
-
-# target to preprocess a source file
-server_autogen/mocs_compilation.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/server_autogen/mocs_compilation.cpp.i
-.PHONY : server_autogen/mocs_compilation.cpp.i
-
-server_autogen/mocs_compilation.s: server_autogen/mocs_compilation.cpp.s
-.PHONY : server_autogen/mocs_compilation.s
-
-# target to generate assembly for a file
-server_autogen/mocs_compilation.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/server_autogen/mocs_compilation.cpp.s
-.PHONY : server_autogen/mocs_compilation.cpp.s
-
-src/authdialog.o: src/authdialog.cpp.o
-.PHONY : src/authdialog.o
-
-# target to build an object file
-src/authdialog.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/hello.dir/build.make CMakeFiles/hello.dir/src/authdialog.cpp.o
-.PHONY : src/authdialog.cpp.o
-
-src/authdialog.i: src/authdialog.cpp.i
-.PHONY : src/authdialog.i
-
-# target to preprocess a source file
-src/authdialog.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/hello.dir/build.make CMakeFiles/hello.dir/src/authdialog.cpp.i
-.PHONY : src/authdialog.cpp.i
-
-src/authdialog.s: src/authdialog.cpp.s
-.PHONY : src/authdialog.s
-
-# target to generate assembly for a file
-src/authdialog.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/hello.dir/build.make CMakeFiles/hello.dir/src/authdialog.cpp.s
-.PHONY : src/authdialog.cpp.s
-
-src/dbmanager.o: src/dbmanager.cpp.o
-.PHONY : src/dbmanager.o
-
-# target to build an object file
-src/dbmanager.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/hello.dir/build.make CMakeFiles/hello.dir/src/dbmanager.cpp.o
-.PHONY : src/dbmanager.cpp.o
-
-src/dbmanager.i: src/dbmanager.cpp.i
-.PHONY : src/dbmanager.i
-
-# target to preprocess a source file
-src/dbmanager.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/hello.dir/build.make CMakeFiles/hello.dir/src/dbmanager.cpp.i
-.PHONY : src/dbmanager.cpp.i
-
-src/dbmanager.s: src/dbmanager.cpp.s
-.PHONY : src/dbmanager.s
-
-# target to generate assembly for a file
-src/dbmanager.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/hello.dir/build.make CMakeFiles/hello.dir/src/dbmanager.cpp.s
-.PHONY : src/dbmanager.cpp.s
-
-src/doctorinfowidget.o: src/doctorinfowidget.cpp.o
-.PHONY : src/doctorinfowidget.o
-
-# target to build an object file
-src/doctorinfowidget.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/hello.dir/build.make CMakeFiles/hello.dir/src/doctorinfowidget.cpp.o
-.PHONY : src/doctorinfowidget.cpp.o
-
-src/doctorinfowidget.i: src/doctorinfowidget.cpp.i
-.PHONY : src/doctorinfowidget.i
-
-# target to preprocess a source file
-src/doctorinfowidget.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/hello.dir/build.make CMakeFiles/hello.dir/src/doctorinfowidget.cpp.i
-.PHONY : src/doctorinfowidget.cpp.i
-
-src/doctorinfowidget.s: src/doctorinfowidget.cpp.s
-.PHONY : src/doctorinfowidget.s
-
-# target to generate assembly for a file
-src/doctorinfowidget.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/hello.dir/build.make CMakeFiles/hello.dir/src/doctorinfowidget.cpp.s
-.PHONY : src/doctorinfowidget.cpp.s
-
-src/hello.o: src/hello.cpp.o
-.PHONY : src/hello.o
-
-# target to build an object file
-src/hello.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/hello.dir/build.make CMakeFiles/hello.dir/src/hello.cpp.o
-.PHONY : src/hello.cpp.o
-
-src/hello.i: src/hello.cpp.i
-.PHONY : src/hello.i
-
-# target to preprocess a source file
-src/hello.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/hello.dir/build.make CMakeFiles/hello.dir/src/hello.cpp.i
-.PHONY : src/hello.cpp.i
-
-src/hello.s: src/hello.cpp.s
-.PHONY : src/hello.s
-
-# target to generate assembly for a file
-src/hello.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/hello.dir/build.make CMakeFiles/hello.dir/src/hello.cpp.s
-.PHONY : src/hello.cpp.s
-
-src/loginwidget.o: src/loginwidget.cpp.o
-.PHONY : src/loginwidget.o
-
-# target to build an object file
-src/loginwidget.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/hello.dir/build.make CMakeFiles/hello.dir/src/loginwidget.cpp.o
-.PHONY : src/loginwidget.cpp.o
-
-src/loginwidget.i: src/loginwidget.cpp.i
-.PHONY : src/loginwidget.i
-
-# target to preprocess a source file
-src/loginwidget.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/hello.dir/build.make CMakeFiles/hello.dir/src/loginwidget.cpp.i
-.PHONY : src/loginwidget.cpp.i
-
-src/loginwidget.s: src/loginwidget.cpp.s
-.PHONY : src/loginwidget.s
-
-# target to generate assembly for a file
-src/loginwidget.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/hello.dir/build.make CMakeFiles/hello.dir/src/loginwidget.cpp.s
-.PHONY : src/loginwidget.cpp.s
-
-src/main.o: src/main.cpp.o
-.PHONY : src/main.o
-
-# target to build an object file
-src/main.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/hello.dir/build.make CMakeFiles/hello.dir/src/main.cpp.o
-.PHONY : src/main.cpp.o
-
-src/main.i: src/main.cpp.i
-.PHONY : src/main.i
-
-# target to preprocess a source file
-src/main.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/hello.dir/build.make CMakeFiles/hello.dir/src/main.cpp.i
-.PHONY : src/main.cpp.i
-
-src/main.s: src/main.cpp.s
-.PHONY : src/main.s
-
-# target to generate assembly for a file
-src/main.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/hello.dir/build.make CMakeFiles/hello.dir/src/main.cpp.s
-.PHONY : src/main.cpp.s
-
-src/patientinfowidget.o: src/patientinfowidget.cpp.o
-.PHONY : src/patientinfowidget.o
-
-# target to build an object file
-src/patientinfowidget.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/hello.dir/build.make CMakeFiles/hello.dir/src/patientinfowidget.cpp.o
-.PHONY : src/patientinfowidget.cpp.o
-
-src/patientinfowidget.i: src/patientinfowidget.cpp.i
-.PHONY : src/patientinfowidget.i
-
-# target to preprocess a source file
-src/patientinfowidget.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/hello.dir/build.make CMakeFiles/hello.dir/src/patientinfowidget.cpp.i
-.PHONY : src/patientinfowidget.cpp.i
-
-src/patientinfowidget.s: src/patientinfowidget.cpp.s
-.PHONY : src/patientinfowidget.s
-
-# target to generate assembly for a file
-src/patientinfowidget.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/hello.dir/build.make CMakeFiles/hello.dir/src/patientinfowidget.cpp.s
-.PHONY : src/patientinfowidget.cpp.s
-
-src/tcpclient.o: src/tcpclient.cpp.o
-.PHONY : src/tcpclient.o
-
-# target to build an object file
-src/tcpclient.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/hello.dir/build.make CMakeFiles/hello.dir/src/tcpclient.cpp.o
-.PHONY : src/tcpclient.cpp.o
-
-src/tcpclient.i: src/tcpclient.cpp.i
-.PHONY : src/tcpclient.i
-
-# target to preprocess a source file
-src/tcpclient.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/hello.dir/build.make CMakeFiles/hello.dir/src/tcpclient.cpp.i
-.PHONY : src/tcpclient.cpp.i
-
-src/tcpclient.s: src/tcpclient.cpp.s
-.PHONY : src/tcpclient.s
-
-# target to generate assembly for a file
-src/tcpclient.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/hello.dir/build.make CMakeFiles/hello.dir/src/tcpclient.cpp.s
-.PHONY : src/tcpclient.cpp.s
 
 # Help Target
 help:
@@ -544,48 +208,6 @@ help:
 	@echo "... server_autogen_timestamp_deps"
 	@echo "... hello"
 	@echo "... server"
-	@echo "... hello_autogen/UVLADIE3JM/qrc_resources.o"
-	@echo "... hello_autogen/UVLADIE3JM/qrc_resources.i"
-	@echo "... hello_autogen/UVLADIE3JM/qrc_resources.s"
-	@echo "... hello_autogen/mocs_compilation.o"
-	@echo "... hello_autogen/mocs_compilation.i"
-	@echo "... hello_autogen/mocs_compilation.s"
-	@echo "... server/database.o"
-	@echo "... server/database.i"
-	@echo "... server/database.s"
-	@echo "... server/server.o"
-	@echo "... server/server.i"
-	@echo "... server/server.s"
-	@echo "... server/tcpserver.o"
-	@echo "... server/tcpserver.i"
-	@echo "... server/tcpserver.s"
-	@echo "... server_autogen/mocs_compilation.o"
-	@echo "... server_autogen/mocs_compilation.i"
-	@echo "... server_autogen/mocs_compilation.s"
-	@echo "... src/authdialog.o"
-	@echo "... src/authdialog.i"
-	@echo "... src/authdialog.s"
-	@echo "... src/dbmanager.o"
-	@echo "... src/dbmanager.i"
-	@echo "... src/dbmanager.s"
-	@echo "... src/doctorinfowidget.o"
-	@echo "... src/doctorinfowidget.i"
-	@echo "... src/doctorinfowidget.s"
-	@echo "... src/hello.o"
-	@echo "... src/hello.i"
-	@echo "... src/hello.s"
-	@echo "... src/loginwidget.o"
-	@echo "... src/loginwidget.i"
-	@echo "... src/loginwidget.s"
-	@echo "... src/main.o"
-	@echo "... src/main.i"
-	@echo "... src/main.s"
-	@echo "... src/patientinfowidget.o"
-	@echo "... src/patientinfowidget.i"
-	@echo "... src/patientinfowidget.s"
-	@echo "... src/tcpclient.o"
-	@echo "... src/tcpclient.i"
-	@echo "... src/tcpclient.s"
 .PHONY : help
 
 
