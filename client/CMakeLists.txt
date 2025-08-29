@@ -9,6 +9,15 @@ set(srcs
     ui/hello/hello.cpp
     ui/loginwidget/loginwidget.cpp
     ui/doctorinfowidget/doctorinfowidget.cpp
+    ui/doctorinfowidget/attendancewidget.cpp
+    ui/doctorinfowidget/checkinwidget.cpp
+    ui/doctorinfowidget/leavewidget.cpp
+    ui/doctorinfowidget/cancelleavewidget.cpp
+    ui/doctorinfowidget/chatroomwidget.cpp
+    ui/doctorinfowidget/profilewidget.cpp
+    ui/doctorinfowidget/appointmentswidget.cpp
+    ui/doctorinfowidget/caseswidget.cpp
+    ui/doctorinfowidget/diagnosiswidget.cpp
     ui/patientinfowidget/patientinfowidget.cpp
     ui/patientinfowidget/basepage.h
     ui/patientinfowidget/appointmentpage.cpp
