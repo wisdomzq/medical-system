@@ -288,6 +288,30 @@ modules/loginmodule/loginmodule.cpp.s:
 	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f server/CMakeFiles/server.dir/build.make server/CMakeFiles/server.dir/modules/loginmodule/loginmodule.cpp.s
 .PHONY : modules/loginmodule/loginmodule.cpp.s
 
+modules/patientmodule/register/register.o: modules/patientmodule/register/register.cpp.o
+.PHONY : modules/patientmodule/register/register.o
+
+# target to build an object file
+modules/patientmodule/register/register.cpp.o:
+	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f server/CMakeFiles/server.dir/build.make server/CMakeFiles/server.dir/modules/patientmodule/register/register.cpp.o
+.PHONY : modules/patientmodule/register/register.cpp.o
+
+modules/patientmodule/register/register.i: modules/patientmodule/register/register.cpp.i
+.PHONY : modules/patientmodule/register/register.i
+
+# target to preprocess a source file
+modules/patientmodule/register/register.cpp.i:
+	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f server/CMakeFiles/server.dir/build.make server/CMakeFiles/server.dir/modules/patientmodule/register/register.cpp.i
+.PHONY : modules/patientmodule/register/register.cpp.i
+
+modules/patientmodule/register/register.s: modules/patientmodule/register/register.cpp.s
+.PHONY : modules/patientmodule/register/register.s
+
+# target to generate assembly for a file
+modules/patientmodule/register/register.cpp.s:
+	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f server/CMakeFiles/server.dir/build.make server/CMakeFiles/server.dir/modules/patientmodule/register/register.cpp.s
+.PHONY : modules/patientmodule/register/register.cpp.s
+
 server_autogen/mocs_compilation.o: server_autogen/mocs_compilation.cpp.o
 .PHONY : server_autogen/mocs_compilation.o
 
@@ -340,6 +364,9 @@ help:
 	@echo "... modules/loginmodule/loginmodule.o"
 	@echo "... modules/loginmodule/loginmodule.i"
 	@echo "... modules/loginmodule/loginmodule.s"
+	@echo "... modules/patientmodule/register/register.o"
+	@echo "... modules/patientmodule/register/register.i"
+	@echo "... modules/patientmodule/register/register.s"
 	@echo "... server_autogen/mocs_compilation.o"
 	@echo "... server_autogen/mocs_compilation.i"
 	@echo "... server_autogen/mocs_compilation.s"

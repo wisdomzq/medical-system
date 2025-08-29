@@ -14,6 +14,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/server.dir/main.cpp.o.d"
   "CMakeFiles/server.dir/modules/loginmodule/loginmodule.cpp.o"
   "CMakeFiles/server.dir/modules/loginmodule/loginmodule.cpp.o.d"
+  "CMakeFiles/server.dir/modules/patientmodule/register/register.cpp.o"
+  "CMakeFiles/server.dir/modules/patientmodule/register/register.cpp.o.d"
   "CMakeFiles/server.dir/server_autogen/mocs_compilation.cpp.o"
   "CMakeFiles/server.dir/server_autogen/mocs_compilation.cpp.o.d"
   "server"

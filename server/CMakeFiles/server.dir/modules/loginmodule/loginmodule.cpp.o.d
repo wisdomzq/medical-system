@@ -280,4 +280,5 @@ server/CMakeFiles/server.dir/modules/loginmodule/loginmodule.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QString \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qstring.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QDateTime \
- /usr/include/x86_64-linux-gnu/qt5/QtCore/qdatetime.h
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/qdatetime.h \
+ /home/xuwt/Qt/medical-system/server/core/database/database_config.h

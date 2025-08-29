@@ -93,6 +93,9 @@ private:
     // 示例数据插入
     void insertSampleMedications();
     void insertSampleDoctors();
+    
+    // 数据清理和修复
+    bool cleanupInconsistentData();
 };
 
 #endif // DATABASE_H

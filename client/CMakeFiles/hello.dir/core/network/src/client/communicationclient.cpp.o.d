@@ -254,6 +254,11 @@ client/CMakeFiles/hello.dir/core/network/src/client/communicationclient.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QTimer \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qtimer.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qbasictimer.h \
+ /home/xuwt/Qt/medical-system/client/core/network/src/client/streamparser.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/QByteArray \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/qbytearray.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/QDataStream \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/qdatastream.h \
  /home/xuwt/Qt/medical-system/client/core/network/src/protocol.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QMetaType \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h \
@@ -280,7 +285,6 @@ client/CMakeFiles/hello.dir/core/network/src/client/communicationclient.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qbasictimer.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qbitarray.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qbuffer.h \
- /usr/include/x86_64-linux-gnu/qt5/QtCore/qbytearray.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qbytearraylist.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qbytearraymatcher.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qcache.h \
@@ -315,7 +319,6 @@ client/CMakeFiles/hello.dir/core/network/src/client/communicationclient.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qcoreapplication.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qcoreevent.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qcryptographichash.h \
- /usr/include/x86_64-linux-gnu/qt5/QtCore/qdatastream.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qdatetime.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qdeadlinetimer.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qelapsedtimer.h \
@@ -507,8 +510,5 @@ client/CMakeFiles/hello.dir/core/network/src/client/communicationclient.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qwineventnotifier.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qxmlstream.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qtcoreversion.h \
- /home/xuwt/Qt/medical-system/client/core/network/src/client/streamparser.h \
- /usr/include/x86_64-linux-gnu/qt5/QtCore/QByteArray \
- /usr/include/x86_64-linux-gnu/qt5/QtCore/QDataStream \
  /home/xuwt/Qt/medical-system/client/core/network/src/client/responsedispatcher.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QJsonObject
