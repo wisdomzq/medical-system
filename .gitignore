@@ -3,7 +3,6 @@ build/
 
 # User-specific files
 *.user
-*.db
 
 # VS Code settings
 .vscode/
