@@ -10,6 +10,15 @@ set(srcs
     ui/loginwidget/loginwidget.cpp
     ui/doctorinfowidget/doctorinfowidget.cpp
     ui/patientinfowidget/patientinfowidget.cpp
+    ui/patientinfowidget/basepage.h
+    ui/patientinfowidget/appointmentpage.cpp
+    ui/patientinfowidget/appointmentpage.h
+    ui/patientinfowidget/profilepage.cpp
+    ui/patientinfowidget/profilepage.h
+    ui/patientinfowidget/placeholderpages.cpp
+    ui/patientinfowidget/placeholderpages.h
+    ui/patientinfowidget/hospitalpage.cpp
+    ui/patientinfowidget/hospitalpage.h
     core/network/src/client/communicationclient.cpp
     core/network/src/client/responsedispatcher.cpp
     core/network/src/client/streamparser.cpp

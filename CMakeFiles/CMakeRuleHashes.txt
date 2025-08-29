@@ -1,4 +1,0 @@
-# Hashes of file build rules.
-31f6e94d24020733f690d159199f6e09 client/CMakeFiles/hello_autogen
-f2c9852e6834db24ca2c598a625ce68d client/hello_autogen/3YJK5W5UP7/qrc_resources.cpp
-57cbe0c40fc785026aaaefc1364a152d server/CMakeFiles/server_autogen

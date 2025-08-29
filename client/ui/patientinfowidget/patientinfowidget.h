@@ -2,13 +2,22 @@
 #define PATIENTINFOWIDGET_H
 
 #include <QWidget>
-#include <QLineEdit>
-
-class QTableWidget;
-class QPushButton;
-#include "core/network/src/client/communicationclient.h"
-
+#include <QObject>
 class QTabWidget;
+class CommunicationClient;
+
+// 前向声明各子页面类
+class AppointmentPage;
+class ProfilePage;
+class CasePage;
+class CommunicationPage;
+class DoctorInfoPage;
+class AdvicePage;
+class PrescriptionPage;
+class HealthAssessmentPage;
+class MedicationSearchPage;
+class HospitalizationInfoPage;
+class HospitalPage;
 
 class PatientInfoWidget : public QWidget
 {
@@ -19,36 +28,25 @@ public:
     ~PatientInfoWidget();
 
 private:
-    QTabWidget *tabWidget;
+    QTabWidget *tabWidget = nullptr;
     QString m_patientName;
-    QLineEdit *nameEdit;
-    QLineEdit *ageEdit;
-    QLineEdit *phoneEdit;
-    QLineEdit *addressEdit;
-    CommunicationClient *m_communicationClient;
+    CommunicationClient *m_communicationClient = nullptr;
 
-    QWidget *createAppointmentPage(); // 将扩展为医生排班 + 挂号
-    QWidget *createCasePage();
-    QWidget *createCommunicationPage();
-    QWidget *createProfilePage();
-    void requestPatientInfo();
-    void requestDoctorSchedule();
-    void sendRegisterRequest();
-
-    // 挂号页面控件
-    QWidget *appointmentPage = nullptr;
-    QTableWidget *doctorTable = nullptr;
-    QPushButton *refreshDoctorsBtn = nullptr;
-    QPushButton *registerBtn = nullptr;
-    QLineEdit *registerDoctorIdEdit = nullptr; // 序号（可选）
-    QLineEdit *registerDoctorNameEdit = nullptr; // 医生姓名(注册时填写的用户名或 doctors.name)
-    QLineEdit *registerPatientNameEdit = nullptr;
-    QTableWidget *appointmentsTable = nullptr; // 患者预约列表
-    QPushButton *refreshAppointmentsBtn = nullptr;
+    // 子页面实例
+    AppointmentPage *m_appointmentPage = nullptr;
+    ProfilePage *m_profilePage = nullptr;
+    CasePage *m_casePage = nullptr;
+    CommunicationPage *m_communicationPage = nullptr;
+    DoctorInfoPage *m_doctorInfoPage = nullptr;
+    AdvicePage *m_advicePage = nullptr;
+    PrescriptionPage *m_prescriptionPage = nullptr;
+    HealthAssessmentPage *m_healthAssessmentPage = nullptr;
+    MedicationSearchPage *m_medicationSearchPage = nullptr;
+    HospitalizationInfoPage *m_hospitalizationInfoPage = nullptr;
+    HospitalPage *m_hospitalPage = nullptr; // 新住院页面
 
 private slots:
-    void updateProfile();
-    void onResponseReceived(const QJsonObject &response);
+    void forwardBackToLogin();
 
 signals:
     void backToLogin();

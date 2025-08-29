@@ -41,6 +41,7 @@ void DBManager::initDatabase() {
     createPrescriptionItemsTable();
     createMedicationsTable();
     createDoctorSchedulesTable();
+    createHospitalizationsTable();
     
     // 插入示例数据
     insertSampleDoctors();
@@ -296,6 +297,65 @@ void DBManager::createDoctorSchedulesTable() {
             qDebug() << "创建doctor_schedules表失败:" << query.lastError().text();
         }
     }
+}
+
+void DBManager::createHospitalizationsTable() {
+    if (!m_db.tables().contains(QStringLiteral("hospitalizations"))) {
+        QSqlQuery query(m_db);
+        QString sql = R"(
+            CREATE TABLE hospitalizations (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                patient_username TEXT NOT NULL,
+                doctor_username TEXT NOT NULL,
+                ward_number TEXT,
+                bed_number TEXT,
+                admission_date DATE NOT NULL,
+                discharge_date DATE,
+                status TEXT DEFAULT 'active' CHECK(status IN ('active','discharged')),
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (patient_username) REFERENCES users(username),
+                FOREIGN KEY (doctor_username) REFERENCES users(username)
+            )
+        )";
+        if (!query.exec(sql)) {
+            qDebug() << "创建hospitalizations表失败:" << query.lastError().text();
+        }
+    }
+}
+
+bool DBManager::createHospitalization(const QJsonObject &data) {
+    QSqlQuery q(m_db);
+    q.prepare(R"(INSERT INTO hospitalizations (patient_username, doctor_username, ward_number, bed_number, admission_date, discharge_date, status)
+                VALUES (:p, :d, :w, :b, :ad, :dd, :st))");
+    q.bindValue(":p", data.value("patient_username").toString());
+    q.bindValue(":d", data.value("doctor_username").toString());
+    q.bindValue(":w", data.value("ward_number").toString());
+    q.bindValue(":b", data.value("bed_number").toString());
+    q.bindValue(":ad", data.value("admission_date").toString());
+    q.bindValue(":dd", data.value("discharge_date").toString());
+    q.bindValue(":st", data.value("status").toString().isEmpty()? QString("active") : data.value("status").toString());
+    if(!q.exec()) { qDebug() << "createHospitalization error:" << q.lastError().text(); return false; }
+    return true;
+}
+
+static bool fetchHospitalizations(QSqlDatabase &db, QSqlQuery &q, QJsonArray &list) {
+    if(!q.exec()) { qDebug() << "fetchHospitalizations query exec error:" << q.lastError().text(); return false; }
+    while(q.next()) {
+        QJsonObject o; o["id"]=q.value("id").toInt(); o["patient_username"]=q.value("patient_username").toString(); o["doctor_username"]=q.value("doctor_username").toString(); o["ward_number"]=q.value("ward_number").toString(); o["bed_number"]=q.value("bed_number").toString(); o["admission_date"]=q.value("admission_date").toString(); o["discharge_date"]=q.value("discharge_date").toString(); o["status"]=q.value("status").toString(); list.append(o); }
+    return true;
+}
+
+bool DBManager::getHospitalizationsByPatient(const QString &patientUsername, QJsonArray &list) {
+    QSqlQuery q(m_db); q.prepare("SELECT * FROM hospitalizations WHERE patient_username=:p ORDER BY admission_date DESC"); q.bindValue(":p", patientUsername); return fetchHospitalizations(m_db,q,list);
+}
+
+bool DBManager::getAllHospitalizations(QJsonArray &list) {
+    QSqlQuery q(m_db); q.prepare("SELECT * FROM hospitalizations ORDER BY admission_date DESC"); return fetchHospitalizations(m_db,q,list);
+}
+
+bool DBManager::getHospitalizationsByDoctor(const QString &doctorUsername, QJsonArray &list) {
+    QSqlQuery q(m_db); q.prepare("SELECT * FROM hospitalizations WHERE doctor_username=:d ORDER BY admission_date DESC"); q.bindValue(":d", doctorUsername); return fetchHospitalizations(m_db,q,list);
 }
 
 bool DBManager::authenticateUser(const QString& username, const QString& password) {

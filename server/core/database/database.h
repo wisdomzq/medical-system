@@ -74,6 +74,12 @@ public:
     // 新增重载方法
     QString getUserRole(const QString& username);
 
+    // 住院信息
+    bool createHospitalization(const QJsonObject &data); // {patient_username, doctor_username, ward_number, bed_number, admission_date}
+    bool getHospitalizationsByPatient(const QString &patientUsername, QJsonArray &list); // 查看本人住院记录
+    bool getAllHospitalizations(QJsonArray &list); // 管理/医生端汇总
+    bool getHospitalizationsByDoctor(const QString &doctorUsername, QJsonArray &list);
+
 private:
     QSqlDatabase m_db;
     void initDatabase();
@@ -89,6 +95,7 @@ private:
     void createPrescriptionItemsTable();
     void createMedicationsTable();
     void createDoctorSchedulesTable();
+    void createHospitalizationsTable();
     
     // 示例数据插入
     void insertSampleMedications();

@@ -94,6 +94,19 @@ int main(int argc, char *argv[]) {
             if (ok) {
                 responsePayload["data"] = medications;
             }
+        } else if (action == "create_hospitalization") {
+            bool ok = db.createHospitalization(payload.value("data").toObject());
+            responsePayload["type"] = "create_hospitalization_response";
+            responsePayload["success"] = ok;
+        } else if (action == "get_hospitalizations_by_patient") {
+            QJsonArray list; bool ok = db.getHospitalizationsByPatient(payload.value("patient_username").toString(), list);
+            responsePayload["type"] = "hospitalizations_response"; responsePayload["success"] = ok; if(ok) responsePayload["data"] = list;
+        } else if (action == "get_hospitalizations_by_doctor") {
+            QJsonArray list; bool ok = db.getHospitalizationsByDoctor(payload.value("doctor_username").toString(), list);
+            responsePayload["type"] = "hospitalizations_response"; responsePayload["success"] = ok; if(ok) responsePayload["data"] = list;
+        } else if (action == "get_all_hospitalizations") {
+            QJsonArray list; bool ok = db.getAllHospitalizations(list);
+            responsePayload["type"] = "hospitalizations_response"; responsePayload["success"] = ok; if(ok) responsePayload["data"] = list;
         } else {
             responsePayload["type"] = "unknown_response";
             responsePayload["success"] = false;
