@@ -7,3 +7,4 @@ build/
 
 # VS Code settings
 .vscode/
+.cache/

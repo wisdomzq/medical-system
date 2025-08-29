@@ -209,3 +209,157 @@ medical-system
 └─ tests
 
 ```
+```
+medical-system
+├─ CMakeCache.txt
+├─ CMakeFiles
+│  ├─ 3.28.3
+│  │  ├─ CMakeCXXCompiler.cmake
+│  │  ├─ CMakeDetermineCompilerABI_CXX.bin
+│  │  ├─ CMakeSystem.cmake
+│  │  └─ CompilerIdCXX
+│  │     ├─ CMakeCXXCompilerId.cpp
+│  │     └─ a.out
+│  ├─ CMakeConfigureLog.yaml
+│  ├─ CMakeDirectoryInformation.cmake
+│  ├─ CMakeRuleHashes.txt
+│  ├─ Makefile.cmake
+│  ├─ Makefile2
+│  ├─ Progress
+│  │  ├─ 10
+│  │  ├─ 11
+│  │  ├─ 2
+│  │  ├─ 4
+│  │  ├─ 5
+│  │  ├─ 6
+│  │  ├─ 7
+│  │  ├─ 8
+│  │  ├─ 9
+│  │  └─ count.txt
+│  ├─ TargetDirectories.txt
+│  ├─ cmake.check_cache
+│  ├─ hello.dir
+│  │  ├─ DependInfo.cmake
+│  │  ├─ build.make
+│  │  ├─ cmake_clean.cmake
+│  │  ├─ compiler_depend.internal
+│  │  ├─ compiler_depend.make
+│  │  ├─ compiler_depend.ts
+│  │  ├─ depend.make
+│  │  ├─ flags.make
+│  │  ├─ hello_autogen
+│  │  │  ├─ mocs_compilation.cpp.o
+│  │  │  └─ mocs_compilation.cpp.o.d
+│  │  ├─ link.txt
+│  │  ├─ progress.make
+│  │  └─ src
+│  │     ├─ authdialog.cpp.o
+│  │     ├─ authdialog.cpp.o.d
+│  │     ├─ dbmanager.cpp.o
+│  │     ├─ dbmanager.cpp.o.d
+│  │     ├─ doctorinfowidget.cpp.o
+│  │     ├─ doctorinfowidget.cpp.o.d
+│  │     ├─ hello.cpp.o
+│  │     ├─ hello.cpp.o.d
+│  │     ├─ loginwidget.cpp.o
+│  │     ├─ loginwidget.cpp.o.d
+│  │     ├─ main.cpp.o
+│  │     ├─ main.cpp.o.d
+│  │     ├─ patientinfowidget.cpp.o
+│  │     └─ patientinfowidget.cpp.o.d
+│  ├─ hello_autogen.dir
+│  │  ├─ AutogenInfo.json
+│  │  ├─ AutogenUsed.txt
+│  │  ├─ DependInfo.cmake
+│  │  ├─ ParseCache.txt
+│  │  ├─ build.make
+│  │  ├─ cmake_clean.cmake
+│  │  ├─ compiler_depend.internal
+│  │  ├─ compiler_depend.make
+│  │  ├─ compiler_depend.ts
+│  │  └─ progress.make
+│  ├─ hello_autogen_timestamp_deps.dir
+│  │  ├─ DependInfo.cmake
+│  │  ├─ build.make
+│  │  ├─ cmake_clean.cmake
+│  │  ├─ compiler_depend.make
+│  │  ├─ compiler_depend.ts
+│  │  └─ progress.make
+│  └─ progress.marks
+├─ CMakeLists.txt
+├─ Makefile
+├─ README.md
+├─ client
+│  ├─ CMakeLists.txt
+│  ├─ core
+│  │  └─ network
+│  │     ├─ CMakeLists.txt
+│  │     ├─ README.md
+│  │     ├─ examples
+│  │     │  └─ client_cli.cpp
+│  │     └─ src
+│  │        ├─ client
+│  │        │  ├─ communicationclient.cpp
+│  │        │  ├─ communicationclient.h
+│  │        │  ├─ responsedispatcher.cpp
+│  │        │  ├─ responsedispatcher.h
+│  │        │  ├─ streamparser.cpp
+│  │        │  └─ streamparser.h
+│  │        └─ protocol.h
+│  ├─ main.cpp
+│  ├─ resources
+│  │  ├─ resources.qrc
+│  │  └─ style.qss
+│  └─ ui
+│     ├─ authdialog
+│     │  ├─ authdialog.cpp
+│     │  └─ authdialog.h
+│     ├─ doctorinfowidget
+│     │  ├─ doctorinfowidget.cpp
+│     │  └─ doctorinfowidget.h
+│     ├─ hello
+│     │  ├─ hello.cpp
+│     │  ├─ hello.h
+│     │  └─ hello.ui
+│     ├─ loginwidget
+│     │  ├─ loginwidget.cpp
+│     │  └─ loginwidget.h
+│     └─ patientinfowidget
+│        ├─ patientinfowidget.cpp
+│        └─ patientinfowidget.h
+├─ cmake_install.cmake
+├─ data
+├─ readme.md
+├─ server
+│  ├─ CMakeLists.txt
+│  ├─ core
+│  │  ├─ database
+│  │  │  ├─ database.cpp
+│  │  │  └─ database.h
+│  │  └─ network
+│  │     ├─ CMakeLists.txt
+│  │     ├─ README.md
+│  │     ├─ examples
+│  │     │  └─ server_main.cpp
+│  │     └─ src
+│  │        ├─ protocol.h
+│  │        └─ server
+│  │           ├─ clienthandler.cpp
+│  │           ├─ clienthandler.h
+│  │           ├─ communicationserver.cpp
+│  │           ├─ communicationserver.h
+│  │           ├─ messagerouter.cpp
+│  │           └─ messagerouter.h
+│  ├─ main.cpp
+│  └─ modules
+│     ├─ doctormodule
+│     ├─ loginmodule
+│     │  ├─ loginmodule.cpp
+│     │  └─ loginmodule.h
+│     └─ patientmodule
+│        └─ register
+│           ├─ register.cpp
+│           └─ register.h
+└─ tests
+
+```
