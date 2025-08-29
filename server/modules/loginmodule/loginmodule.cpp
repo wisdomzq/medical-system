@@ -3,15 +3,9 @@
 #include <QCoreApplication>
 #include <QDir>
 #include "core/database/database.h"
+#include "core/database/database_config.h"
 
-static QString resolveDbPath() {
-    QDir dir(QCoreApplication::applicationDirPath());
-    // ascend until找到 data 目录或上溯两级
-    for (int i=0;i<4 && !dir.exists("data");++i) dir.cdUp();
-    return dir.filePath("data/user.db");
-}
-
-LoginModule::LoginModule(QObject *parent) : QObject(parent), m_db(new DBManager(resolveDbPath())) {}
+LoginModule::LoginModule(QObject *parent) : QObject(parent), m_db(new DBManager(DatabaseConfig::getDatabasePath())) {}
 
 LoginModule::~LoginModule() { delete m_db; }
 

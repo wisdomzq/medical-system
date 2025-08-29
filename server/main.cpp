@@ -5,8 +5,8 @@
 #include "core/network/src/server/communicationserver.h"
 #include "core/network/src/server/messagerouter.h"
 #include "modules/loginmodule/loginmodule.h"
-#include "modules/patientmodule/register/register.h"
 #include "core/database/database.h"
+#include "core/database/database_config.h"
 
 int main(int argc, char *argv[]) {
     QCoreApplication a(argc, argv);
@@ -14,19 +14,15 @@ int main(int argc, char *argv[]) {
 
     CommunicationServer server;
     LoginModule loginModule;
-    RegisterManager registerManager; // 挂号模块实例，内部已连接 MessageRouter
 
     QObject::connect(&MessageRouter::instance(), &MessageRouter::requestReceived,
                      [&](const QJsonObject &payload) {
         QJsonObject responsePayload;
         const QString action = payload.value("action").toString();
 
-        DBManager db("data/user.db"); // 使用新的扩展数据库
+        DBManager db(DatabaseConfig::getDatabasePath()); // 使用统一的数据库路径配置
 
-        if (action == "get_doctor_schedule" || action == "register_doctor") {
-            // 交由 RegisterManager 处理，避免重复响应
-            return;
-        } else if (action == "login") {
+        if (action == "login") {
             responsePayload = loginModule.handleLogin(payload);
         } else if (action == "register") {
             responsePayload = loginModule.handleRegister(payload);
