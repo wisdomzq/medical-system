@@ -1525,6 +1525,35 @@ bool DBManager::getDoctorsByDepartment(const QString& department, QJsonArray& do
     return true;
 }
 
+// 清理不一致的数据
+bool DBManager::cleanupInconsistentData() {
+    // 此处可以添加数据清理逻辑，例如：
+    // 1. 删除在 'users' 表中没有对应用户的 'doctors' 或 'patients' 记录
+    // 2. 删除引用了不存在的用户的预约
+    // 3. 确保外键约束的完整性
+    // 目前仅为占位符
+    QSqlQuery query(m_db);
+
+    // 清理 doctors 表中不存在于 users 表的记录
+    QString cleanupDoctorsSql = "DELETE FROM doctors WHERE username NOT IN (SELECT username FROM users)";
+    if (!query.exec(cleanupDoctorsSql)) {
+        qDebug() << "Failed to cleanup doctors table:" << query.lastError().text();
+        return false;
+    }
+
+    // 清理 patients 表中不存在于 users 表的记录
+    QString cleanupPatientsSql = "DELETE FROM patients WHERE username NOT IN (SELECT username FROM users)";
+    if (!query.exec(cleanupPatientsSql)) {
+        qDebug() << "Failed to cleanup patients table:" << query.lastError().text();
+        return false;
+    }
+
+    // 可以根据需要添加更多清理规则...
+
+    qDebug() << "Inconsistent data cleanup completed successfully.";
+    return true;
+}
+
 // 插入示例医生数据
 void DBManager::insertSampleDoctors() {
     // 检查是否已经有医生数据
@@ -1598,21 +1627,32 @@ void DBManager::insertSampleMedications() {
         return; // 如果已有数据，不再插入
     }
     
-    QSqlQuery query(m_db);
-    query.prepare("INSERT INTO medications (name, category, price, unit) VALUES (?, ?, ?, ?)");
+    // 插入示例药品数据
+    QJsonArray medications;
     
-    QStringList medications = {"阿司匹林", "感冒灵", "维生素C"};
-    QStringList categories = {"心血管药物", "感冒药", "维生素"};
-    QList<double> prices = {5.5, 12.0, 8.5};
+    QJsonObject med1;
+    med1["name"] = "阿司匹林肠溶片";
+    med1["generic_name"] = "Aspirin Enteric-coated Tablets";
+    med1["category"] = "解热镇痛";
+    med1["manufacturer"] = "拜耳";
+    med1["specification"] = "100mg*30片";
+    med1["unit"] = "盒";
+    med1["price"] = 15.50;
+    med1["stock_quantity"] = 1000;
+    medications.append(med1);
     
-    for (int i = 0; i < medications.size(); ++i) {
-        query.addBindValue(medications[i]);
-        query.addBindValue(categories[i]);
-        query.addBindValue(prices[i]);
-        query.addBindValue("盒");
-        
-        if (!query.exec()) {
-            qDebug() << "Insert sample medication error:" << query.lastError().text();
-        }
+    QJsonObject med2;
+    med2["name"] = "布洛芬缓释胶囊";
+    med2["generic_name"] = "Ibuprofen Sustained-release Capsules";
+    med2["category"] = "解热镇痛";
+    med2["manufacturer"] = "芬必得";
+    med2["specification"] = "0.3g*20粒";
+    med2["unit"] = "盒";
+    med2["price"] = 22.00;
+    med2["stock_quantity"] = 800;
+    medications.append(med2);
+    
+    for (const auto& medValue : medications) {
+        addMedication(medValue.toObject());
     }
 }
