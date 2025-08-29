@@ -512,8 +512,8 @@ client/CMakeFiles/hello.dir/hello_autogen/mocs_compilation.cpp.o: \
  /home/xuwt/Qt/medical-system/client/hello_autogen/XKFTU44BVS/../../core/network/src/client/streamparser.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QByteArray \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QDataStream \
- /home/xuwt/Qt/medical-system/client/hello_autogen/AKRC6WZMME/moc_doctorinfowidget.cpp \
- /home/xuwt/Qt/medical-system/client/hello_autogen/AKRC6WZMME/../../ui/doctorinfowidget/doctorinfowidget.h \
+ /home/xuwt/Qt/medical-system/client/hello_autogen/AKRC6WZMME/moc_appointmentswidget.cpp \
+ /home/xuwt/Qt/medical-system/client/hello_autogen/AKRC6WZMME/../../ui/doctorinfowidget/appointmentswidget.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QWidget \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qwidget.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qtwidgetsglobal.h \
@@ -542,19 +542,32 @@ client/CMakeFiles/hello.dir/hello_autogen/mocs_compilation.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qsizepolicy.h \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/qcursor.h \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/qkeysequence.h \
- /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QLineEdit \
- /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qlineedit.h \
- /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qframe.h \
- /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qwidget.h \
- /usr/include/x86_64-linux-gnu/qt5/QtGui/qtextcursor.h \
- /usr/include/x86_64-linux-gnu/qt5/QtGui/qtextformat.h \
- /usr/include/x86_64-linux-gnu/qt5/QtGui/qpen.h \
- /usr/include/x86_64-linux-gnu/qt5/QtGui/qtextoption.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/QString \
+ /home/xuwt/Qt/medical-system/client/hello_autogen/AKRC6WZMME/moc_attendancewidget.cpp \
+ /home/xuwt/Qt/medical-system/client/hello_autogen/AKRC6WZMME/../../ui/doctorinfowidget/attendancewidget.h \
+ /home/xuwt/Qt/medical-system/client/hello_autogen/AKRC6WZMME/moc_cancelleavewidget.cpp \
+ /home/xuwt/Qt/medical-system/client/hello_autogen/AKRC6WZMME/../../ui/doctorinfowidget/cancelleavewidget.h \
+ /home/xuwt/Qt/medical-system/client/hello_autogen/AKRC6WZMME/moc_caseswidget.cpp \
+ /home/xuwt/Qt/medical-system/client/hello_autogen/AKRC6WZMME/../../ui/doctorinfowidget/caseswidget.h \
+ /home/xuwt/Qt/medical-system/client/hello_autogen/AKRC6WZMME/moc_chatroomwidget.cpp \
+ /home/xuwt/Qt/medical-system/client/hello_autogen/AKRC6WZMME/../../ui/doctorinfowidget/chatroomwidget.h \
+ /home/xuwt/Qt/medical-system/client/hello_autogen/AKRC6WZMME/moc_checkinwidget.cpp \
+ /home/xuwt/Qt/medical-system/client/hello_autogen/AKRC6WZMME/../../ui/doctorinfowidget/checkinwidget.h \
+ /home/xuwt/Qt/medical-system/client/hello_autogen/AKRC6WZMME/moc_diagnosiswidget.cpp \
+ /home/xuwt/Qt/medical-system/client/hello_autogen/AKRC6WZMME/../../ui/doctorinfowidget/diagnosiswidget.h \
+ /home/xuwt/Qt/medical-system/client/hello_autogen/AKRC6WZMME/moc_doctorinfowidget.cpp \
+ /home/xuwt/Qt/medical-system/client/hello_autogen/AKRC6WZMME/../../ui/doctorinfowidget/doctorinfowidget.h \
+ /home/xuwt/Qt/medical-system/client/hello_autogen/AKRC6WZMME/moc_leavewidget.cpp \
+ /home/xuwt/Qt/medical-system/client/hello_autogen/AKRC6WZMME/../../ui/doctorinfowidget/leavewidget.h \
+ /home/xuwt/Qt/medical-system/client/hello_autogen/AKRC6WZMME/moc_profilewidget.cpp \
+ /home/xuwt/Qt/medical-system/client/hello_autogen/AKRC6WZMME/../../ui/doctorinfowidget/profilewidget.h \
  /home/xuwt/Qt/medical-system/client/hello_autogen/KUE7F3CO2C/moc_hello.cpp \
  /home/xuwt/Qt/medical-system/client/hello_autogen/KUE7F3CO2C/../../ui/hello/hello.h \
  /home/xuwt/Qt/medical-system/client/ui/loginwidget/loginwidget.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QLabel \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qlabel.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qframe.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qwidget.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QPushButton \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qpushbutton.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qabstractbutton.h \
@@ -566,6 +579,12 @@ client/CMakeFiles/hello.dir/hello_autogen/mocs_compilation.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qboxlayout.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qgridlayout.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QVBoxLayout \
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QLineEdit \
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qlineedit.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtGui/qtextcursor.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtGui/qtextformat.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtGui/qpen.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtGui/qtextoption.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QStackedWidget \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qstackedwidget.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QFormLayout \
@@ -578,5 +597,56 @@ client/CMakeFiles/hello.dir/hello_autogen/mocs_compilation.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qmainwindow.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qtabwidget.h \
  /home/xuwt/Qt/medical-system/client/hello_autogen/MJCUNQZLOZ/moc_loginwidget.cpp \
+ /home/xuwt/Qt/medical-system/client/hello_autogen/ZEUGGMGZAI/moc_appointmentpage.cpp \
+ /home/xuwt/Qt/medical-system/client/hello_autogen/ZEUGGMGZAI/../../ui/patientinfowidget/appointmentpage.h \
+ /home/xuwt/Qt/medical-system/client/hello_autogen/ZEUGGMGZAI/../../ui/patientinfowidget/basepage.h \
+ /home/xuwt/Qt/medical-system/client/hello_autogen/ZEUGGMGZAI/moc_basepage.cpp \
+ /home/xuwt/Qt/medical-system/client/hello_autogen/ZEUGGMGZAI/moc_hospitalpage.cpp \
+ /home/xuwt/Qt/medical-system/client/hello_autogen/ZEUGGMGZAI/../../ui/patientinfowidget/hospitalpage.h \
+ /home/xuwt/Qt/medical-system/client/hello_autogen/ZEUGGMGZAI/moc_medicationpage.cpp \
+ /home/xuwt/Qt/medical-system/client/hello_autogen/ZEUGGMGZAI/../../ui/patientinfowidget/medicationpage.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/QJsonArray \
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QTableWidget \
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qtablewidget.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qtableview.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qabstractitemview.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qabstractscrollarea.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/qitemselectionmodel.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qabstractitemdelegate.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qstyleoption.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qabstractspinbox.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtGui/qvalidator.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qslider.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qabstractslider.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qstyle.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qtabbar.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qrubberband.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtNetwork/QNetworkReply \
+ /usr/include/x86_64-linux-gnu/qt5/QtNetwork/qnetworkreply.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/QIODevice \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/QString \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/QVariant \
+ /usr/include/x86_64-linux-gnu/qt5/QtNetwork/QNetworkRequest \
+ /usr/include/x86_64-linux-gnu/qt5/QtNetwork/qnetworkrequest.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/QSharedDataPointer \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/QUrl \
+ /usr/include/x86_64-linux-gnu/qt5/QtNetwork/QNetworkAccessManager \
+ /usr/include/x86_64-linux-gnu/qt5/QtNetwork/qnetworkaccessmanager.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtNetwork/qnetworkrequest.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/QVector \
+ /usr/include/x86_64-linux-gnu/qt5/QtNetwork/QSslConfiguration \
+ /usr/include/x86_64-linux-gnu/qt5/QtNetwork/qsslconfiguration.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtNetwork/qsslsocket.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtNetwork/qtcpsocket.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtNetwork/qsslerror.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtNetwork/qsslcertificate.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtNetwork/qssl.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/QFlags \
+ /usr/include/x86_64-linux-gnu/qt5/QtNetwork/QSslPreSharedKeyAuthenticator \
+ /usr/include/x86_64-linux-gnu/qt5/QtNetwork/qsslpresharedkeyauthenticator.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/QMetaType \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/QHash \
  /home/xuwt/Qt/medical-system/client/hello_autogen/ZEUGGMGZAI/moc_patientinfowidget.cpp \
- /home/xuwt/Qt/medical-system/client/hello_autogen/ZEUGGMGZAI/../../ui/patientinfowidget/patientinfowidget.h
+ /home/xuwt/Qt/medical-system/client/hello_autogen/ZEUGGMGZAI/../../ui/patientinfowidget/patientinfowidget.h \
+ /home/xuwt/Qt/medical-system/client/hello_autogen/ZEUGGMGZAI/moc_profilepage.cpp \
+ /home/xuwt/Qt/medical-system/client/hello_autogen/ZEUGGMGZAI/../../ui/patientinfowidget/profilepage.h

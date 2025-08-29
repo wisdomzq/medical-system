@@ -18,11 +18,6 @@ DBManager::DBManager(const QString& path) {
         qDebug() << "Error: connection with database fail" << m_db.lastError().text();
     } else {
         qDebug() << "Database: connection ok";
-        // 启用外键约束
-        QSqlQuery query(m_db);
-        if (!query.exec("PRAGMA foreign_keys = ON;")) {
-            qDebug() << "启用外键约束失败:" << query.lastError().text();
-        }
     }
     initDatabase();
 }
@@ -46,10 +41,7 @@ void DBManager::initDatabase() {
     createPrescriptionItemsTable();
     createMedicationsTable();
     createDoctorSchedulesTable();
-    createHospitalizationsTable();
-    
-    // 清理不一致的数据
-    cleanupInconsistentData();
+    createHospitalizationsTable(); // 添加住院表
     
     // 插入示例数据
     insertSampleDoctors();
@@ -258,7 +250,7 @@ void DBManager::createPrescriptionItemsTable() {
 void DBManager::createMedicationsTable() {
     if (!m_db.tables().contains(QStringLiteral("medications"))) {
         QSqlQuery query(m_db);
-    QString sql = R"(
+        QString sql = R"(
             CREATE TABLE medications (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL,
@@ -273,7 +265,6 @@ void DBManager::createMedicationsTable() {
                 precautions TEXT,
                 side_effects TEXT,
                 contraindications TEXT,
-                image_path TEXT,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
             )
@@ -316,11 +307,16 @@ void DBManager::createHospitalizationsTable() {
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 patient_username TEXT NOT NULL,
                 doctor_username TEXT NOT NULL,
-                ward_number TEXT,
-                bed_number TEXT,
                 admission_date DATE NOT NULL,
                 discharge_date DATE,
-                status TEXT DEFAULT 'active' CHECK(status IN ('active','discharged')),
+                ward TEXT,
+                bed_number TEXT,
+                diagnosis TEXT,
+                treatment_plan TEXT,
+                daily_cost DECIMAL(10,2) DEFAULT 0.00,
+                total_cost DECIMAL(10,2) DEFAULT 0.00,
+                status TEXT DEFAULT 'admitted' CHECK(status IN ('admitted', 'discharged', 'transferred')),
+                notes TEXT,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (patient_username) REFERENCES users(username),
@@ -331,40 +327,6 @@ void DBManager::createHospitalizationsTable() {
             qDebug() << "创建hospitalizations表失败:" << query.lastError().text();
         }
     }
-}
-
-bool DBManager::createHospitalization(const QJsonObject &data) {
-    QSqlQuery q(m_db);
-    q.prepare(R"(INSERT INTO hospitalizations (patient_username, doctor_username, ward_number, bed_number, admission_date, discharge_date, status)
-                VALUES (:p, :d, :w, :b, :ad, :dd, :st))");
-    q.bindValue(":p", data.value("patient_username").toString());
-    q.bindValue(":d", data.value("doctor_username").toString());
-    q.bindValue(":w", data.value("ward_number").toString());
-    q.bindValue(":b", data.value("bed_number").toString());
-    q.bindValue(":ad", data.value("admission_date").toString());
-    q.bindValue(":dd", data.value("discharge_date").toString());
-    q.bindValue(":st", data.value("status").toString().isEmpty()? QString("active") : data.value("status").toString());
-    if(!q.exec()) { qDebug() << "createHospitalization error:" << q.lastError().text(); return false; }
-    return true;
-}
-
-static bool fetchHospitalizations(QSqlDatabase &db, QSqlQuery &q, QJsonArray &list) {
-    if(!q.exec()) { qDebug() << "fetchHospitalizations query exec error:" << q.lastError().text(); return false; }
-    while(q.next()) {
-        QJsonObject o; o["id"]=q.value("id").toInt(); o["patient_username"]=q.value("patient_username").toString(); o["doctor_username"]=q.value("doctor_username").toString(); o["ward_number"]=q.value("ward_number").toString(); o["bed_number"]=q.value("bed_number").toString(); o["admission_date"]=q.value("admission_date").toString(); o["discharge_date"]=q.value("discharge_date").toString(); o["status"]=q.value("status").toString(); list.append(o); }
-    return true;
-}
-
-bool DBManager::getHospitalizationsByPatient(const QString &patientUsername, QJsonArray &list) {
-    QSqlQuery q(m_db); q.prepare("SELECT * FROM hospitalizations WHERE patient_username=:p ORDER BY admission_date DESC"); q.bindValue(":p", patientUsername); return fetchHospitalizations(m_db,q,list);
-}
-
-bool DBManager::getAllHospitalizations(QJsonArray &list) {
-    QSqlQuery q(m_db); q.prepare("SELECT * FROM hospitalizations ORDER BY admission_date DESC"); return fetchHospitalizations(m_db,q,list);
-}
-
-bool DBManager::getHospitalizationsByDoctor(const QString &doctorUsername, QJsonArray &list) {
-    QSqlQuery q(m_db); q.prepare("SELECT * FROM hospitalizations WHERE doctor_username=:d ORDER BY admission_date DESC"); q.bindValue(":d", doctorUsername); return fetchHospitalizations(m_db,q,list);
 }
 
 bool DBManager::authenticateUser(const QString& username, const QString& password) {
@@ -397,18 +359,7 @@ bool DBManager::getUserRole(const QString &username, QString &role) {
 // 修改 addUser 函数，使其只负责向 users 表添加用户。
 // 这是更清晰的单一职责设计。
 bool DBManager::addUser(const QString& username, const QString& password, const QString& role) {
-    // 首先检查用户名是否已存在
-    QSqlQuery checkQuery(m_db);
-    checkQuery.prepare("SELECT COUNT(*) FROM users WHERE username = :username");
-    checkQuery.bindValue(":username", username);
-    if (checkQuery.exec() && checkQuery.next()) {
-        int count = checkQuery.value(0).toInt();
-        if (count > 0) {
-            qDebug() << "addUser error: Username already exists:" << username;
-            return false; // 用户名已存在
-        }
-    }
-
+    qDebug() << "添加用户到users表:" << username << "role:" << role;
     QSqlQuery query(m_db);
     query.prepare("INSERT INTO users (username, password, role) VALUES (:username, :password, :role)");
     query.bindValue(":username", username);
@@ -418,6 +369,7 @@ bool DBManager::addUser(const QString& username, const QString& password, const 
         qDebug() << "addUser error:" << query.lastError().text();
         return false;
     }
+    qDebug() << "用户成功添加到users表:" << username;
     return true;
 }
 
@@ -544,8 +496,6 @@ bool DBManager::updatePatientInfo(const QString& username, const QJsonObject& da
 // ==================== Functions from client ====================
 // 重写 registerDoctor，使用事务确保原子性，并一次性插入所有数据。
 bool DBManager::registerDoctor(const QString& name, const QString& password, const QString& department, const QString& phone) {
-    qDebug() << "开始注册医生:" << name;
-    
     // 开启数据库事务
     if (!m_db.transaction()) {
         qDebug() << "Failed to start transaction.";
@@ -554,7 +504,6 @@ bool DBManager::registerDoctor(const QString& name, const QString& password, con
 
     // 1. 插入到 users 表
     if (!addUser(name, password, "doctor")) {
-        qDebug() << "注册医生失败: 用户名已存在或添加用户失败:" << name;
         m_db.rollback(); // 如果失败，回滚事务
         return false;
     }
@@ -580,13 +529,12 @@ bool DBManager::registerDoctor(const QString& name, const QString& password, con
         return false;
     }
     
-    qDebug() << "医生注册成功:" << name;
     return true;
 }
 
-// 重写 registerPatient，逻辑同上。
+// 重写 registerPatient，使用事务确保原子性，并一次性插入所有数据。
 bool DBManager::registerPatient(const QString& name, const QString& password, int age, const QString& phone, const QString& address) {
-    qDebug() << "开始注册病人:" << name;
+    qDebug() << "开始注册患者:" << name << "age:" << age << "phone:" << phone << "address:" << address;
     
     if (!m_db.transaction()) {
         qDebug() << "Failed to start transaction.";
@@ -595,7 +543,7 @@ bool DBManager::registerPatient(const QString& name, const QString& password, in
 
     // 1. 插入到 users 表
     if (!addUser(name, password, "patient")) {
-        qDebug() << "注册病人失败: 用户名已存在或添加用户失败:" << name;
+        qDebug() << "Failed to add user to users table";
         m_db.rollback();
         return false;
     }
@@ -621,7 +569,7 @@ bool DBManager::registerPatient(const QString& name, const QString& password, in
         return false;
     }
     
-    qDebug() << "病人注册成功:" << name;
+    qDebug() << "患者注册成功:" << name;
     return true;
 }
 
@@ -1267,23 +1215,18 @@ bool DBManager::addMedication(const QJsonObject& medicationData) {
 
 bool DBManager::getMedications(QJsonArray& medications) {
     QSqlQuery query(m_db);
-    if (!query.exec("SELECT id, name, generic_name, category, manufacturer, specification, unit, price, stock_quantity, description, precautions FROM medications")) {
+    if (!query.exec("SELECT id, name, category, price, unit FROM medications")) {
         qDebug() << "getMedications error:" << query.lastError().text();
         return false;
     }
+    
     while (query.next()) {
         QJsonObject medication;
         medication["id"] = query.value("id").toInt();
         medication["name"] = query.value("name").toString();
-        medication["generic_name"] = query.value("generic_name").toString();
         medication["category"] = query.value("category").toString();
-        medication["manufacturer"] = query.value("manufacturer").toString();
-        medication["specification"] = query.value("specification").toString();
-        medication["unit"] = query.value("unit").toString();
         medication["price"] = query.value("price").toDouble();
-        medication["stock_quantity"] = query.value("stock_quantity").toInt();
-        medication["description"] = query.value("description").toString();
-        medication["precautions"] = query.value("precautions").toString();
+        medication["unit"] = query.value("unit").toString();
         medications.append(medication);
     }
     return true;
@@ -1293,14 +1236,13 @@ bool DBManager::searchMedications(const QString& keyword, QJsonArray& medication
     QSqlQuery query(m_db);
     query.prepare(R"(
         SELECT id, name, generic_name, category, manufacturer, specification,
-               unit, price, stock_quantity, description, precautions
+               unit, price, stock_quantity, description
         FROM medications
-        WHERE name = :keyword OR generic_name = :keyword
-              OR category LIKE :like_keyword OR manufacturer LIKE :like_keyword
+        WHERE name LIKE :keyword OR generic_name LIKE :keyword 
+              OR category LIKE :keyword OR manufacturer LIKE :keyword
         ORDER BY name
     )");
-    query.bindValue(":keyword", keyword);
-    query.bindValue(":like_keyword", "%" + keyword + "%");
+    query.bindValue(":keyword", "%" + keyword + "%");
     
     if (!query.exec()) {
         qDebug() << "searchMedications error:" << query.lastError().text();
@@ -1318,8 +1260,7 @@ bool DBManager::searchMedications(const QString& keyword, QJsonArray& medication
         medication["unit"] = query.value("unit").toString();
         medication["price"] = query.value("price").toDouble();
         medication["stock_quantity"] = query.value("stock_quantity").toInt();
-    medication["description"] = query.value("description").toString();
-    medication["precautions"] = query.value("precautions").toString();
+        medication["description"] = query.value("description").toString();
         medications.append(medication);
     }
     return true;
@@ -1525,32 +1466,193 @@ bool DBManager::getDoctorsByDepartment(const QString& department, QJsonArray& do
     return true;
 }
 
-// 清理不一致的数据
-bool DBManager::cleanupInconsistentData() {
-    // 此处可以添加数据清理逻辑，例如：
-    // 1. 删除在 'users' 表中没有对应用户的 'doctors' 或 'patients' 记录
-    // 2. 删除引用了不存在的用户的预约
-    // 3. 确保外键约束的完整性
-    // 目前仅为占位符
+// 住院管理实现
+bool DBManager::createHospitalization(const QJsonObject& hospitalizationData) {
     QSqlQuery query(m_db);
+    query.prepare(R"(
+        INSERT INTO hospitalizations (
+            patient_username, doctor_username, admission_date, ward, bed_number,
+            diagnosis, treatment_plan, daily_cost, status, notes
+        ) VALUES (
+            :patient_username, :doctor_username, :admission_date, :ward, :bed_number,
+            :diagnosis, :treatment_plan, :daily_cost, :status, :notes
+        )
+    )");
+    
+    query.bindValue(":patient_username", hospitalizationData["patient_username"].toString());
+    query.bindValue(":doctor_username", hospitalizationData["doctor_username"].toString());
+    query.bindValue(":admission_date", hospitalizationData["admission_date"].toString());
+    query.bindValue(":ward", hospitalizationData["ward"].toString());
+    query.bindValue(":bed_number", hospitalizationData["bed_number"].toString());
+    query.bindValue(":diagnosis", hospitalizationData["diagnosis"].toString());
+    query.bindValue(":treatment_plan", hospitalizationData["treatment_plan"].toString());
+    query.bindValue(":daily_cost", hospitalizationData["daily_cost"].toDouble());
+    
+    QString status = hospitalizationData.contains("status") ? 
+                     hospitalizationData["status"].toString() : "admitted";
+    query.bindValue(":status", status);
+    
+    query.bindValue(":notes", hospitalizationData["notes"].toString());
+    
+    if (!query.exec()) {
+        qDebug() << "createHospitalization error:" << query.lastError().text();
+        return false;
+    }
+    return true;
+}
 
-    // 清理 doctors 表中不存在于 users 表的记录
-    QString cleanupDoctorsSql = "DELETE FROM doctors WHERE username NOT IN (SELECT username FROM users)";
-    if (!query.exec(cleanupDoctorsSql)) {
-        qDebug() << "Failed to cleanup doctors table:" << query.lastError().text();
+bool DBManager::getHospitalizationsByPatient(const QString& patientUsername, QJsonArray& hospitalizations) {
+    QSqlQuery query(m_db);
+    query.prepare(R"(
+        SELECT h.id, h.doctor_username, h.admission_date, h.discharge_date, h.ward,
+               h.bed_number, h.diagnosis, h.treatment_plan, h.daily_cost, h.total_cost,
+               h.status, h.notes, h.created_at,
+               d.name as doctor_name, d.title as doctor_title, d.department
+        FROM hospitalizations h
+        LEFT JOIN doctors d ON h.doctor_username = d.username
+        WHERE h.patient_username = :patient_username
+        ORDER BY h.admission_date DESC
+    )");
+    query.bindValue(":patient_username", patientUsername);
+
+    if (!query.exec()) {
+        qDebug() << "getHospitalizationsByPatient error:" << query.lastError().text();
         return false;
     }
 
-    // 清理 patients 表中不存在于 users 表的记录
-    QString cleanupPatientsSql = "DELETE FROM patients WHERE username NOT IN (SELECT username FROM users)";
-    if (!query.exec(cleanupPatientsSql)) {
-        qDebug() << "Failed to cleanup patients table:" << query.lastError().text();
+    while (query.next()) {
+        QJsonObject hospitalization;
+        hospitalization["id"] = query.value("id").toInt();
+        hospitalization["doctor_username"] = query.value("doctor_username").toString();
+        hospitalization["doctor_name"] = query.value("doctor_name").toString();
+        hospitalization["doctor_title"] = query.value("doctor_title").toString();
+        hospitalization["department"] = query.value("department").toString();
+        hospitalization["admission_date"] = query.value("admission_date").toString();
+        hospitalization["discharge_date"] = query.value("discharge_date").toString();
+        hospitalization["ward"] = query.value("ward").toString();
+        hospitalization["bed_number"] = query.value("bed_number").toString();
+        hospitalization["diagnosis"] = query.value("diagnosis").toString();
+        hospitalization["treatment_plan"] = query.value("treatment_plan").toString();
+        hospitalization["daily_cost"] = query.value("daily_cost").toDouble();
+        hospitalization["total_cost"] = query.value("total_cost").toDouble();
+        hospitalization["status"] = query.value("status").toString();
+        hospitalization["notes"] = query.value("notes").toString();
+        hospitalization["created_at"] = query.value("created_at").toString();
+        hospitalizations.append(hospitalization);
+    }
+    return true;
+}
+
+bool DBManager::getHospitalizationsByDoctor(const QString& doctorUsername, QJsonArray& hospitalizations) {
+    QSqlQuery query(m_db);
+    query.prepare(R"(
+        SELECT h.id, h.patient_username, h.admission_date, h.discharge_date, h.ward,
+               h.bed_number, h.diagnosis, h.treatment_plan, h.daily_cost, h.total_cost,
+               h.status, h.notes, h.created_at,
+               p.name as patient_name, p.age as patient_age, p.gender
+        FROM hospitalizations h
+        LEFT JOIN patients p ON h.patient_username = p.username
+        WHERE h.doctor_username = :doctor_username
+        ORDER BY h.admission_date DESC
+    )");
+    query.bindValue(":doctor_username", doctorUsername);
+
+    if (!query.exec()) {
+        qDebug() << "getHospitalizationsByDoctor error:" << query.lastError().text();
         return false;
     }
 
-    // 可以根据需要添加更多清理规则...
+    while (query.next()) {
+        QJsonObject hospitalization;
+        hospitalization["id"] = query.value("id").toInt();
+        hospitalization["patient_username"] = query.value("patient_username").toString();
+        hospitalization["patient_name"] = query.value("patient_name").toString();
+        hospitalization["patient_age"] = query.value("patient_age").toInt();
+        hospitalization["patient_gender"] = query.value("gender").toString();
+        hospitalization["admission_date"] = query.value("admission_date").toString();
+        hospitalization["discharge_date"] = query.value("discharge_date").toString();
+        hospitalization["ward"] = query.value("ward").toString();
+        hospitalization["bed_number"] = query.value("bed_number").toString();
+        hospitalization["diagnosis"] = query.value("diagnosis").toString();
+        hospitalization["treatment_plan"] = query.value("treatment_plan").toString();
+        hospitalization["daily_cost"] = query.value("daily_cost").toDouble();
+        hospitalization["total_cost"] = query.value("total_cost").toDouble();
+        hospitalization["status"] = query.value("status").toString();
+        hospitalization["notes"] = query.value("notes").toString();
+        hospitalization["created_at"] = query.value("created_at").toString();
+        hospitalizations.append(hospitalization);
+    }
+    return true;
+}
 
-    qDebug() << "Inconsistent data cleanup completed successfully.";
+bool DBManager::getAllHospitalizations(QJsonArray& hospitalizations) {
+    QSqlQuery query(m_db);
+    query.prepare(R"(
+        SELECT h.id, h.patient_username, h.doctor_username, h.admission_date, h.discharge_date,
+               h.ward, h.bed_number, h.diagnosis, h.treatment_plan, h.daily_cost, h.total_cost,
+               h.status, h.notes, h.created_at,
+               p.name as patient_name, p.age as patient_age, p.gender,
+               d.name as doctor_name, d.title as doctor_title, d.department
+        FROM hospitalizations h
+        LEFT JOIN patients p ON h.patient_username = p.username
+        LEFT JOIN doctors d ON h.doctor_username = d.username
+        ORDER BY h.admission_date DESC
+    )");
+
+    if (!query.exec()) {
+        qDebug() << "getAllHospitalizations error:" << query.lastError().text();
+        return false;
+    }
+
+    while (query.next()) {
+        QJsonObject hospitalization;
+        hospitalization["id"] = query.value("id").toInt();
+        hospitalization["patient_username"] = query.value("patient_username").toString();
+        hospitalization["patient_name"] = query.value("patient_name").toString();
+        hospitalization["patient_age"] = query.value("patient_age").toInt();
+        hospitalization["patient_gender"] = query.value("gender").toString();
+        hospitalization["doctor_username"] = query.value("doctor_username").toString();
+        hospitalization["doctor_name"] = query.value("doctor_name").toString();
+        hospitalization["doctor_title"] = query.value("doctor_title").toString();
+        hospitalization["department"] = query.value("department").toString();
+        hospitalization["admission_date"] = query.value("admission_date").toString();
+        hospitalization["discharge_date"] = query.value("discharge_date").toString();
+        hospitalization["ward"] = query.value("ward").toString();
+        hospitalization["bed_number"] = query.value("bed_number").toString();
+        hospitalization["diagnosis"] = query.value("diagnosis").toString();
+        hospitalization["treatment_plan"] = query.value("treatment_plan").toString();
+        hospitalization["daily_cost"] = query.value("daily_cost").toDouble();
+        hospitalization["total_cost"] = query.value("total_cost").toDouble();
+        hospitalization["status"] = query.value("status").toString();
+        hospitalization["notes"] = query.value("notes").toString();
+        hospitalization["created_at"] = query.value("created_at").toString();
+        hospitalizations.append(hospitalization);
+    }
+    return true;
+}
+
+bool DBManager::updateHospitalizationStatus(int hospitalizationId, const QString& status) {
+    QSqlQuery query(m_db);
+    query.prepare("UPDATE hospitalizations SET status = :status, updated_at = CURRENT_TIMESTAMP WHERE id = :id");
+    query.bindValue(":status", status);
+    query.bindValue(":id", hospitalizationId);
+    
+    if (!query.exec()) {
+        qDebug() << "updateHospitalizationStatus error:" << query.lastError().text();
+        return false;
+    }
+    return true;
+}
+
+bool DBManager::deleteHospitalization(int hospitalizationId) {
+    QSqlQuery query(m_db);
+    query.prepare("DELETE FROM hospitalizations WHERE id = :id");
+    query.bindValue(":id", hospitalizationId);
+    
+    if (!query.exec()) {
+        qDebug() << "deleteHospitalization error:" << query.lastError().text();
+        return false;
+    }
     return true;
 }
 
@@ -1627,32 +1729,21 @@ void DBManager::insertSampleMedications() {
         return; // 如果已有数据，不再插入
     }
     
-    // 插入示例药品数据
-    QJsonArray medications;
+    QSqlQuery query(m_db);
+    query.prepare("INSERT INTO medications (name, category, price, unit) VALUES (?, ?, ?, ?)");
     
-    QJsonObject med1;
-    med1["name"] = "阿司匹林肠溶片";
-    med1["generic_name"] = "Aspirin Enteric-coated Tablets";
-    med1["category"] = "解热镇痛";
-    med1["manufacturer"] = "拜耳";
-    med1["specification"] = "100mg*30片";
-    med1["unit"] = "盒";
-    med1["price"] = 15.50;
-    med1["stock_quantity"] = 1000;
-    medications.append(med1);
+    QStringList medications = {"阿司匹林", "感冒灵", "维生素C"};
+    QStringList categories = {"心血管药物", "感冒药", "维生素"};
+    QList<double> prices = {5.5, 12.0, 8.5};
     
-    QJsonObject med2;
-    med2["name"] = "布洛芬缓释胶囊";
-    med2["generic_name"] = "Ibuprofen Sustained-release Capsules";
-    med2["category"] = "解热镇痛";
-    med2["manufacturer"] = "芬必得";
-    med2["specification"] = "0.3g*20粒";
-    med2["unit"] = "盒";
-    med2["price"] = 22.00;
-    med2["stock_quantity"] = 800;
-    medications.append(med2);
-    
-    for (const auto& medValue : medications) {
-        addMedication(medValue.toObject());
+    for (int i = 0; i < medications.size(); ++i) {
+        query.addBindValue(medications[i]);
+        query.addBindValue(categories[i]);
+        query.addBindValue(prices[i]);
+        query.addBindValue("盒");
+        
+        if (!query.exec()) {
+            qDebug() << "Insert sample medication error:" << query.lastError().text();
+        }
     }
 }

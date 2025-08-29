@@ -60,6 +60,12 @@
 			null
 		],
 		[
+			"/home/xuwt/Qt/medical-system/server/modules/patientmodule/medicine/medicine.h",
+			"MU",
+			"ZXZACPACKL/moc_medicine.cpp",
+			null
+		],
+		[
 			"/home/xuwt/Qt/medical-system/server/modules/patientmodule/register/register.h",
 			"MU",
 			"3UNC5IPTOD/moc_register.cpp",
@@ -145,6 +151,11 @@
 		[ "/home/xuwt/Qt/medical-system/server/main.cpp", "MU", null ],
 		[
 			"/home/xuwt/Qt/medical-system/server/modules/loginmodule/loginmodule.cpp",
+			"MU",
+			null
+		],
+		[
+			"/home/xuwt/Qt/medical-system/server/modules/patientmodule/medicine/medicine.cpp",
 			"MU",
 			null
 		],

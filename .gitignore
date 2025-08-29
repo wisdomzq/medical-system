@@ -38,10 +38,9 @@ ui_*.h
 *.swp
 *.swo
 
-# Database files (if containing test data)
-# *.db
-# *.sqlite
-# *.sqlite3
+# Database backup files only (keep user.db for team testing)
+*.db.backup*
+user.db.backup*
 
 # Log files
 *.log
@@ -53,3 +52,11 @@ ui_*.h
 .clangd/
 *.idx
 *.pch
+
+# Additional CMake and build artifacts
+*.make
+progress.marks
+link.txt
+DependInfo.cmake
+AutogenInfo.json
+ParseCache.txt

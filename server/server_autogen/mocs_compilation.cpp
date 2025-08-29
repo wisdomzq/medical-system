@@ -3,4 +3,5 @@
 #include "F5YCKCVFAJ/moc_communicationserver.cpp"
 #include "F5YCKCVFAJ/moc_messagerouter.cpp"
 #include "URL7VJ5BZG/moc_loginmodule.cpp"
+#include "ZXZACPACKL/moc_medicine.cpp"
 #include "3UNC5IPTOD/moc_register.cpp"

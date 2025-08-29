@@ -67,18 +67,20 @@ public:
     bool getDoctorStatistics(const QString& doctorUsername, QJsonObject& statistics);
     bool getPatientStatistics(const QString& patientUsername, QJsonObject& statistics);
 
+    // 住院管理
+    bool createHospitalization(const QJsonObject& hospitalizationData);
+    bool getHospitalizationsByPatient(const QString& patientUsername, QJsonArray& hospitalizations);
+    bool getHospitalizationsByDoctor(const QString& doctorUsername, QJsonArray& hospitalizations);
+    bool getAllHospitalizations(QJsonArray& hospitalizations);
+    bool updateHospitalizationStatus(int hospitalizationId, const QString& status);
+    bool deleteHospitalization(int hospitalizationId);
+
     // 获取医生列表（用于患者挂号）
     bool getAllDoctors(QJsonArray& doctors);
     bool getDoctorsByDepartment(const QString& department, QJsonArray& doctors);
 
     // 新增重载方法
     QString getUserRole(const QString& username);
-
-    // 住院信息
-    bool createHospitalization(const QJsonObject &data); // {patient_username, doctor_username, ward_number, bed_number, admission_date}
-    bool getHospitalizationsByPatient(const QString &patientUsername, QJsonArray &list); // 查看本人住院记录
-    bool getAllHospitalizations(QJsonArray &list); // 管理/医生端汇总
-    bool getHospitalizationsByDoctor(const QString &doctorUsername, QJsonArray &list);
 
 private:
     QSqlDatabase m_db;
@@ -100,9 +102,6 @@ private:
     // 示例数据插入
     void insertSampleMedications();
     void insertSampleDoctors();
-    
-    // 数据清理和修复
-    bool cleanupInconsistentData();
 };
 
 #endif // DATABASE_H

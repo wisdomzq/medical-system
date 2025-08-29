@@ -132,10 +132,136 @@ client/CMakeFiles/hello.dir/ui/doctorinfowidget/doctorinfowidget.cpp.s: cmake_fo
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/hello.dir/ui/doctorinfowidget/doctorinfowidget.cpp.s"
 	cd /home/xuwt/Qt/medical-system/client && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/doctorinfowidget.cpp -o CMakeFiles/hello.dir/ui/doctorinfowidget/doctorinfowidget.cpp.s
 
+client/CMakeFiles/hello.dir/ui/doctorinfowidget/attendancewidget.cpp.o: client/CMakeFiles/hello.dir/flags.make
+client/CMakeFiles/hello.dir/ui/doctorinfowidget/attendancewidget.cpp.o: client/ui/doctorinfowidget/attendancewidget.cpp
+client/CMakeFiles/hello.dir/ui/doctorinfowidget/attendancewidget.cpp.o: client/CMakeFiles/hello.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/xuwt/Qt/medical-system/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object client/CMakeFiles/hello.dir/ui/doctorinfowidget/attendancewidget.cpp.o"
+	cd /home/xuwt/Qt/medical-system/client && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT client/CMakeFiles/hello.dir/ui/doctorinfowidget/attendancewidget.cpp.o -MF CMakeFiles/hello.dir/ui/doctorinfowidget/attendancewidget.cpp.o.d -o CMakeFiles/hello.dir/ui/doctorinfowidget/attendancewidget.cpp.o -c /home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/attendancewidget.cpp
+
+client/CMakeFiles/hello.dir/ui/doctorinfowidget/attendancewidget.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/hello.dir/ui/doctorinfowidget/attendancewidget.cpp.i"
+	cd /home/xuwt/Qt/medical-system/client && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/attendancewidget.cpp > CMakeFiles/hello.dir/ui/doctorinfowidget/attendancewidget.cpp.i
+
+client/CMakeFiles/hello.dir/ui/doctorinfowidget/attendancewidget.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/hello.dir/ui/doctorinfowidget/attendancewidget.cpp.s"
+	cd /home/xuwt/Qt/medical-system/client && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/attendancewidget.cpp -o CMakeFiles/hello.dir/ui/doctorinfowidget/attendancewidget.cpp.s
+
+client/CMakeFiles/hello.dir/ui/doctorinfowidget/checkinwidget.cpp.o: client/CMakeFiles/hello.dir/flags.make
+client/CMakeFiles/hello.dir/ui/doctorinfowidget/checkinwidget.cpp.o: client/ui/doctorinfowidget/checkinwidget.cpp
+client/CMakeFiles/hello.dir/ui/doctorinfowidget/checkinwidget.cpp.o: client/CMakeFiles/hello.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/xuwt/Qt/medical-system/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object client/CMakeFiles/hello.dir/ui/doctorinfowidget/checkinwidget.cpp.o"
+	cd /home/xuwt/Qt/medical-system/client && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT client/CMakeFiles/hello.dir/ui/doctorinfowidget/checkinwidget.cpp.o -MF CMakeFiles/hello.dir/ui/doctorinfowidget/checkinwidget.cpp.o.d -o CMakeFiles/hello.dir/ui/doctorinfowidget/checkinwidget.cpp.o -c /home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/checkinwidget.cpp
+
+client/CMakeFiles/hello.dir/ui/doctorinfowidget/checkinwidget.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/hello.dir/ui/doctorinfowidget/checkinwidget.cpp.i"
+	cd /home/xuwt/Qt/medical-system/client && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/checkinwidget.cpp > CMakeFiles/hello.dir/ui/doctorinfowidget/checkinwidget.cpp.i
+
+client/CMakeFiles/hello.dir/ui/doctorinfowidget/checkinwidget.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/hello.dir/ui/doctorinfowidget/checkinwidget.cpp.s"
+	cd /home/xuwt/Qt/medical-system/client && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/checkinwidget.cpp -o CMakeFiles/hello.dir/ui/doctorinfowidget/checkinwidget.cpp.s
+
+client/CMakeFiles/hello.dir/ui/doctorinfowidget/leavewidget.cpp.o: client/CMakeFiles/hello.dir/flags.make
+client/CMakeFiles/hello.dir/ui/doctorinfowidget/leavewidget.cpp.o: client/ui/doctorinfowidget/leavewidget.cpp
+client/CMakeFiles/hello.dir/ui/doctorinfowidget/leavewidget.cpp.o: client/CMakeFiles/hello.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/xuwt/Qt/medical-system/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object client/CMakeFiles/hello.dir/ui/doctorinfowidget/leavewidget.cpp.o"
+	cd /home/xuwt/Qt/medical-system/client && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT client/CMakeFiles/hello.dir/ui/doctorinfowidget/leavewidget.cpp.o -MF CMakeFiles/hello.dir/ui/doctorinfowidget/leavewidget.cpp.o.d -o CMakeFiles/hello.dir/ui/doctorinfowidget/leavewidget.cpp.o -c /home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/leavewidget.cpp
+
+client/CMakeFiles/hello.dir/ui/doctorinfowidget/leavewidget.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/hello.dir/ui/doctorinfowidget/leavewidget.cpp.i"
+	cd /home/xuwt/Qt/medical-system/client && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/leavewidget.cpp > CMakeFiles/hello.dir/ui/doctorinfowidget/leavewidget.cpp.i
+
+client/CMakeFiles/hello.dir/ui/doctorinfowidget/leavewidget.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/hello.dir/ui/doctorinfowidget/leavewidget.cpp.s"
+	cd /home/xuwt/Qt/medical-system/client && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/leavewidget.cpp -o CMakeFiles/hello.dir/ui/doctorinfowidget/leavewidget.cpp.s
+
+client/CMakeFiles/hello.dir/ui/doctorinfowidget/cancelleavewidget.cpp.o: client/CMakeFiles/hello.dir/flags.make
+client/CMakeFiles/hello.dir/ui/doctorinfowidget/cancelleavewidget.cpp.o: client/ui/doctorinfowidget/cancelleavewidget.cpp
+client/CMakeFiles/hello.dir/ui/doctorinfowidget/cancelleavewidget.cpp.o: client/CMakeFiles/hello.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/xuwt/Qt/medical-system/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object client/CMakeFiles/hello.dir/ui/doctorinfowidget/cancelleavewidget.cpp.o"
+	cd /home/xuwt/Qt/medical-system/client && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT client/CMakeFiles/hello.dir/ui/doctorinfowidget/cancelleavewidget.cpp.o -MF CMakeFiles/hello.dir/ui/doctorinfowidget/cancelleavewidget.cpp.o.d -o CMakeFiles/hello.dir/ui/doctorinfowidget/cancelleavewidget.cpp.o -c /home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/cancelleavewidget.cpp
+
+client/CMakeFiles/hello.dir/ui/doctorinfowidget/cancelleavewidget.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/hello.dir/ui/doctorinfowidget/cancelleavewidget.cpp.i"
+	cd /home/xuwt/Qt/medical-system/client && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/cancelleavewidget.cpp > CMakeFiles/hello.dir/ui/doctorinfowidget/cancelleavewidget.cpp.i
+
+client/CMakeFiles/hello.dir/ui/doctorinfowidget/cancelleavewidget.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/hello.dir/ui/doctorinfowidget/cancelleavewidget.cpp.s"
+	cd /home/xuwt/Qt/medical-system/client && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/cancelleavewidget.cpp -o CMakeFiles/hello.dir/ui/doctorinfowidget/cancelleavewidget.cpp.s
+
+client/CMakeFiles/hello.dir/ui/doctorinfowidget/chatroomwidget.cpp.o: client/CMakeFiles/hello.dir/flags.make
+client/CMakeFiles/hello.dir/ui/doctorinfowidget/chatroomwidget.cpp.o: client/ui/doctorinfowidget/chatroomwidget.cpp
+client/CMakeFiles/hello.dir/ui/doctorinfowidget/chatroomwidget.cpp.o: client/CMakeFiles/hello.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/xuwt/Qt/medical-system/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object client/CMakeFiles/hello.dir/ui/doctorinfowidget/chatroomwidget.cpp.o"
+	cd /home/xuwt/Qt/medical-system/client && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT client/CMakeFiles/hello.dir/ui/doctorinfowidget/chatroomwidget.cpp.o -MF CMakeFiles/hello.dir/ui/doctorinfowidget/chatroomwidget.cpp.o.d -o CMakeFiles/hello.dir/ui/doctorinfowidget/chatroomwidget.cpp.o -c /home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/chatroomwidget.cpp
+
+client/CMakeFiles/hello.dir/ui/doctorinfowidget/chatroomwidget.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/hello.dir/ui/doctorinfowidget/chatroomwidget.cpp.i"
+	cd /home/xuwt/Qt/medical-system/client && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/chatroomwidget.cpp > CMakeFiles/hello.dir/ui/doctorinfowidget/chatroomwidget.cpp.i
+
+client/CMakeFiles/hello.dir/ui/doctorinfowidget/chatroomwidget.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/hello.dir/ui/doctorinfowidget/chatroomwidget.cpp.s"
+	cd /home/xuwt/Qt/medical-system/client && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/chatroomwidget.cpp -o CMakeFiles/hello.dir/ui/doctorinfowidget/chatroomwidget.cpp.s
+
+client/CMakeFiles/hello.dir/ui/doctorinfowidget/profilewidget.cpp.o: client/CMakeFiles/hello.dir/flags.make
+client/CMakeFiles/hello.dir/ui/doctorinfowidget/profilewidget.cpp.o: client/ui/doctorinfowidget/profilewidget.cpp
+client/CMakeFiles/hello.dir/ui/doctorinfowidget/profilewidget.cpp.o: client/CMakeFiles/hello.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/xuwt/Qt/medical-system/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object client/CMakeFiles/hello.dir/ui/doctorinfowidget/profilewidget.cpp.o"
+	cd /home/xuwt/Qt/medical-system/client && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT client/CMakeFiles/hello.dir/ui/doctorinfowidget/profilewidget.cpp.o -MF CMakeFiles/hello.dir/ui/doctorinfowidget/profilewidget.cpp.o.d -o CMakeFiles/hello.dir/ui/doctorinfowidget/profilewidget.cpp.o -c /home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/profilewidget.cpp
+
+client/CMakeFiles/hello.dir/ui/doctorinfowidget/profilewidget.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/hello.dir/ui/doctorinfowidget/profilewidget.cpp.i"
+	cd /home/xuwt/Qt/medical-system/client && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/profilewidget.cpp > CMakeFiles/hello.dir/ui/doctorinfowidget/profilewidget.cpp.i
+
+client/CMakeFiles/hello.dir/ui/doctorinfowidget/profilewidget.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/hello.dir/ui/doctorinfowidget/profilewidget.cpp.s"
+	cd /home/xuwt/Qt/medical-system/client && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/profilewidget.cpp -o CMakeFiles/hello.dir/ui/doctorinfowidget/profilewidget.cpp.s
+
+client/CMakeFiles/hello.dir/ui/doctorinfowidget/appointmentswidget.cpp.o: client/CMakeFiles/hello.dir/flags.make
+client/CMakeFiles/hello.dir/ui/doctorinfowidget/appointmentswidget.cpp.o: client/ui/doctorinfowidget/appointmentswidget.cpp
+client/CMakeFiles/hello.dir/ui/doctorinfowidget/appointmentswidget.cpp.o: client/CMakeFiles/hello.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/xuwt/Qt/medical-system/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object client/CMakeFiles/hello.dir/ui/doctorinfowidget/appointmentswidget.cpp.o"
+	cd /home/xuwt/Qt/medical-system/client && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT client/CMakeFiles/hello.dir/ui/doctorinfowidget/appointmentswidget.cpp.o -MF CMakeFiles/hello.dir/ui/doctorinfowidget/appointmentswidget.cpp.o.d -o CMakeFiles/hello.dir/ui/doctorinfowidget/appointmentswidget.cpp.o -c /home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/appointmentswidget.cpp
+
+client/CMakeFiles/hello.dir/ui/doctorinfowidget/appointmentswidget.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/hello.dir/ui/doctorinfowidget/appointmentswidget.cpp.i"
+	cd /home/xuwt/Qt/medical-system/client && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/appointmentswidget.cpp > CMakeFiles/hello.dir/ui/doctorinfowidget/appointmentswidget.cpp.i
+
+client/CMakeFiles/hello.dir/ui/doctorinfowidget/appointmentswidget.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/hello.dir/ui/doctorinfowidget/appointmentswidget.cpp.s"
+	cd /home/xuwt/Qt/medical-system/client && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/appointmentswidget.cpp -o CMakeFiles/hello.dir/ui/doctorinfowidget/appointmentswidget.cpp.s
+
+client/CMakeFiles/hello.dir/ui/doctorinfowidget/caseswidget.cpp.o: client/CMakeFiles/hello.dir/flags.make
+client/CMakeFiles/hello.dir/ui/doctorinfowidget/caseswidget.cpp.o: client/ui/doctorinfowidget/caseswidget.cpp
+client/CMakeFiles/hello.dir/ui/doctorinfowidget/caseswidget.cpp.o: client/CMakeFiles/hello.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/xuwt/Qt/medical-system/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object client/CMakeFiles/hello.dir/ui/doctorinfowidget/caseswidget.cpp.o"
+	cd /home/xuwt/Qt/medical-system/client && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT client/CMakeFiles/hello.dir/ui/doctorinfowidget/caseswidget.cpp.o -MF CMakeFiles/hello.dir/ui/doctorinfowidget/caseswidget.cpp.o.d -o CMakeFiles/hello.dir/ui/doctorinfowidget/caseswidget.cpp.o -c /home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/caseswidget.cpp
+
+client/CMakeFiles/hello.dir/ui/doctorinfowidget/caseswidget.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/hello.dir/ui/doctorinfowidget/caseswidget.cpp.i"
+	cd /home/xuwt/Qt/medical-system/client && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/caseswidget.cpp > CMakeFiles/hello.dir/ui/doctorinfowidget/caseswidget.cpp.i
+
+client/CMakeFiles/hello.dir/ui/doctorinfowidget/caseswidget.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/hello.dir/ui/doctorinfowidget/caseswidget.cpp.s"
+	cd /home/xuwt/Qt/medical-system/client && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/caseswidget.cpp -o CMakeFiles/hello.dir/ui/doctorinfowidget/caseswidget.cpp.s
+
+client/CMakeFiles/hello.dir/ui/doctorinfowidget/diagnosiswidget.cpp.o: client/CMakeFiles/hello.dir/flags.make
+client/CMakeFiles/hello.dir/ui/doctorinfowidget/diagnosiswidget.cpp.o: client/ui/doctorinfowidget/diagnosiswidget.cpp
+client/CMakeFiles/hello.dir/ui/doctorinfowidget/diagnosiswidget.cpp.o: client/CMakeFiles/hello.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/xuwt/Qt/medical-system/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object client/CMakeFiles/hello.dir/ui/doctorinfowidget/diagnosiswidget.cpp.o"
+	cd /home/xuwt/Qt/medical-system/client && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT client/CMakeFiles/hello.dir/ui/doctorinfowidget/diagnosiswidget.cpp.o -MF CMakeFiles/hello.dir/ui/doctorinfowidget/diagnosiswidget.cpp.o.d -o CMakeFiles/hello.dir/ui/doctorinfowidget/diagnosiswidget.cpp.o -c /home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/diagnosiswidget.cpp
+
+client/CMakeFiles/hello.dir/ui/doctorinfowidget/diagnosiswidget.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/hello.dir/ui/doctorinfowidget/diagnosiswidget.cpp.i"
+	cd /home/xuwt/Qt/medical-system/client && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/diagnosiswidget.cpp > CMakeFiles/hello.dir/ui/doctorinfowidget/diagnosiswidget.cpp.i
+
+client/CMakeFiles/hello.dir/ui/doctorinfowidget/diagnosiswidget.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/hello.dir/ui/doctorinfowidget/diagnosiswidget.cpp.s"
+	cd /home/xuwt/Qt/medical-system/client && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/diagnosiswidget.cpp -o CMakeFiles/hello.dir/ui/doctorinfowidget/diagnosiswidget.cpp.s
+
 client/CMakeFiles/hello.dir/ui/patientinfowidget/patientinfowidget.cpp.o: client/CMakeFiles/hello.dir/flags.make
 client/CMakeFiles/hello.dir/ui/patientinfowidget/patientinfowidget.cpp.o: client/ui/patientinfowidget/patientinfowidget.cpp
 client/CMakeFiles/hello.dir/ui/patientinfowidget/patientinfowidget.cpp.o: client/CMakeFiles/hello.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/xuwt/Qt/medical-system/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object client/CMakeFiles/hello.dir/ui/patientinfowidget/patientinfowidget.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/xuwt/Qt/medical-system/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object client/CMakeFiles/hello.dir/ui/patientinfowidget/patientinfowidget.cpp.o"
 	cd /home/xuwt/Qt/medical-system/client && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT client/CMakeFiles/hello.dir/ui/patientinfowidget/patientinfowidget.cpp.o -MF CMakeFiles/hello.dir/ui/patientinfowidget/patientinfowidget.cpp.o.d -o CMakeFiles/hello.dir/ui/patientinfowidget/patientinfowidget.cpp.o -c /home/xuwt/Qt/medical-system/client/ui/patientinfowidget/patientinfowidget.cpp
 
 client/CMakeFiles/hello.dir/ui/patientinfowidget/patientinfowidget.cpp.i: cmake_force
@@ -146,10 +272,80 @@ client/CMakeFiles/hello.dir/ui/patientinfowidget/patientinfowidget.cpp.s: cmake_
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/hello.dir/ui/patientinfowidget/patientinfowidget.cpp.s"
 	cd /home/xuwt/Qt/medical-system/client && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/xuwt/Qt/medical-system/client/ui/patientinfowidget/patientinfowidget.cpp -o CMakeFiles/hello.dir/ui/patientinfowidget/patientinfowidget.cpp.s
 
+client/CMakeFiles/hello.dir/ui/patientinfowidget/appointmentpage.cpp.o: client/CMakeFiles/hello.dir/flags.make
+client/CMakeFiles/hello.dir/ui/patientinfowidget/appointmentpage.cpp.o: client/ui/patientinfowidget/appointmentpage.cpp
+client/CMakeFiles/hello.dir/ui/patientinfowidget/appointmentpage.cpp.o: client/CMakeFiles/hello.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/xuwt/Qt/medical-system/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object client/CMakeFiles/hello.dir/ui/patientinfowidget/appointmentpage.cpp.o"
+	cd /home/xuwt/Qt/medical-system/client && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT client/CMakeFiles/hello.dir/ui/patientinfowidget/appointmentpage.cpp.o -MF CMakeFiles/hello.dir/ui/patientinfowidget/appointmentpage.cpp.o.d -o CMakeFiles/hello.dir/ui/patientinfowidget/appointmentpage.cpp.o -c /home/xuwt/Qt/medical-system/client/ui/patientinfowidget/appointmentpage.cpp
+
+client/CMakeFiles/hello.dir/ui/patientinfowidget/appointmentpage.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/hello.dir/ui/patientinfowidget/appointmentpage.cpp.i"
+	cd /home/xuwt/Qt/medical-system/client && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/xuwt/Qt/medical-system/client/ui/patientinfowidget/appointmentpage.cpp > CMakeFiles/hello.dir/ui/patientinfowidget/appointmentpage.cpp.i
+
+client/CMakeFiles/hello.dir/ui/patientinfowidget/appointmentpage.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/hello.dir/ui/patientinfowidget/appointmentpage.cpp.s"
+	cd /home/xuwt/Qt/medical-system/client && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/xuwt/Qt/medical-system/client/ui/patientinfowidget/appointmentpage.cpp -o CMakeFiles/hello.dir/ui/patientinfowidget/appointmentpage.cpp.s
+
+client/CMakeFiles/hello.dir/ui/patientinfowidget/profilepage.cpp.o: client/CMakeFiles/hello.dir/flags.make
+client/CMakeFiles/hello.dir/ui/patientinfowidget/profilepage.cpp.o: client/ui/patientinfowidget/profilepage.cpp
+client/CMakeFiles/hello.dir/ui/patientinfowidget/profilepage.cpp.o: client/CMakeFiles/hello.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/xuwt/Qt/medical-system/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object client/CMakeFiles/hello.dir/ui/patientinfowidget/profilepage.cpp.o"
+	cd /home/xuwt/Qt/medical-system/client && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT client/CMakeFiles/hello.dir/ui/patientinfowidget/profilepage.cpp.o -MF CMakeFiles/hello.dir/ui/patientinfowidget/profilepage.cpp.o.d -o CMakeFiles/hello.dir/ui/patientinfowidget/profilepage.cpp.o -c /home/xuwt/Qt/medical-system/client/ui/patientinfowidget/profilepage.cpp
+
+client/CMakeFiles/hello.dir/ui/patientinfowidget/profilepage.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/hello.dir/ui/patientinfowidget/profilepage.cpp.i"
+	cd /home/xuwt/Qt/medical-system/client && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/xuwt/Qt/medical-system/client/ui/patientinfowidget/profilepage.cpp > CMakeFiles/hello.dir/ui/patientinfowidget/profilepage.cpp.i
+
+client/CMakeFiles/hello.dir/ui/patientinfowidget/profilepage.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/hello.dir/ui/patientinfowidget/profilepage.cpp.s"
+	cd /home/xuwt/Qt/medical-system/client && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/xuwt/Qt/medical-system/client/ui/patientinfowidget/profilepage.cpp -o CMakeFiles/hello.dir/ui/patientinfowidget/profilepage.cpp.s
+
+client/CMakeFiles/hello.dir/ui/patientinfowidget/placeholderpages.cpp.o: client/CMakeFiles/hello.dir/flags.make
+client/CMakeFiles/hello.dir/ui/patientinfowidget/placeholderpages.cpp.o: client/ui/patientinfowidget/placeholderpages.cpp
+client/CMakeFiles/hello.dir/ui/patientinfowidget/placeholderpages.cpp.o: client/CMakeFiles/hello.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/xuwt/Qt/medical-system/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building CXX object client/CMakeFiles/hello.dir/ui/patientinfowidget/placeholderpages.cpp.o"
+	cd /home/xuwt/Qt/medical-system/client && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT client/CMakeFiles/hello.dir/ui/patientinfowidget/placeholderpages.cpp.o -MF CMakeFiles/hello.dir/ui/patientinfowidget/placeholderpages.cpp.o.d -o CMakeFiles/hello.dir/ui/patientinfowidget/placeholderpages.cpp.o -c /home/xuwt/Qt/medical-system/client/ui/patientinfowidget/placeholderpages.cpp
+
+client/CMakeFiles/hello.dir/ui/patientinfowidget/placeholderpages.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/hello.dir/ui/patientinfowidget/placeholderpages.cpp.i"
+	cd /home/xuwt/Qt/medical-system/client && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/xuwt/Qt/medical-system/client/ui/patientinfowidget/placeholderpages.cpp > CMakeFiles/hello.dir/ui/patientinfowidget/placeholderpages.cpp.i
+
+client/CMakeFiles/hello.dir/ui/patientinfowidget/placeholderpages.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/hello.dir/ui/patientinfowidget/placeholderpages.cpp.s"
+	cd /home/xuwt/Qt/medical-system/client && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/xuwt/Qt/medical-system/client/ui/patientinfowidget/placeholderpages.cpp -o CMakeFiles/hello.dir/ui/patientinfowidget/placeholderpages.cpp.s
+
+client/CMakeFiles/hello.dir/ui/patientinfowidget/hospitalpage.cpp.o: client/CMakeFiles/hello.dir/flags.make
+client/CMakeFiles/hello.dir/ui/patientinfowidget/hospitalpage.cpp.o: client/ui/patientinfowidget/hospitalpage.cpp
+client/CMakeFiles/hello.dir/ui/patientinfowidget/hospitalpage.cpp.o: client/CMakeFiles/hello.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/xuwt/Qt/medical-system/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building CXX object client/CMakeFiles/hello.dir/ui/patientinfowidget/hospitalpage.cpp.o"
+	cd /home/xuwt/Qt/medical-system/client && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT client/CMakeFiles/hello.dir/ui/patientinfowidget/hospitalpage.cpp.o -MF CMakeFiles/hello.dir/ui/patientinfowidget/hospitalpage.cpp.o.d -o CMakeFiles/hello.dir/ui/patientinfowidget/hospitalpage.cpp.o -c /home/xuwt/Qt/medical-system/client/ui/patientinfowidget/hospitalpage.cpp
+
+client/CMakeFiles/hello.dir/ui/patientinfowidget/hospitalpage.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/hello.dir/ui/patientinfowidget/hospitalpage.cpp.i"
+	cd /home/xuwt/Qt/medical-system/client && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/xuwt/Qt/medical-system/client/ui/patientinfowidget/hospitalpage.cpp > CMakeFiles/hello.dir/ui/patientinfowidget/hospitalpage.cpp.i
+
+client/CMakeFiles/hello.dir/ui/patientinfowidget/hospitalpage.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/hello.dir/ui/patientinfowidget/hospitalpage.cpp.s"
+	cd /home/xuwt/Qt/medical-system/client && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/xuwt/Qt/medical-system/client/ui/patientinfowidget/hospitalpage.cpp -o CMakeFiles/hello.dir/ui/patientinfowidget/hospitalpage.cpp.s
+
+client/CMakeFiles/hello.dir/ui/patientinfowidget/medicationpage.cpp.o: client/CMakeFiles/hello.dir/flags.make
+client/CMakeFiles/hello.dir/ui/patientinfowidget/medicationpage.cpp.o: client/ui/patientinfowidget/medicationpage.cpp
+client/CMakeFiles/hello.dir/ui/patientinfowidget/medicationpage.cpp.o: client/CMakeFiles/hello.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/xuwt/Qt/medical-system/CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Building CXX object client/CMakeFiles/hello.dir/ui/patientinfowidget/medicationpage.cpp.o"
+	cd /home/xuwt/Qt/medical-system/client && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT client/CMakeFiles/hello.dir/ui/patientinfowidget/medicationpage.cpp.o -MF CMakeFiles/hello.dir/ui/patientinfowidget/medicationpage.cpp.o.d -o CMakeFiles/hello.dir/ui/patientinfowidget/medicationpage.cpp.o -c /home/xuwt/Qt/medical-system/client/ui/patientinfowidget/medicationpage.cpp
+
+client/CMakeFiles/hello.dir/ui/patientinfowidget/medicationpage.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/hello.dir/ui/patientinfowidget/medicationpage.cpp.i"
+	cd /home/xuwt/Qt/medical-system/client && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/xuwt/Qt/medical-system/client/ui/patientinfowidget/medicationpage.cpp > CMakeFiles/hello.dir/ui/patientinfowidget/medicationpage.cpp.i
+
+client/CMakeFiles/hello.dir/ui/patientinfowidget/medicationpage.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/hello.dir/ui/patientinfowidget/medicationpage.cpp.s"
+	cd /home/xuwt/Qt/medical-system/client && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/xuwt/Qt/medical-system/client/ui/patientinfowidget/medicationpage.cpp -o CMakeFiles/hello.dir/ui/patientinfowidget/medicationpage.cpp.s
+
 client/CMakeFiles/hello.dir/core/network/src/client/communicationclient.cpp.o: client/CMakeFiles/hello.dir/flags.make
 client/CMakeFiles/hello.dir/core/network/src/client/communicationclient.cpp.o: client/core/network/src/client/communicationclient.cpp
 client/CMakeFiles/hello.dir/core/network/src/client/communicationclient.cpp.o: client/CMakeFiles/hello.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/xuwt/Qt/medical-system/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object client/CMakeFiles/hello.dir/core/network/src/client/communicationclient.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/xuwt/Qt/medical-system/CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Building CXX object client/CMakeFiles/hello.dir/core/network/src/client/communicationclient.cpp.o"
 	cd /home/xuwt/Qt/medical-system/client && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT client/CMakeFiles/hello.dir/core/network/src/client/communicationclient.cpp.o -MF CMakeFiles/hello.dir/core/network/src/client/communicationclient.cpp.o.d -o CMakeFiles/hello.dir/core/network/src/client/communicationclient.cpp.o -c /home/xuwt/Qt/medical-system/client/core/network/src/client/communicationclient.cpp
 
 client/CMakeFiles/hello.dir/core/network/src/client/communicationclient.cpp.i: cmake_force
@@ -163,7 +359,7 @@ client/CMakeFiles/hello.dir/core/network/src/client/communicationclient.cpp.s: c
 client/CMakeFiles/hello.dir/core/network/src/client/responsedispatcher.cpp.o: client/CMakeFiles/hello.dir/flags.make
 client/CMakeFiles/hello.dir/core/network/src/client/responsedispatcher.cpp.o: client/core/network/src/client/responsedispatcher.cpp
 client/CMakeFiles/hello.dir/core/network/src/client/responsedispatcher.cpp.o: client/CMakeFiles/hello.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/xuwt/Qt/medical-system/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object client/CMakeFiles/hello.dir/core/network/src/client/responsedispatcher.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/xuwt/Qt/medical-system/CMakeFiles --progress-num=$(CMAKE_PROGRESS_22) "Building CXX object client/CMakeFiles/hello.dir/core/network/src/client/responsedispatcher.cpp.o"
 	cd /home/xuwt/Qt/medical-system/client && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT client/CMakeFiles/hello.dir/core/network/src/client/responsedispatcher.cpp.o -MF CMakeFiles/hello.dir/core/network/src/client/responsedispatcher.cpp.o.d -o CMakeFiles/hello.dir/core/network/src/client/responsedispatcher.cpp.o -c /home/xuwt/Qt/medical-system/client/core/network/src/client/responsedispatcher.cpp
 
 client/CMakeFiles/hello.dir/core/network/src/client/responsedispatcher.cpp.i: cmake_force
@@ -177,7 +373,7 @@ client/CMakeFiles/hello.dir/core/network/src/client/responsedispatcher.cpp.s: cm
 client/CMakeFiles/hello.dir/core/network/src/client/streamparser.cpp.o: client/CMakeFiles/hello.dir/flags.make
 client/CMakeFiles/hello.dir/core/network/src/client/streamparser.cpp.o: client/core/network/src/client/streamparser.cpp
 client/CMakeFiles/hello.dir/core/network/src/client/streamparser.cpp.o: client/CMakeFiles/hello.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/xuwt/Qt/medical-system/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object client/CMakeFiles/hello.dir/core/network/src/client/streamparser.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/xuwt/Qt/medical-system/CMakeFiles --progress-num=$(CMAKE_PROGRESS_23) "Building CXX object client/CMakeFiles/hello.dir/core/network/src/client/streamparser.cpp.o"
 	cd /home/xuwt/Qt/medical-system/client && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT client/CMakeFiles/hello.dir/core/network/src/client/streamparser.cpp.o -MF CMakeFiles/hello.dir/core/network/src/client/streamparser.cpp.o.d -o CMakeFiles/hello.dir/core/network/src/client/streamparser.cpp.o -c /home/xuwt/Qt/medical-system/client/core/network/src/client/streamparser.cpp
 
 client/CMakeFiles/hello.dir/core/network/src/client/streamparser.cpp.i: cmake_force
@@ -191,7 +387,7 @@ client/CMakeFiles/hello.dir/core/network/src/client/streamparser.cpp.s: cmake_fo
 client/CMakeFiles/hello.dir/main.cpp.o: client/CMakeFiles/hello.dir/flags.make
 client/CMakeFiles/hello.dir/main.cpp.o: client/main.cpp
 client/CMakeFiles/hello.dir/main.cpp.o: client/CMakeFiles/hello.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/xuwt/Qt/medical-system/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object client/CMakeFiles/hello.dir/main.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/xuwt/Qt/medical-system/CMakeFiles --progress-num=$(CMAKE_PROGRESS_24) "Building CXX object client/CMakeFiles/hello.dir/main.cpp.o"
 	cd /home/xuwt/Qt/medical-system/client && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT client/CMakeFiles/hello.dir/main.cpp.o -MF CMakeFiles/hello.dir/main.cpp.o.d -o CMakeFiles/hello.dir/main.cpp.o -c /home/xuwt/Qt/medical-system/client/main.cpp
 
 client/CMakeFiles/hello.dir/main.cpp.i: cmake_force
@@ -205,7 +401,7 @@ client/CMakeFiles/hello.dir/main.cpp.s: cmake_force
 client/CMakeFiles/hello.dir/hello_autogen/3YJK5W5UP7/qrc_resources.cpp.o: client/CMakeFiles/hello.dir/flags.make
 client/CMakeFiles/hello.dir/hello_autogen/3YJK5W5UP7/qrc_resources.cpp.o: client/hello_autogen/3YJK5W5UP7/qrc_resources.cpp
 client/CMakeFiles/hello.dir/hello_autogen/3YJK5W5UP7/qrc_resources.cpp.o: client/CMakeFiles/hello.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/xuwt/Qt/medical-system/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object client/CMakeFiles/hello.dir/hello_autogen/3YJK5W5UP7/qrc_resources.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/xuwt/Qt/medical-system/CMakeFiles --progress-num=$(CMAKE_PROGRESS_25) "Building CXX object client/CMakeFiles/hello.dir/hello_autogen/3YJK5W5UP7/qrc_resources.cpp.o"
 	cd /home/xuwt/Qt/medical-system/client && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT client/CMakeFiles/hello.dir/hello_autogen/3YJK5W5UP7/qrc_resources.cpp.o -MF CMakeFiles/hello.dir/hello_autogen/3YJK5W5UP7/qrc_resources.cpp.o.d -o CMakeFiles/hello.dir/hello_autogen/3YJK5W5UP7/qrc_resources.cpp.o -c /home/xuwt/Qt/medical-system/client/hello_autogen/3YJK5W5UP7/qrc_resources.cpp
 
 client/CMakeFiles/hello.dir/hello_autogen/3YJK5W5UP7/qrc_resources.cpp.i: cmake_force
@@ -222,7 +418,21 @@ hello_OBJECTS = \
 "CMakeFiles/hello.dir/ui/hello/hello.cpp.o" \
 "CMakeFiles/hello.dir/ui/loginwidget/loginwidget.cpp.o" \
 "CMakeFiles/hello.dir/ui/doctorinfowidget/doctorinfowidget.cpp.o" \
+"CMakeFiles/hello.dir/ui/doctorinfowidget/attendancewidget.cpp.o" \
+"CMakeFiles/hello.dir/ui/doctorinfowidget/checkinwidget.cpp.o" \
+"CMakeFiles/hello.dir/ui/doctorinfowidget/leavewidget.cpp.o" \
+"CMakeFiles/hello.dir/ui/doctorinfowidget/cancelleavewidget.cpp.o" \
+"CMakeFiles/hello.dir/ui/doctorinfowidget/chatroomwidget.cpp.o" \
+"CMakeFiles/hello.dir/ui/doctorinfowidget/profilewidget.cpp.o" \
+"CMakeFiles/hello.dir/ui/doctorinfowidget/appointmentswidget.cpp.o" \
+"CMakeFiles/hello.dir/ui/doctorinfowidget/caseswidget.cpp.o" \
+"CMakeFiles/hello.dir/ui/doctorinfowidget/diagnosiswidget.cpp.o" \
 "CMakeFiles/hello.dir/ui/patientinfowidget/patientinfowidget.cpp.o" \
+"CMakeFiles/hello.dir/ui/patientinfowidget/appointmentpage.cpp.o" \
+"CMakeFiles/hello.dir/ui/patientinfowidget/profilepage.cpp.o" \
+"CMakeFiles/hello.dir/ui/patientinfowidget/placeholderpages.cpp.o" \
+"CMakeFiles/hello.dir/ui/patientinfowidget/hospitalpage.cpp.o" \
+"CMakeFiles/hello.dir/ui/patientinfowidget/medicationpage.cpp.o" \
 "CMakeFiles/hello.dir/core/network/src/client/communicationclient.cpp.o" \
 "CMakeFiles/hello.dir/core/network/src/client/responsedispatcher.cpp.o" \
 "CMakeFiles/hello.dir/core/network/src/client/streamparser.cpp.o" \
@@ -236,7 +446,21 @@ client/hello: client/CMakeFiles/hello.dir/hello_autogen/mocs_compilation.cpp.o
 client/hello: client/CMakeFiles/hello.dir/ui/hello/hello.cpp.o
 client/hello: client/CMakeFiles/hello.dir/ui/loginwidget/loginwidget.cpp.o
 client/hello: client/CMakeFiles/hello.dir/ui/doctorinfowidget/doctorinfowidget.cpp.o
+client/hello: client/CMakeFiles/hello.dir/ui/doctorinfowidget/attendancewidget.cpp.o
+client/hello: client/CMakeFiles/hello.dir/ui/doctorinfowidget/checkinwidget.cpp.o
+client/hello: client/CMakeFiles/hello.dir/ui/doctorinfowidget/leavewidget.cpp.o
+client/hello: client/CMakeFiles/hello.dir/ui/doctorinfowidget/cancelleavewidget.cpp.o
+client/hello: client/CMakeFiles/hello.dir/ui/doctorinfowidget/chatroomwidget.cpp.o
+client/hello: client/CMakeFiles/hello.dir/ui/doctorinfowidget/profilewidget.cpp.o
+client/hello: client/CMakeFiles/hello.dir/ui/doctorinfowidget/appointmentswidget.cpp.o
+client/hello: client/CMakeFiles/hello.dir/ui/doctorinfowidget/caseswidget.cpp.o
+client/hello: client/CMakeFiles/hello.dir/ui/doctorinfowidget/diagnosiswidget.cpp.o
 client/hello: client/CMakeFiles/hello.dir/ui/patientinfowidget/patientinfowidget.cpp.o
+client/hello: client/CMakeFiles/hello.dir/ui/patientinfowidget/appointmentpage.cpp.o
+client/hello: client/CMakeFiles/hello.dir/ui/patientinfowidget/profilepage.cpp.o
+client/hello: client/CMakeFiles/hello.dir/ui/patientinfowidget/placeholderpages.cpp.o
+client/hello: client/CMakeFiles/hello.dir/ui/patientinfowidget/hospitalpage.cpp.o
+client/hello: client/CMakeFiles/hello.dir/ui/patientinfowidget/medicationpage.cpp.o
 client/hello: client/CMakeFiles/hello.dir/core/network/src/client/communicationclient.cpp.o
 client/hello: client/CMakeFiles/hello.dir/core/network/src/client/responsedispatcher.cpp.o
 client/hello: client/CMakeFiles/hello.dir/core/network/src/client/streamparser.cpp.o
@@ -248,7 +472,7 @@ client/hello: /usr/lib/x86_64-linux-gnu/libQt5Network.so.5.15.3
 client/hello: /usr/lib/x86_64-linux-gnu/libQt5Gui.so.5.15.3
 client/hello: /usr/lib/x86_64-linux-gnu/libQt5Core.so.5.15.3
 client/hello: client/CMakeFiles/hello.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/xuwt/Qt/medical-system/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Linking CXX executable hello"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/xuwt/Qt/medical-system/CMakeFiles --progress-num=$(CMAKE_PROGRESS_26) "Linking CXX executable hello"
 	cd /home/xuwt/Qt/medical-system/client && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/hello.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
