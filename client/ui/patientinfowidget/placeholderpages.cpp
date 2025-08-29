@@ -11,5 +11,4 @@ DoctorInfoPage::DoctorInfoPage(CommunicationClient *c,const QString&p,QWidget*pa
 AdvicePage::AdvicePage(CommunicationClient *c,const QString&p,QWidget*parent):BasePage(c,p,parent){ ensureLayout(this,"医嘱模块"); }
 PrescriptionPage::PrescriptionPage(CommunicationClient *c,const QString&p,QWidget*parent):BasePage(c,p,parent){ ensureLayout(this,"处方模块"); }
 HealthAssessmentPage::HealthAssessmentPage(CommunicationClient *c,const QString&p,QWidget*parent):BasePage(c,p,parent){ ensureLayout(this,"健康评估"); }
-MedicationSearchPage::MedicationSearchPage(CommunicationClient *c,const QString&p,QWidget*parent):BasePage(c,p,parent){ ensureLayout(this,"药品搜索"); }
 HospitalizationInfoPage::HospitalizationInfoPage(CommunicationClient *c,const QString&p,QWidget*parent):BasePage(c,p,parent){ ensureLayout(this,"住院信息"); }

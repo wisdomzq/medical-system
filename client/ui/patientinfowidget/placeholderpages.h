@@ -7,5 +7,4 @@ class DoctorInfoPage : public BasePage { public: DoctorInfoPage(CommunicationCli
 class AdvicePage : public BasePage { public: AdvicePage(CommunicationClient *c,const QString&p,QWidget*parent=nullptr); };
 class PrescriptionPage : public BasePage { public: PrescriptionPage(CommunicationClient *c,const QString&p,QWidget*parent=nullptr); };
 class HealthAssessmentPage : public BasePage { public: HealthAssessmentPage(CommunicationClient *c,const QString&p,QWidget*parent=nullptr); };
-class MedicationSearchPage : public BasePage { public: MedicationSearchPage(CommunicationClient *c,const QString&p,QWidget*parent=nullptr); };
 class HospitalizationInfoPage : public BasePage { public: HospitalizationInfoPage(CommunicationClient *c,const QString&p,QWidget*parent=nullptr); };

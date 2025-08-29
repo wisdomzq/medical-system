@@ -28,6 +28,8 @@ set(srcs
     ui/patientinfowidget/placeholderpages.h
     ui/patientinfowidget/hospitalpage.cpp
     ui/patientinfowidget/hospitalpage.h
+    ui/patientinfowidget/medicationpage.cpp
+    ui/patientinfowidget/medicationpage.h
     core/network/src/client/communicationclient.cpp
     core/network/src/client/responsedispatcher.cpp
     core/network/src/client/streamparser.cpp

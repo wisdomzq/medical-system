@@ -1209,18 +1209,23 @@ bool DBManager::addMedication(const QJsonObject& medicationData) {
 
 bool DBManager::getMedications(QJsonArray& medications) {
     QSqlQuery query(m_db);
-    if (!query.exec("SELECT id, name, category, price, unit FROM medications")) {
+    if (!query.exec("SELECT id, name, generic_name, category, manufacturer, specification, unit, price, stock_quantity, description, precautions FROM medications")) {
         qDebug() << "getMedications error:" << query.lastError().text();
         return false;
     }
-    
     while (query.next()) {
         QJsonObject medication;
         medication["id"] = query.value("id").toInt();
         medication["name"] = query.value("name").toString();
+        medication["generic_name"] = query.value("generic_name").toString();
         medication["category"] = query.value("category").toString();
-        medication["price"] = query.value("price").toDouble();
+        medication["manufacturer"] = query.value("manufacturer").toString();
+        medication["specification"] = query.value("specification").toString();
         medication["unit"] = query.value("unit").toString();
+        medication["price"] = query.value("price").toDouble();
+        medication["stock_quantity"] = query.value("stock_quantity").toInt();
+        medication["description"] = query.value("description").toString();
+        medication["precautions"] = query.value("precautions").toString();
         medications.append(medication);
     }
     return true;
@@ -1230,7 +1235,7 @@ bool DBManager::searchMedications(const QString& keyword, QJsonArray& medication
     QSqlQuery query(m_db);
     query.prepare(R"(
         SELECT id, name, generic_name, category, manufacturer, specification,
-               unit, price, stock_quantity, description
+               unit, price, stock_quantity, description, precautions
         FROM medications
         WHERE name LIKE :keyword OR generic_name LIKE :keyword 
               OR category LIKE :keyword OR manufacturer LIKE :keyword
@@ -1254,7 +1259,8 @@ bool DBManager::searchMedications(const QString& keyword, QJsonArray& medication
         medication["unit"] = query.value("unit").toString();
         medication["price"] = query.value("price").toDouble();
         medication["stock_quantity"] = query.value("stock_quantity").toInt();
-        medication["description"] = query.value("description").toString();
+    medication["description"] = query.value("description").toString();
+    medication["precautions"] = query.value("precautions").toString();
         medications.append(medication);
     }
     return true;

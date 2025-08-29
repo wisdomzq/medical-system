@@ -5,6 +5,7 @@
 #include "core/network/src/server/communicationserver.h"
 #include "core/network/src/server/messagerouter.h"
 #include "modules/loginmodule/loginmodule.h"
+#include "modules/patientmodule/medicine/medicine.h"
 #include "core/database/database.h"
 #include "core/database/database_config.h"
 
@@ -14,6 +15,7 @@ int main(int argc, char *argv[]) {
 
     CommunicationServer server;
     LoginModule loginModule;
+    MedicineModule medicineModule; // 负责药品相关请求
 
     QObject::connect(&MessageRouter::instance(), &MessageRouter::requestReceived,
                      [&](const QJsonObject &payload) {
@@ -85,14 +87,6 @@ int main(int argc, char *argv[]) {
             responsePayload["success"] = ok;
             if (ok) {
                 responsePayload["data"] = doctors;
-            }
-        } else if (action == "get_medications") {
-            QJsonArray medications;
-            bool ok = db.getMedications(medications);
-            responsePayload["type"] = "medications_response";
-            responsePayload["success"] = ok;
-            if (ok) {
-                responsePayload["data"] = medications;
             }
         } else if (action == "create_hospitalization") {
             bool ok = db.createHospitalization(payload.value("data").toObject());

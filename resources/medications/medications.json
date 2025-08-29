@@ -1,0 +1,28 @@
+[
+  {
+    "name": "阿司匹林",
+    "generic_name": "Aspirin",
+    "category": "解热镇痛药",
+    "manufacturer": "示例制药厂",
+    "specification": "100mg*24片",
+    "unit": "盒",
+    "price": 5.50,
+    "stock_quantity": 120,
+    "description": "用于缓解轻至中度疼痛，如头痛、牙痛、肌肉痛，也用于感冒引起的发热。",
+    "precautions": "胃溃疡、出血倾向者慎用；饭后服用以减轻胃刺激。",
+    "image": "aspirin.png"
+  },
+  {
+    "name": "感冒灵",
+    "generic_name": "Compound Cold Remedy",
+    "category": "感冒药",
+    "manufacturer": "示例健康药业",
+    "specification": "10袋",
+    "unit": "盒",
+    "price": 12.00,
+    "stock_quantity": 80,
+    "description": "用于普通感冒或流行性感冒引起的发热、头痛、咽痛、鼻塞、流涕等症状。",
+    "precautions": "肝肾功能不全者慎用；服药期间避免同时使用其他含对乙酰氨基酚制剂。",
+    "image": "ganmaoling.png"
+  }
+]

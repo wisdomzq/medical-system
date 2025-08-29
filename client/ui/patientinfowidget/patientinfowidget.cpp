@@ -5,6 +5,7 @@
 #include "profilepage.h"
 #include "placeholderpages.h"
 #include "hospitalpage.h"
+#include "medicationpage.h"
 #include <QVBoxLayout>
 #include <QTabWidget>
 #include <QJsonObject>
@@ -54,6 +55,8 @@ PatientInfoWidget::PatientInfoWidget(const QString &patientName, QWidget *parent
             m_profilePage->handleResponse(obj);
         if (type.startsWith("hospitalizations"))
             m_hospitalPage->handleResponse(obj);
+        if (type == "medications_response")
+            m_medicationSearchPage->handleResponse(obj);
     });
 }
 
