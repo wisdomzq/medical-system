@@ -142,3 +142,110 @@ bool DBManager::updatePatientInfo(const QString& username, const QJsonObject& da
     }
     return true;
 }
+
+// ==================== Functions from client ====================
+
+bool DBManager::registerDoctor(const QString& name, const QString& password, const QString& department, const QString& phone) {
+    QSqlQuery query(m_db);
+    query.prepare("INSERT INTO doctors (name, password, department, phone) VALUES (:name, :password, :department, :phone)");
+    query.bindValue(":name", name);
+    query.bindValue(":password", password);
+    query.bindValue(":department", department);
+    query.bindValue(":phone", phone);
+    if (!query.exec()) {
+        qDebug() << "registerDoctor error:" << query.lastError();
+        return false;
+    }
+    return true;
+}
+
+bool DBManager::registerPatient(const QString& name, const QString& password, int age, const QString& phone, const QString& address) {
+    QSqlQuery query(m_db);
+    query.prepare("INSERT INTO patients (name, password, age, phone, address) VALUES (:name, :password, :age, :phone, :address)");
+    query.bindValue(":name", name);
+    query.bindValue(":password", password);
+    query.bindValue(":age", age);
+    query.bindValue(":phone", phone);
+    query.bindValue(":address", address);
+    if (!query.exec()) {
+        qDebug() << "registerPatient error:" << query.lastError();
+        return false;
+    }
+    return true;
+}
+
+bool DBManager::loginDoctor(const QString& name, const QString& password) {
+    QSqlQuery query(m_db);
+    query.prepare("SELECT id FROM doctors WHERE name = :name AND password = :password");
+    query.bindValue(":name", name);
+    query.bindValue(":password", password);
+    if (query.exec() && query.next()) {
+        return true;
+    }
+    return false;
+}
+
+bool DBManager::loginPatient(const QString& name, const QString& password) {
+    QSqlQuery query(m_db);
+    query.prepare("SELECT id FROM patients WHERE name = :name AND password = :password");
+    query.bindValue(":name", name);
+    query.bindValue(":password", password);
+    if (query.exec() && query.next()) {
+        return true;
+    }
+    return false;
+}
+
+bool DBManager::getDoctorDetails(const QString& name, QString& department, QString& phone) {
+    QSqlQuery query(m_db);
+    query.prepare("SELECT department, phone FROM doctors WHERE name = :name");
+    query.bindValue(":name", name);
+    if (query.exec() && query.next()) {
+        department = query.value(0).toString();
+        phone = query.value(1).toString();
+        return true;
+    }
+    return false;
+}
+
+bool DBManager::getPatientDetails(const QString& name, int& age, QString& phone, QString& address) {
+    QSqlQuery query(m_db);
+    query.prepare("SELECT age, phone, address FROM patients WHERE name = :name");
+    query.bindValue(":name", name);
+    if (query.exec() && query.next()) {
+        age = query.value(0).toInt();
+        phone = query.value(1).toString();
+        address = query.value(2).toString();
+        return true;
+    }
+    return false;
+}
+
+bool DBManager::updateDoctorProfile(const QString& oldName, const QString& newName, const QString& department, const QString& phone) {
+    QSqlQuery query(m_db);
+    query.prepare("UPDATE doctors SET name = :newName, department = :department, phone = :phone WHERE name = :oldName");
+    query.bindValue(":newName", newName);
+    query.bindValue(":department", department);
+    query.bindValue(":phone", phone);
+    query.bindValue(":oldName", oldName);
+    if (!query.exec()) {
+        qDebug() << "updateDoctorProfile error:" << query.lastError();
+        return false;
+    }
+    return true;
+}
+
+bool DBManager::updatePatientProfile(const QString& oldName, const QString& newName, int age, const QString& phone, const QString& address) {
+    QSqlQuery query(m_db);
+    query.prepare("UPDATE patients SET name = :newName, age = :age, phone = :phone, address = :address WHERE name = :oldName");
+    query.bindValue(":newName", newName);
+    query.bindValue(":age", age);
+    query.bindValue(":phone", phone);
+    query.bindValue(":address", address);
+    query.bindValue(":oldName", oldName);
+    if (!query.exec()) {
+        qDebug() << "updatePatientProfile error:" << query.lastError();
+        return false;
+    }
+    return true;
+}
