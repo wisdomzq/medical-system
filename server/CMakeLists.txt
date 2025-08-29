@@ -8,12 +8,12 @@ find_package(Qt5 COMPONENTS Core Network Sql REQUIRED)
 set(srcs
     main.cpp
     core/tcpserver.cpp
-    core/database.cpp
+    core/database/database.cpp
 )
 
 add_executable(server
     ${srcs}
 )
 
-target_include_directories(server PRIVATE . core)
+target_include_directories(server PRIVATE . core core/database)
 target_link_libraries(server PRIVATE Qt5::Core Qt5::Network Qt5::Sql sqlite3)
