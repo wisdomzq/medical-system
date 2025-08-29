@@ -1,5 +1,5 @@
 #include "patientinfowidget.h"
-#include "tcpclient.h"
+#include "core/network/src/protocol.h"
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QTabWidget>
@@ -8,14 +8,14 @@
 #include <QMessageBox>
 #include <QJsonObject>
 
-PatientInfoWidget::PatientInfoWidget(QWidget *parent)
-    : QWidget(parent)
+PatientInfoWidget::PatientInfoWidget(const QString &patientName, QWidget *parent)
+    : QWidget(parent), m_patientName(patientName)
 {
-    m_tcpClient = new TcpClient(this);
-    m_tcpClient->connectToServer("127.0.0.1", 12345);
-    connect(m_tcpClient, &TcpClient::responseReceived, this, &PatientInfoWidget::onResponseReceived);
+    m_communicationClient = new CommunicationClient(this);
+    m_communicationClient->connectToServer("127.0.0.1", Protocol::SERVER_PORT);
+    connect(m_communicationClient, &CommunicationClient::jsonReceived, this, &PatientInfoWidget::onResponseReceived);
 
-    setWindowTitle("患者中心");
+    setWindowTitle("患者中心 - " + m_patientName);
     setMinimumSize(800, 600);
 
     tabWidget = new QTabWidget(this);
@@ -27,6 +27,8 @@ PatientInfoWidget::PatientInfoWidget(QWidget *parent)
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     mainLayout->addWidget(tabWidget);
     setLayout(mainLayout);
+
+    requestPatientInfo();
 }
 
 PatientInfoWidget::~PatientInfoWidget()
@@ -60,12 +62,7 @@ QWidget* PatientInfoWidget::createCommunicationPage()
     return page;
 }
 
-void PatientInfoWidget::setPatientName(const QString &patientName)
-{
-    currentPatientName = patientName;
-    setWindowTitle("患者中心 - " + currentPatientName);
-    loadProfile();
-}
+// setPatientName removed; fixed via constructor
 
 QWidget* PatientInfoWidget::createProfilePage()
 {
@@ -97,12 +94,12 @@ QWidget* PatientInfoWidget::createProfilePage()
     return page;
 }
 
-void PatientInfoWidget::loadProfile()
+void PatientInfoWidget::requestPatientInfo()
 {
     QJsonObject request;
-    request["type"] = "get_patient_info";
-    request["username"] = currentPatientName;
-    m_tcpClient->sendRequest(request);
+    request["action"] = "get_patient_info";
+    request["username"] = m_patientName;
+    m_communicationClient->sendJson(request);
 }
 
 void PatientInfoWidget::updateProfile()

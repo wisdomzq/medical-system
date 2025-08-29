@@ -54,6 +54,17 @@ bool DBManager::authenticateUser(const QString& username, const QString& passwor
     return false;
 }
 
+bool DBManager::getUserRole(const QString &username, QString &role) {
+    QSqlQuery query(m_db);
+    query.prepare("SELECT role FROM users WHERE username = :u");
+    query.bindValue(":u", username);
+    if (query.exec() && query.next()) {
+        role = query.value(0).toString();
+        return true;
+    }
+    return false;
+}
+
 bool DBManager::addUser(const QString& username, const QString& password, const QString& role) {
     QSqlQuery query(m_db);
     query.prepare("INSERT INTO users (username, password, role) VALUES (:username, :password, :role)");
@@ -146,54 +157,42 @@ bool DBManager::updatePatientInfo(const QString& username, const QJsonObject& da
 // ==================== Functions from client ====================
 
 bool DBManager::registerDoctor(const QString& name, const QString& password, const QString& department, const QString& phone) {
-    QSqlQuery query(m_db);
-    query.prepare("INSERT INTO doctors (name, password, department, phone) VALUES (:name, :password, :department, :phone)");
-    query.bindValue(":name", name);
-    query.bindValue(":password", password);
-    query.bindValue(":department", department);
-    query.bindValue(":phone", phone);
-    if (!query.exec()) {
-        qDebug() << "registerDoctor error:" << query.lastError();
+    if (!addUser(name, password, "doctor")) return false;
+    QSqlQuery up(m_db);
+    up.prepare("UPDATE doctors SET department = :d, phone = :p WHERE username = :u");
+    up.bindValue(":d", department);
+    up.bindValue(":p", phone);
+    up.bindValue(":u", name);
+    if (!up.exec()) {
+        qDebug() << "registerDoctor update error:" << up.lastError();
         return false;
     }
     return true;
 }
 
 bool DBManager::registerPatient(const QString& name, const QString& password, int age, const QString& phone, const QString& address) {
-    QSqlQuery query(m_db);
-    query.prepare("INSERT INTO patients (name, password, age, phone, address) VALUES (:name, :password, :age, :phone, :address)");
-    query.bindValue(":name", name);
-    query.bindValue(":password", password);
-    query.bindValue(":age", age);
-    query.bindValue(":phone", phone);
-    query.bindValue(":address", address);
-    if (!query.exec()) {
-        qDebug() << "registerPatient error:" << query.lastError();
+    if (!addUser(name, password, "patient")) return false;
+    QSqlQuery up(m_db);
+    up.prepare("UPDATE patients SET age = :age, phone = :p, address = :a WHERE username = :u");
+    up.bindValue(":age", age);
+    up.bindValue(":p", phone);
+    up.bindValue(":a", address);
+    up.bindValue(":u", name);
+    if (!up.exec()) {
+        qDebug() << "registerPatient update error:" << up.lastError();
         return false;
     }
     return true;
 }
 
 bool DBManager::loginDoctor(const QString& name, const QString& password) {
-    QSqlQuery query(m_db);
-    query.prepare("SELECT id FROM doctors WHERE name = :name AND password = :password");
-    query.bindValue(":name", name);
-    query.bindValue(":password", password);
-    if (query.exec() && query.next()) {
-        return true;
-    }
-    return false;
+    if (!authenticateUser(name, password)) return false;
+    QString role; return getUserRole(name, role) && role == "doctor";
 }
 
 bool DBManager::loginPatient(const QString& name, const QString& password) {
-    QSqlQuery query(m_db);
-    query.prepare("SELECT id FROM patients WHERE name = :name AND password = :password");
-    query.bindValue(":name", name);
-    query.bindValue(":password", password);
-    if (query.exec() && query.next()) {
-        return true;
-    }
-    return false;
+    if (!authenticateUser(name, password)) return false;
+    QString role; return getUserRole(name, role) && role == "patient";
 }
 
 bool DBManager::getDoctorDetails(const QString& name, QString& department, QString& phone) {

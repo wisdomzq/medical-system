@@ -11,12 +11,10 @@ Hello::Hello(QWidget* parent)
     setCentralWidget(stackedWidget);
 
     loginWidget = new LoginWidget(this);
-    doctorInfoWidget = new DoctorInfoWidget(this);
-    patientInfoWidget = new PatientInfoWidget(this);
+    doctorInfoWidget = nullptr;
+    patientInfoWidget = nullptr;
 
     stackedWidget->addWidget(loginWidget);
-    stackedWidget->addWidget(doctorInfoWidget);
-    stackedWidget->addWidget(patientInfoWidget);
 
     connect(loginWidget, &LoginWidget::doctorLoggedIn, this, &Hello::showDoctorUI);
     connect(loginWidget, &LoginWidget::patientLoggedIn, this, &Hello::showPatientUI);
@@ -30,13 +28,21 @@ Hello::~Hello() {}
 
 void Hello::showDoctorUI(const QString &doctorName)
 {
-    doctorInfoWidget->setDoctorName(doctorName);
+    if (!doctorInfoWidget) {
+        doctorInfoWidget = new DoctorInfoWidget(doctorName, this);
+        stackedWidget->addWidget(doctorInfoWidget);
+        connect(doctorInfoWidget, &DoctorInfoWidget::backToLogin, this, &Hello::showLoginUI);
+    }
     stackedWidget->setCurrentWidget(doctorInfoWidget);
 }
 
 void Hello::showPatientUI(const QString &patientName)
 {
-    patientInfoWidget->setPatientName(patientName);
+    if (!patientInfoWidget) {
+        patientInfoWidget = new PatientInfoWidget(patientName, this);
+        stackedWidget->addWidget(patientInfoWidget);
+        connect(patientInfoWidget, &PatientInfoWidget::backToLogin, this, &Hello::showLoginUI);
+    }
     stackedWidget->setCurrentWidget(patientInfoWidget);
 }
 

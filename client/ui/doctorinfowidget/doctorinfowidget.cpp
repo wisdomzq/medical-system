@@ -1,5 +1,5 @@
 #include "doctorinfowidget.h"
-#include "tcpclient.h"
+#include "core/network/src/protocol.h"
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QTabWidget>
@@ -8,14 +8,14 @@
 #include <QMessageBox>
 #include <QJsonObject>
 
-DoctorInfoWidget::DoctorInfoWidget(QWidget *parent)
-    : QWidget(parent)
+DoctorInfoWidget::DoctorInfoWidget(const QString &doctorName, QWidget *parent)
+    : QWidget(parent), m_doctorName(doctorName)
 {
-    m_tcpClient = new TcpClient(this);
-    m_tcpClient->connectToServer("127.0.0.1", 12345);
-    connect(m_tcpClient, &TcpClient::responseReceived, this, &DoctorInfoWidget::onResponseReceived);
+    m_communicationClient = new CommunicationClient(this);
+    m_communicationClient->connectToServer("127.0.0.1", Protocol::SERVER_PORT);
+    connect(m_communicationClient, &CommunicationClient::jsonReceived, this, &DoctorInfoWidget::onResponseReceived);
 
-    setWindowTitle("医生工作台");
+    setWindowTitle("医生工作台 - " + m_doctorName);
     setMinimumSize(800, 600);
 
     tabWidget = new QTabWidget(this);
@@ -27,6 +27,8 @@ DoctorInfoWidget::DoctorInfoWidget(QWidget *parent)
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     mainLayout->addWidget(tabWidget);
     setLayout(mainLayout);
+
+    requestDoctorInfo();
 }
 
 DoctorInfoWidget::~DoctorInfoWidget()
@@ -60,12 +62,7 @@ QWidget* DoctorInfoWidget::createCommunicationPage()
     return page;
 }
 
-void DoctorInfoWidget::setDoctorName(const QString &doctorName)
-{
-    currentDoctorName = doctorName;
-    setWindowTitle("医生工作台 - " + currentDoctorName);
-    loadProfile();
-}
+// setDoctorName removed; name fixed via constructor
 
 QWidget* DoctorInfoWidget::createProfilePage()
 {
@@ -95,27 +92,25 @@ QWidget* DoctorInfoWidget::createProfilePage()
     return page;
 }
 
-void DoctorInfoWidget::loadProfile()
+void DoctorInfoWidget::requestDoctorInfo()
 {
     QJsonObject request;
-    request["type"] = "get_doctor_info";
-    request["username"] = currentDoctorName;
-    m_tcpClient->sendRequest(request);
+    request["action"] = "get_doctor_info";
+    request["username"] = m_doctorName;
+    m_communicationClient->sendJson(request);
 }
 
 void DoctorInfoWidget::updateProfile()
 {
     QJsonObject request;
-    request["type"] = "update_doctor_info";
-    request["username"] = currentDoctorName;
-
+    request["action"] = "update_doctor_info";
+    request["username"] = m_doctorName;
     QJsonObject data;
     data["name"] = nameEdit->text();
     data["department"] = departmentEdit->text();
     data["phone"] = phoneEdit->text();
     request["data"] = data;
-
-    m_tcpClient->sendRequest(request);
+    m_communicationClient->sendJson(request);
 }
 
 void DoctorInfoWidget::onResponseReceived(const QJsonObject &response)
@@ -132,8 +127,8 @@ void DoctorInfoWidget::onResponseReceived(const QJsonObject &response)
     {
         if (response["success"].toBool()) {
             QMessageBox::information(this, "成功", "个人信息更新成功！");
-            currentDoctorName = nameEdit->text();
-            setWindowTitle("医生工作台 - " + currentDoctorName);
+            m_doctorName = nameEdit->text();
+            setWindowTitle("医生工作台 - " + m_doctorName);
         } else {
             QMessageBox::warning(this, "失败", "个人信息更新失败。");
         }

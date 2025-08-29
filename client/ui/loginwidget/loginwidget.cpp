@@ -1,23 +1,26 @@
 #include "loginwidget.h"
 #include "doctorinfowidget.h"
 #include "patientinfowidget.h"
-#include "tcpclient.h"
+#include "core/network/src/client/communicationclient.h"
+#include "core/network/src/protocol.h"
 #include <QFont>
 #include <QMessageBox>
 #include <QJsonObject>
+#include <QJsonDocument>
 
 LoginWidget::LoginWidget(QWidget* parent)
     : QWidget(parent)
 {
-    m_tcpClient = new TcpClient(this);
-    connect(m_tcpClient, &TcpClient::connected, this, [this](){
+    m_communicationClient = new CommunicationClient(this);
+    connect(m_communicationClient, &CommunicationClient::connected, this, [this](){
         QMessageBox::information(this, "连接成功", "已成功连接到服务器。");
     });
-    connect(m_tcpClient, &TcpClient::disconnected, this, [this](){
+    connect(m_communicationClient, &CommunicationClient::disconnected, this, [this](){
         QMessageBox::warning(this, "连接断开", "与服务器的连接已断开。");
     });
-    m_tcpClient->connectToServer("127.0.0.1", 12345);
-    connect(m_tcpClient, &TcpClient::responseReceived, this, &LoginWidget::onResponseReceived);
+    m_communicationClient->connectToServer("127.0.0.1", Protocol::SERVER_PORT);
+    connect(m_communicationClient, &CommunicationClient::jsonReceived, this, &LoginWidget::onResponseReceived);
+
 
     // Main layout containing only the stacked widget
     QVBoxLayout* mainLayout = new QVBoxLayout(this);
@@ -206,94 +209,70 @@ void LoginWidget::showPatientLogin() { stackedWidget->setCurrentIndex(2); }
 void LoginWidget::showDoctorRegister() { stackedWidget->setCurrentIndex(3); }
 void LoginWidget::showPatientRegister() { stackedWidget->setCurrentIndex(4); }
 
-void LoginWidget::onDoctorLogin() {
-    QString name = doctorLoginNameEdit->text();
+void LoginWidget::onDoctorLogin()
+{
+    QString username = doctorLoginNameEdit->text();
     QString password = doctorLoginPasswordEdit->text();
-
-    if (name.isEmpty() || password.isEmpty()) {
-        QMessageBox::warning(this, "登录失败", "用户名和密码不能为空！");
+    if (username.isEmpty() || password.isEmpty()) {
+        QMessageBox::warning(this, "登录失败", "用户名和密码不能为空。");
         return;
     }
 
     QJsonObject request;
-    request["type"] = "login";
-    request["username"] = name;
+    request["action"] = "login";
+    request["username"] = username;
     request["password"] = password;
-    request["role"] = "doctor";
-    m_tcpClient->sendRequest(request);
+    m_communicationClient->sendJson(request);
 }
 
-void LoginWidget::onPatientLogin() {
-    QString name = patientLoginNameEdit->text();
+void LoginWidget::onPatientLogin()
+{
+    QString username = patientLoginNameEdit->text();
     QString password = patientLoginPasswordEdit->text();
-
-    if (name.isEmpty() || password.isEmpty()) {
-        QMessageBox::warning(this, "登录失败", "用户名和密码不能为空！");
+    if (username.isEmpty() || password.isEmpty()) {
+        QMessageBox::warning(this, "登录失败", "用户名和密码不能为空。");
         return;
     }
 
     QJsonObject request;
-    request["type"] = "login";
-    request["username"] = name;
+    request["action"] = "login";
+    request["username"] = username;
     request["password"] = password;
-    request["role"] = "patient";
-    m_tcpClient->sendRequest(request);
+    m_communicationClient->sendJson(request);
 }
 
-void LoginWidget::onDoctorRegister() {
-    // 直接从输入框获取 QString
-    QString name = doctorRegisterNameEdit->text();
+void LoginWidget::onDoctorRegister()
+{
+    QString username = doctorRegisterNameEdit->text();
     QString password = doctorRegisterPasswordEdit->text();
-    QString department = doctorDepartmentEdit->text();
-    QString phone = doctorPhoneEdit->text();
-
-    // 添加输入验证
-    if (name.isEmpty() || password.isEmpty() || department.isEmpty() || phone.isEmpty()) {
-        QMessageBox::warning(this, "注册失败", "所有注册信息均不能为空！");
+    if (username.isEmpty() || password.isEmpty()) {
+        QMessageBox::warning(this, "注册失败", "用户名和密码不能为空。");
         return;
     }
 
     QJsonObject request;
-    request["type"] = "register";
-    request["username"] = name;
+    request["action"] = "register";
+    request["username"] = username;
     request["password"] = password;
     request["role"] = "doctor";
-    request["department"] = department;
-    request["phone"] = phone;
-    m_tcpClient->sendRequest(request);
+    m_communicationClient->sendJson(request);
 }
 
-void LoginWidget::onPatientRegister() {
-    // 直接从输入框获取 QString
-    QString name = patientRegisterNameEdit->text();
+void LoginWidget::onPatientRegister()
+{
+    QString username = patientRegisterNameEdit->text();
     QString password = patientRegisterPasswordEdit->text();
-    QString ageStr = patientAgeEdit->text();
-    QString phone = patientPhoneEdit->text();
-    QString address = patientAddressEdit->text();
-
-    // 添加输入验证
-    if (name.isEmpty() || password.isEmpty() || ageStr.isEmpty() || phone.isEmpty() || address.isEmpty()) {
-        QMessageBox::warning(this, "注册失败", "所有注册信息均不能为空！");
-        return;
-    }
-
-    bool isAgeValid;
-    int age = ageStr.toInt(&isAgeValid);
-
-    if (!isAgeValid || age <= 0) {
-        QMessageBox::warning(this, "注册失败", "请输入一个有效的年龄！");
+    if (username.isEmpty() || password.isEmpty()) {
+        QMessageBox::warning(this, "注册失败", "用户名和密码不能为空。");
         return;
     }
 
     QJsonObject request;
-    request["type"] = "register";
-    request["username"] = name;
+    request["action"] = "register";
+    request["username"] = username;
     request["password"] = password;
     request["role"] = "patient";
-    request["age"] = age;
-    request["phone"] = phone;
-    request["address"] = address;
-    m_tcpClient->sendRequest(request);
+    m_communicationClient->sendJson(request);
 }
 
 void LoginWidget::onResponseReceived(const QJsonObject &response)
@@ -301,43 +280,27 @@ void LoginWidget::onResponseReceived(const QJsonObject &response)
     QString type = response["type"].toString();
     bool success = response["success"].toBool();
 
-    if (type == "login_response")
-    {
-        if (success)
-        {
+    if (type == "login_response") {
+        if (success) {
+            QMessageBox::information(this, "登录成功", "登录成功！");
             QString role = response["role"].toString();
-            QString username = response["username"].toString();
-            if (role == "doctor")
-            {
-                emit doctorLoggedIn(username);
+            if (role == "doctor") {
+                DoctorInfoWidget* doctorWidget = new DoctorInfoWidget(doctorLoginNameEdit->text());
+                doctorWidget->show();
+                this->close();
+            } else if (role == "patient") {
+                PatientInfoWidget* patientWidget = new PatientInfoWidget(patientLoginNameEdit->text());
+                patientWidget->show();
+                this->close();
             }
-            else
-            {
-                emit patientLoggedIn(username);
-            }
+        } else {
+            QMessageBox::warning(this, "登录失败", "用户名或密码错误。");
         }
-        else
-        {
-            QMessageBox::warning(this, "登录失败", "用户名或密码错误！");
-        }
-    }
-    else if (type == "register_response")
-    {
-        if (success)
-        {
+    } else if (type == "register_response") {
+        if (success) {
             QMessageBox::information(this, "注册成功", "注册成功！请返回登录。");
-            if (response["role"].toString() == "doctor")
-            {
-                showDoctorLogin();
-            }
-            else
-            {
-                showPatientLogin();
-            }
-        }
-        else
-        {
-            QMessageBox::warning(this, "注册失败", "注册失败！可能是用户名已存在。");
+        } else {
+            QMessageBox::warning(this, "注册失败", "用户名已存在。");
         }
     }
 }

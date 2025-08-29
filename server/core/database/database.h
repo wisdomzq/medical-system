@@ -15,6 +15,7 @@ public:
     bool getPatientInfo(const QString& username, QJsonObject& patientInfo);
     bool updateDoctorInfo(const QString& username, const QJsonObject& data);
     bool updatePatientInfo(const QString& username, const QJsonObject& data);
+    bool getUserRole(const QString& username, QString &role);
 
     // Functions from client
     bool registerDoctor(const QString& name, const QString& password, const QString& department, const QString& phone);

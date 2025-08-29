@@ -3,7 +3,7 @@
 
 #include <QWidget>
 #include <QLineEdit>
-#include "tcpclient.h"
+#include "core/network/src/client/communicationclient.h"
 
 class QTabWidget;
 
@@ -12,24 +12,23 @@ class PatientInfoWidget : public QWidget
     Q_OBJECT
 
 public:
-    explicit PatientInfoWidget(QWidget *parent = nullptr);
+    explicit PatientInfoWidget(const QString &patientName, QWidget *parent = nullptr);
     ~PatientInfoWidget();
-    void setPatientName(const QString &patientName);
 
 private:
     QTabWidget *tabWidget;
-    QString currentPatientName;
+    QString m_patientName;
     QLineEdit *nameEdit;
     QLineEdit *ageEdit;
     QLineEdit *phoneEdit;
     QLineEdit *addressEdit;
-    TcpClient *m_tcpClient;
+    CommunicationClient *m_communicationClient;
 
     QWidget *createAppointmentPage();
     QWidget *createCasePage();
     QWidget *createCommunicationPage();
     QWidget *createProfilePage();
-    void loadProfile();
+    void requestPatientInfo();
 
 private slots:
     void updateProfile();

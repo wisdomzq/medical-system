@@ -1,4 +1,4 @@
-#include <client/communicationclient.h>
+#include "communicationclient.h"
 #include <client/streamparser.h>
 #include <client/responsedispatcher.h>
 

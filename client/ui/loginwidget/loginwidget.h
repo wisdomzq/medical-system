@@ -7,7 +7,7 @@
 #include <QLineEdit>
 #include <QStackedWidget>
 #include <QFormLayout>
-#include "tcpclient.h"
+#include "core/network/src/client/communicationclient.h"
 
 class LoginWidget : public QWidget {
     Q_OBJECT
@@ -50,7 +50,7 @@ private:
     QPushButton* patientRegisterButton;
     QPushButton* backToPatientLoginButton;
 
-    TcpClient* m_tcpClient;
+    CommunicationClient* m_communicationClient;
 
 private:
     // Helper function to create the main title label

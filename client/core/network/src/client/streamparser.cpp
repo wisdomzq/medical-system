@@ -1,4 +1,4 @@
-#include <client/streamparser.h>
+#include "streamparser.h"
 
 using namespace Protocol;
 

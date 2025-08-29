@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QTcpSocket>
 #include <QTimer>
-#include <protocol.h>
+#include "protocol.h"
 
 class StreamFrameParser;
 class ResponseDispatcher;

@@ -10,7 +10,9 @@ set(srcs
     ui/loginwidget/loginwidget.cpp
     ui/doctorinfowidget/doctorinfowidget.cpp
     ui/patientinfowidget/patientinfowidget.cpp
-    core/tcpclient.cpp
+    core/network/src/client/communicationclient.cpp
+    core/network/src/client/responsedispatcher.cpp
+    core/network/src/client/streamparser.cpp
     resources/resources.qrc
     main.cpp
 )
@@ -20,12 +22,15 @@ add_executable(hello
 )
 
 target_include_directories(hello PRIVATE
+    .
     ui
     ui/hello
     ui/loginwidget
     ui/doctorinfowidget
     ui/patientinfowidget
     core
+    core/network/src
+    core/network/src/client
 )
 
 target_link_libraries(hello PRIVATE Qt5::Widgets Qt5::Network sqlite3)
