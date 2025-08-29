@@ -45,7 +45,15 @@ MedicationSearchPage::MedicationSearchPage(CommunicationClient *c, const QString
 }
 
 void MedicationSearchPage::onSearch(){
+<<<<<<< HEAD
     sendSearchRequest(m_searchEdit->text().trimmed());
+=======
+    QString kw = m_searchEdit->text();
+    kw.replace("\u3000", " "); // 全角空格转半角
+    kw = kw.trimmed();
+    qInfo() << "[MedicationSearchPage] 发起搜索 keyword=" << kw;
+    sendSearchRequest(kw);
+>>>>>>> 解决注册失败
 }
 
 void MedicationSearchPage::sendSearchRequest(const QString &keyword){
@@ -55,7 +63,12 @@ void MedicationSearchPage::sendSearchRequest(const QString &keyword){
 
 void MedicationSearchPage::handleResponse(const QJsonObject &obj){
     if(obj.value("type").toString() != "medications_response") return;
+<<<<<<< HEAD
     if(!obj.value("success").toBool()) return; // 可加错误显示
+=======
+    if(!obj.value("success").toBool()){ qWarning() << "[MedicationSearchPage] 搜索失败" << obj; return; }
+    qInfo() << "[MedicationSearchPage] 收到药品条目数=" << obj.value("data").toArray().size();
+>>>>>>> 解决注册失败
     QJsonArray arr = obj.value("data").toArray();
     populateTable(arr);
 }
@@ -65,9 +78,18 @@ void MedicationSearchPage::populateTable(const QJsonArray &arr){
     QString kw = m_searchEdit->text().trimmed();
     QVector<QJsonObject> rows;
     if(!kw.isEmpty()){
+<<<<<<< HEAD
         QVector<QJsonObject> exact;
         for(const auto &v: arr){ QJsonObject o=v.toObject(); if(o.value("name").toString()==kw || o.value("generic_name").toString().compare(kw,Qt::CaseInsensitive)==0) exact.push_back(o); }
         if(!exact.isEmpty()) rows = exact; else { for(const auto &v: arr) rows.push_back(v.toObject()); }
+=======
+        for(const auto &v: arr){
+            QJsonObject o=v.toObject();
+            QString name=o.value("name").toString();
+            QString gen=o.value("generic_name").toString();
+            if(name.contains(kw, Qt::CaseInsensitive) || gen.contains(kw, Qt::CaseInsensitive)) rows.push_back(o);
+        }
+>>>>>>> 解决注册失败
     } else { for(const auto &v: arr) rows.push_back(v.toObject()); }
     m_table->setRowCount(rows.size());
     int row=0; for(const auto &o: rows){

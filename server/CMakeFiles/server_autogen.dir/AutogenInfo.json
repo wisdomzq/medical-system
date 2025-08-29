@@ -58,6 +58,12 @@
 			"MU",
 			"URL7VJ5BZG/moc_loginmodule.cpp",
 			null
+		],
+		[
+			"/home/xuwt/Qt/medical-system/server/modules/patientmodule/register/register.h",
+			"MU",
+			"3UNC5IPTOD/moc_register.cpp",
+			null
 		]
 	],
 	"HEADER_EXTENSIONS" : [ "h", "hh", "h++", "hm", "hpp", "hxx", "in", "txx" ],
@@ -139,6 +145,11 @@
 		[ "/home/xuwt/Qt/medical-system/server/main.cpp", "MU", null ],
 		[
 			"/home/xuwt/Qt/medical-system/server/modules/loginmodule/loginmodule.cpp",
+			"MU",
+			null
+		],
+		[
+			"/home/xuwt/Qt/medical-system/server/modules/patientmodule/register/register.cpp",
 			"MU",
 			null
 		]

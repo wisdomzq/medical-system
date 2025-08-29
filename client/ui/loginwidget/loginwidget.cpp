@@ -245,8 +245,11 @@ void LoginWidget::onDoctorRegister()
 {
     QString username = doctorRegisterNameEdit->text();
     QString password = doctorRegisterPasswordEdit->text();
-    if (username.isEmpty() || password.isEmpty()) {
-        QMessageBox::warning(this, "注册失败", "用户名和密码不能为空。");
+    QString department = doctorDepartmentEdit->text();
+    QString phone = doctorPhoneEdit->text();
+
+    if (username.isEmpty() || password.isEmpty() || department.isEmpty() || phone.isEmpty()) {
+        QMessageBox::warning(this, "注册失败", "所有字段都不能为空。");
         return;
     }
 
@@ -255,6 +258,9 @@ void LoginWidget::onDoctorRegister()
     request["username"] = username;
     request["password"] = password;
     request["role"] = "doctor";
+    // 添加缺失的详细信息
+    request["department"] = department;
+    request["phone"] = phone;
     m_communicationClient->sendJson(request);
 }
 
@@ -262,8 +268,20 @@ void LoginWidget::onPatientRegister()
 {
     QString username = patientRegisterNameEdit->text();
     QString password = patientRegisterPasswordEdit->text();
-    if (username.isEmpty() || password.isEmpty()) {
-        QMessageBox::warning(this, "注册失败", "用户名和密码不能为空。");
+    QString ageStr = patientAgeEdit->text();
+    QString phone = patientPhoneEdit->text();
+    QString address = patientAddressEdit->text();
+
+    if (username.isEmpty() || password.isEmpty() || ageStr.isEmpty() || phone.isEmpty() || address.isEmpty()) {
+        QMessageBox::warning(this, "注册失败", "所有字段都不能为空。");
+        return;
+    }
+
+    // 验证年龄是否为有效数字
+    bool isAgeValid;
+    int age = ageStr.toInt(&isAgeValid);
+    if (!isAgeValid || age <= 0) {
+        QMessageBox::warning(this, "注册失败", "请输入有效的年龄。");
         return;
     }
 
@@ -272,13 +290,19 @@ void LoginWidget::onPatientRegister()
     request["username"] = username;
     request["password"] = password;
     request["role"] = "patient";
+    // 添加缺失的详细信息
+    request["age"] = age;
+    request["phone"] = phone;
+    request["address"] = address;
     m_communicationClient->sendJson(request);
 }
 
+// ...existing code...
 void LoginWidget::onResponseReceived(const QJsonObject &response)
 {
     QString type = response["type"].toString();
     bool success = response["success"].toBool();
+    QString message = response["message"].toString(); // 获取服务器返回的消息
 
     if (type == "login_response") {
         if (success) {
@@ -294,13 +318,15 @@ void LoginWidget::onResponseReceived(const QJsonObject &response)
                 this->close();
             }
         } else {
-            QMessageBox::warning(this, "登录失败", "用户名或密码错误。");
+            // 使用服务器返回的登录失败消息
+            QMessageBox::warning(this, "登录失败", message.isEmpty() ? "用户名或密码错误。" : message);
         }
     } else if (type == "register_response") {
         if (success) {
-            QMessageBox::information(this, "注册成功", "注册成功！请返回登录。");
+            QMessageBox::information(this, "注册成功", message.isEmpty() ? "注册成功！请返回登录。" : message);
         } else {
-            QMessageBox::warning(this, "注册失败", "用户名已存在。");
+            // 使用服务器返回的注册失败消息
+            QMessageBox::warning(this, "注册失败", message.isEmpty() ? "注册失败，请重试。" : message);
         }
     }
 }

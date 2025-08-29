@@ -18,6 +18,11 @@ DBManager::DBManager(const QString& path) {
         qDebug() << "Error: connection with database fail" << m_db.lastError().text();
     } else {
         qDebug() << "Database: connection ok";
+        // 启用外键约束
+        QSqlQuery query(m_db);
+        if (!query.exec("PRAGMA foreign_keys = ON;")) {
+            qDebug() << "启用外键约束失败:" << query.lastError().text();
+        }
     }
     initDatabase();
 }
@@ -42,6 +47,9 @@ void DBManager::initDatabase() {
     createMedicationsTable();
     createDoctorSchedulesTable();
     createHospitalizationsTable();
+    
+    // 清理不一致的数据
+    cleanupInconsistentData();
     
     // 插入示例数据
     insertSampleDoctors();
@@ -250,7 +258,7 @@ void DBManager::createPrescriptionItemsTable() {
 void DBManager::createMedicationsTable() {
     if (!m_db.tables().contains(QStringLiteral("medications"))) {
         QSqlQuery query(m_db);
-        QString sql = R"(
+    QString sql = R"(
             CREATE TABLE medications (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL,
@@ -265,6 +273,7 @@ void DBManager::createMedicationsTable() {
                 precautions TEXT,
                 side_effects TEXT,
                 contraindications TEXT,
+                image_path TEXT,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
             )
@@ -383,7 +392,23 @@ bool DBManager::getUserRole(const QString &username, QString &role) {
     return false;
 }
 
+// ==================== 修改开始 ====================
+
+// 修改 addUser 函数，使其只负责向 users 表添加用户。
+// 这是更清晰的单一职责设计。
 bool DBManager::addUser(const QString& username, const QString& password, const QString& role) {
+    // 首先检查用户名是否已存在
+    QSqlQuery checkQuery(m_db);
+    checkQuery.prepare("SELECT COUNT(*) FROM users WHERE username = :username");
+    checkQuery.bindValue(":username", username);
+    if (checkQuery.exec() && checkQuery.next()) {
+        int count = checkQuery.value(0).toInt();
+        if (count > 0) {
+            qDebug() << "addUser error: Username already exists:" << username;
+            return false; // 用户名已存在
+        }
+    }
+
     QSqlQuery query(m_db);
     query.prepare("INSERT INTO users (username, password, role) VALUES (:username, :password, :role)");
     query.bindValue(":username", username);
@@ -392,26 +417,6 @@ bool DBManager::addUser(const QString& username, const QString& password, const 
     if (!query.exec()) {
         qDebug() << "addUser error:" << query.lastError().text();
         return false;
-    }
-
-    if (role == "doctor") {
-        QSqlQuery docQuery(m_db);
-        docQuery.prepare("INSERT INTO doctors (username, name) VALUES (:username, :name)");
-        docQuery.bindValue(":username", username);
-        docQuery.bindValue(":name", username); // Default name to username
-        if (!docQuery.exec()) {
-            qDebug() << "addUser (doctor) error:" << docQuery.lastError().text();
-            return false;
-        }
-    } else if (role == "patient") {
-        QSqlQuery patQuery(m_db);
-        patQuery.prepare("INSERT INTO patients (username, name) VALUES (:username, :name)");
-        patQuery.bindValue(":username", username);
-        patQuery.bindValue(":name", username); // Default name to username
-        if (!patQuery.exec()) {
-            qDebug() << "addUser (patient) error:" << patQuery.lastError().text();
-            return false;
-        }
     }
     return true;
 }
@@ -537,33 +542,86 @@ bool DBManager::updatePatientInfo(const QString& username, const QJsonObject& da
 }
 
 // ==================== Functions from client ====================
-
+// 重写 registerDoctor，使用事务确保原子性，并一次性插入所有数据。
 bool DBManager::registerDoctor(const QString& name, const QString& password, const QString& department, const QString& phone) {
-    if (!addUser(name, password, "doctor")) return false;
-    QSqlQuery up(m_db);
-    up.prepare("UPDATE doctors SET department = :d, phone = :p WHERE username = :u");
-    up.bindValue(":d", department);
-    up.bindValue(":p", phone);
-    up.bindValue(":u", name);
-    if (!up.exec()) {
-        qDebug() << "registerDoctor update error:" << up.lastError().text();
+    qDebug() << "开始注册医生:" << name;
+    
+    // 开启数据库事务
+    if (!m_db.transaction()) {
+        qDebug() << "Failed to start transaction.";
         return false;
     }
+
+    // 1. 插入到 users 表
+    if (!addUser(name, password, "doctor")) {
+        qDebug() << "注册医生失败: 用户名已存在或添加用户失败:" << name;
+        m_db.rollback(); // 如果失败，回滚事务
+        return false;
+    }
+
+    // 2. 一次性插入完整信息到 doctors 表
+    QSqlQuery docQuery(m_db);
+    docQuery.prepare("INSERT INTO doctors (username, name, department, phone) VALUES (:username, :name, :department, :phone)");
+    docQuery.bindValue(":username", name);
+    docQuery.bindValue(":name", name); // 默认 name 和 username 相同
+    docQuery.bindValue(":department", department);
+    docQuery.bindValue(":phone", phone);
+    
+    if (!docQuery.exec()) {
+        qDebug() << "registerDoctor insert error:" << docQuery.lastError().text();
+        m_db.rollback(); // 如果失败，回滚事务
+        return false;
+    }
+
+    // 提交事务
+    if (!m_db.commit()) {
+        qDebug() << "Failed to commit transaction.";
+        m_db.rollback();
+        return false;
+    }
+    
+    qDebug() << "医生注册成功:" << name;
     return true;
 }
 
+// 重写 registerPatient，逻辑同上。
 bool DBManager::registerPatient(const QString& name, const QString& password, int age, const QString& phone, const QString& address) {
-    if (!addUser(name, password, "patient")) return false;
-    QSqlQuery up(m_db);
-    up.prepare("UPDATE patients SET age = :age, phone = :p, address = :a WHERE username = :u");
-    up.bindValue(":age", age);
-    up.bindValue(":p", phone);
-    up.bindValue(":a", address);
-    up.bindValue(":u", name);
-    if (!up.exec()) {
-        qDebug() << "registerPatient update error:" << up.lastError().text();
+    qDebug() << "开始注册病人:" << name;
+    
+    if (!m_db.transaction()) {
+        qDebug() << "Failed to start transaction.";
         return false;
     }
+
+    // 1. 插入到 users 表
+    if (!addUser(name, password, "patient")) {
+        qDebug() << "注册病人失败: 用户名已存在或添加用户失败:" << name;
+        m_db.rollback();
+        return false;
+    }
+
+    // 2. 一次性插入完整信息到 patients 表
+    QSqlQuery patQuery(m_db);
+    patQuery.prepare("INSERT INTO patients (username, name, age, phone, address) VALUES (:username, :name, :age, :phone, :address)");
+    patQuery.bindValue(":username", name);
+    patQuery.bindValue(":name", name); // 默认 name 和 username 相同
+    patQuery.bindValue(":age", age);
+    patQuery.bindValue(":phone", phone);
+    patQuery.bindValue(":address", address);
+    
+    if (!patQuery.exec()) {
+        qDebug() << "registerPatient insert error:" << patQuery.lastError().text();
+        m_db.rollback();
+        return false;
+    }
+
+    if (!m_db.commit()) {
+        qDebug() << "Failed to commit transaction.";
+        m_db.rollback();
+        return false;
+    }
+    
+    qDebug() << "病人注册成功:" << name;
     return true;
 }
 
@@ -1237,11 +1295,12 @@ bool DBManager::searchMedications(const QString& keyword, QJsonArray& medication
         SELECT id, name, generic_name, category, manufacturer, specification,
                unit, price, stock_quantity, description, precautions
         FROM medications
-        WHERE name LIKE :keyword OR generic_name LIKE :keyword 
-              OR category LIKE :keyword OR manufacturer LIKE :keyword
+        WHERE name = :keyword OR generic_name = :keyword
+              OR category LIKE :like_keyword OR manufacturer LIKE :like_keyword
         ORDER BY name
     )");
-    query.bindValue(":keyword", "%" + keyword + "%");
+    query.bindValue(":keyword", keyword);
+    query.bindValue(":like_keyword", "%" + keyword + "%");
     
     if (!query.exec()) {
         qDebug() << "searchMedications error:" << query.lastError().text();

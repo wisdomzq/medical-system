@@ -1,6 +1,51 @@
 # Build output
 build/
 
+# Executables
+hello
+server
+client
+medical-system
+
+# CMake generated files
+Makefile
+cmake_install.cmake
+CMakeCache.txt
+CMakeFiles/
+compile_commands.json
+
+# Qt auto-generated files
+*_autogen/
+moc_*.cpp
+moc_*.h
+qrc_*.cpp
+ui_*.h
+
+# Object files and intermediate files
+*.o
+*.o.d
+*.obj
+
+# Qt Creator files
+*.pro.user*
+*.qbs.user*
+
+# Temporary and backup files
+*~
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+
+# Database files (if containing test data)
+# *.db
+# *.sqlite
+# *.sqlite3
+
+# Log files
+*.log
+
 # VS Code settings
 .vscode/
 .cache/

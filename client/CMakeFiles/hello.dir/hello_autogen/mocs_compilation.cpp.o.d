@@ -252,6 +252,17 @@ client/CMakeFiles/hello.dir/hello_autogen/mocs_compilation.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QTimer \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qtimer.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qbasictimer.h \
+ /home/xuwt/Qt/medical-system/client/hello_autogen/XKFTU44BVS/moc_responsedispatcher.cpp \
+ /home/xuwt/Qt/medical-system/client/hello_autogen/XKFTU44BVS/../../core/network/src/client/responsedispatcher.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/QJsonObject \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/qjsonobject.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/qjsonvalue.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/qcborvalue.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/qdatetime.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/qcborcommon.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/qregularexpression.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/qurl.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/quuid.h \
  /home/xuwt/Qt/medical-system/client/core/network/src/protocol.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QMetaType \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h \
@@ -284,12 +295,6 @@ client/CMakeFiles/hello.dir/hello_autogen/mocs_compilation.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qcache.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qcalendar.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qcborarray.h \
- /usr/include/x86_64-linux-gnu/qt5/QtCore/qcborvalue.h \
- /usr/include/x86_64-linux-gnu/qt5/QtCore/qdatetime.h \
- /usr/include/x86_64-linux-gnu/qt5/QtCore/qcborcommon.h \
- /usr/include/x86_64-linux-gnu/qt5/QtCore/qregularexpression.h \
- /usr/include/x86_64-linux-gnu/qt5/QtCore/qurl.h \
- /usr/include/x86_64-linux-gnu/qt5/QtCore/quuid.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qcborcommon.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qcbormap.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qcborstream.h \
@@ -366,9 +371,7 @@ client/CMakeFiles/hello.dir/hello_autogen/mocs_compilation.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qitemselectionmodel.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qiterator.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qjsonarray.h \
- /usr/include/x86_64-linux-gnu/qt5/QtCore/qjsonvalue.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qjsondocument.h \
- /usr/include/x86_64-linux-gnu/qt5/QtCore/qjsonobject.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qjsonvalue.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qlibrary.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qlibraryinfo.h \
@@ -505,9 +508,6 @@ client/CMakeFiles/hello.dir/hello_autogen/mocs_compilation.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qwineventnotifier.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qxmlstream.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qtcoreversion.h \
- /home/xuwt/Qt/medical-system/client/hello_autogen/XKFTU44BVS/moc_responsedispatcher.cpp \
- /home/xuwt/Qt/medical-system/client/hello_autogen/XKFTU44BVS/../../core/network/src/client/responsedispatcher.h \
- /usr/include/x86_64-linux-gnu/qt5/QtCore/QJsonObject \
  /home/xuwt/Qt/medical-system/client/hello_autogen/XKFTU44BVS/moc_streamparser.cpp \
  /home/xuwt/Qt/medical-system/client/hello_autogen/XKFTU44BVS/../../core/network/src/client/streamparser.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QByteArray \

@@ -28,6 +28,7 @@ QJsonObject LoginModule::handleLogin(const QJsonObject &request)
     return response;
 }
 
+// ...existing code...
 QJsonObject LoginModule::handleRegister(const QJsonObject &request)
 {
     QString username = request["username"].toString();
@@ -37,13 +38,29 @@ QJsonObject LoginModule::handleRegister(const QJsonObject &request)
     QJsonObject response;
     response["type"] = "register_response";
     bool ok = false;
+    QString errorMessage = "";
+    
     if (role == "doctor") {
         ok = m_db->registerDoctor(username, password, request.value("department").toString(), request.value("phone").toString());
+        if (!ok) {
+            errorMessage = "医生注册失败，用户名可能已存在或信息不完整。";
+        }
     } else if (role == "patient") {
         ok = m_db->registerPatient(username, password, request.value("age").toInt(), request.value("phone").toString(), request.value("address").toString());
+        if (!ok) {
+            errorMessage = "病人注册失败，用户名可能已存在或信息不完整。";
+        }
+    } else {
+        errorMessage = "无效的用户角色。";
     }
+    
     response["success"] = ok;
-    if (!ok) response["error"] = QStringLiteral("register failed");
+    
+    if (!ok) {
+        response["message"] = errorMessage;
+    } else {
+        response["message"] = QString("%1注册成功！").arg(role == "doctor" ? "医生" : "病人");
+    }
 
     return response;
 }

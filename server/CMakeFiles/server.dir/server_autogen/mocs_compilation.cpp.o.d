@@ -515,4 +515,8 @@ server/CMakeFiles/server.dir/server_autogen/mocs_compilation.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QHash \
  /home/xuwt/Qt/medical-system/server/server_autogen/URL7VJ5BZG/moc_loginmodule.cpp \
  /home/xuwt/Qt/medical-system/server/server_autogen/URL7VJ5BZG/../../modules/loginmodule/loginmodule.h \
- /usr/include/x86_64-linux-gnu/qt5/QtCore/QJsonObject
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/QJsonObject \
+ /home/xuwt/Qt/medical-system/server/server_autogen/3UNC5IPTOD/moc_register.cpp \
+ /home/xuwt/Qt/medical-system/server/server_autogen/3UNC5IPTOD/../../modules/patientmodule/register/register.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/QString \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/QList

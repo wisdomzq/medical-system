@@ -17,6 +17,16 @@ static QString localMedicationsJsonPath(){
 static QString moduleImageDir(){
 	// build/server 运行时，源码在 ../server/modules/patientmodule/medicine/img
 	QDir d(QDir::currentPath()+"/../server/modules/patientmodule/medicine/img");
+#include <QSet>
+
+static QString localMedicationsJsonPath(){
+	// 可执行目录: build/server ; 项目根目录: build/.. => ../../
+	QString path = QDir::currentPath() + "/../../resources/medications/medications.json";
+	return path;
+}
+static QString moduleImageDir(){
+	QString path = QDir::currentPath()+"/../../server/modules/patientmodule/medicine/img";
+	QDir d(path);
 	if(d.exists()) return d.path();
 	return QString();
 }
@@ -29,6 +39,7 @@ static QString moduleImageDir(){
  
  void MedicineModule::onRequest(const QJsonObject &payload){
 	 const QString action = payload.value("action").toString();
+	 qInfo() << "[MedicineModule] 收到动作" << action;
 	 if(action == "get_medications") return handleGetMedications(payload);
 	 if(action == "search_medications") return handleSearchMedications(payload);
 	 if(action == "search_medications_remote") return handleRemoteSearch(payload);
@@ -61,6 +72,24 @@ static QString moduleImageDir(){
 							}
 						}
 					}
+<<<<<<< HEAD
+=======
+					// 若仍无图片，尝试按药品名称匹配模块 img 下同名文件（任意扩展）
+					if(!o.contains("image_path") && !o.contains("image_base64")){
+						QString modDir = moduleImageDir();
+						if(!modDir.isEmpty()){
+							QString base = o.value("name").toString();
+							QStringList exts = {".png", ".jpg", ".jpeg"};
+							for(const QString &ext: exts){
+								QString candidate = modDir + "/" + base + ext;
+								if(QFile::exists(candidate)){
+									QFile f(candidate); if(f.open(QIODevice::ReadOnly)) o["image_base64"] = QString::fromLatin1(f.readAll().toBase64());
+									break;
+								}
+							}
+						}
+					}
+>>>>>>> 解决注册失败
 					break;
 				}
 			}
@@ -74,6 +103,10 @@ static QString moduleImageDir(){
  void MedicineModule::handleSearchMedications(const QJsonObject &payload){
 	 DBManager db(DatabaseConfig::getDatabasePath());
 	 const QString keyword = payload.value("keyword").toString();
+<<<<<<< HEAD
+=======
+	 qInfo() << "[MedicineModule] 本地/DB 搜索关键字=" << keyword;
+>>>>>>> 解决注册失败
 	 QJsonArray list; bool ok = db.searchMedications(keyword, list);
 	if(ok && !keyword.isEmpty()){
 		// 将本地 meta 中名称或通用名或分类包含关键字的条目（若数据库未返回）补充
@@ -104,16 +137,46 @@ static QString moduleImageDir(){
 					QString modPath = modDir.isEmpty()? QString() : (modDir+"/"+img);
 					if(QFile::exists(resPath)) o["image_path"] = resPath; else if(!modPath.isEmpty() && QFile::exists(modPath)) { QFile f(modPath); if(f.open(QIODevice::ReadOnly)) o["image_base64"] = QString::fromLatin1(f.readAll().toBase64()); }
 				}
+<<<<<<< HEAD
+=======
+				if(!o.contains("image_path") && !o.contains("image_base64")){
+					QString modDir = moduleImageDir();
+					if(!modDir.isEmpty()){
+						QString base = o.value("name").toString();
+						QStringList exts = {".png", ".jpg", ".jpeg"};
+						for(const QString &ext: exts){
+							QString candidate = modDir + "/" + base + ext;
+							if(QFile::exists(candidate)){
+								QFile f(candidate); if(f.open(QIODevice::ReadOnly)) o["image_base64"] = QString::fromLatin1(f.readAll().toBase64());
+								break;
+							}
+						}
+					}
+				}
+>>>>>>> 解决注册失败
 				list.append(o);
 			}
 		}
 	}
+<<<<<<< HEAD
+=======
+	 // 严格再次过滤：仅保留 name 或 generic_name 包含关键字的项
+	 if(ok && !keyword.isEmpty()){
+		 QJsonArray filtered;
+		 for(const auto &v: list){ QJsonObject o=v.toObject(); QString name=o.value("name").toString(); QString gen=o.value("generic_name").toString(); if(name.contains(keyword, Qt::CaseInsensitive) || gen.contains(keyword, Qt::CaseInsensitive)) filtered.append(o); }
+		 list = filtered; 
+	 }
+>>>>>>> 解决注册失败
 	 QJsonObject resp; resp["type"]="medications_response"; resp["success"]=ok; if(ok) resp["data"]=list; else resp["error"]="搜索药品失败";
 	 sendResponse(resp,payload);
  }
  
  void MedicineModule::handleRemoteSearch(const QJsonObject &payload){
 	 const QString keyword = payload.value("keyword").toString();
+<<<<<<< HEAD
+=======
+	 qInfo() << "[MedicineModule] 远程搜索关键字=" << keyword;
+>>>>>>> 解决注册失败
 	 // DuckDuckGo 简易查询 (公共 API, 无密钥) 仅作示例
 	 QUrl url("https://api.duckduckgo.com/");
 	 QUrlQuery q; q.addQueryItem("q", keyword + QStringLiteral(" 药品")); q.addQueryItem("format","json"); q.addQueryItem("no_redirect","1"); q.addQueryItem("no_html","1");
@@ -141,11 +204,23 @@ static QString moduleImageDir(){
  }
 
 void MedicineModule::loadLocalMeta(){
+<<<<<<< HEAD
 	QFile f(localMedicationsJsonPath());
 	if(!f.exists()) return;
 	if(f.open(QIODevice::ReadOnly)){
 		QJsonDocument doc = QJsonDocument::fromJson(f.readAll());
 		if(doc.isArray()) m_localMeta = doc.array();
+=======
+	QString metaPath = localMedicationsJsonPath();
+	QFile f(metaPath);
+	if(!f.exists()) { qWarning() << "[MedicineModule] 本地药品元数据不存在:" << metaPath; return; }
+	if(f.open(QIODevice::ReadOnly)){
+		QJsonDocument doc = QJsonDocument::fromJson(f.readAll());
+		if(doc.isArray()) { m_localMeta = doc.array(); qInfo() << "[MedicineModule] 载入本地元数据条目数=" << m_localMeta.size(); }
+		else qWarning() << "[MedicineModule] 元数据格式非数组";
+	} else {
+		qWarning() << "[MedicineModule] 打开元数据失败:" << metaPath;
+>>>>>>> 解决注册失败
 	}
 }
  

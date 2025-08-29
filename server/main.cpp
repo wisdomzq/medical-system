@@ -24,6 +24,11 @@ int main(int argc, char *argv[]) {
 
         DBManager db(DatabaseConfig::getDatabasePath()); // 使用统一的数据库路径配置
 
+        // 这些动作由 MedicineModule 处理，这里直接返回避免产生 unknown_response 干扰
+        if(action == "get_medications" || action == "search_medications" || action == "search_medications_remote") {
+            return; // 不发送重复响应
+        }
+
         if (action == "login") {
             responsePayload = loginModule.handleLogin(payload);
         } else if (action == "register") {

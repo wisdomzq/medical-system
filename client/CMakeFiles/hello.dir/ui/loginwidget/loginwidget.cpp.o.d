@@ -315,6 +315,8 @@ client/CMakeFiles/hello.dir/ui/loginwidget/loginwidget.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QTimer \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qtimer.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qbasictimer.h \
+ /home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/doctorinfowidget.h \
+ /home/xuwt/Qt/medical-system/client/ui/patientinfowidget/patientinfowidget.h \
  /home/xuwt/Qt/medical-system/client/core/network/src/protocol.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QMetaType \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h \
@@ -564,8 +566,6 @@ client/CMakeFiles/hello.dir/ui/loginwidget/loginwidget.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qwineventnotifier.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qxmlstream.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qtcoreversion.h \
- /home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/doctorinfowidget.h \
- /home/xuwt/Qt/medical-system/client/ui/patientinfowidget/patientinfowidget.h \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/QFont \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/qfont.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QMessageBox \
