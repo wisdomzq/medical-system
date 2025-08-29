@@ -29,7 +29,6 @@ PatientInfoWidget::PatientInfoWidget(const QString &patientName, QWidget *parent
     m_prescriptionPage = new PrescriptionPage(m_communicationClient, m_patientName, this);
     m_healthAssessmentPage = new HealthAssessmentPage(m_communicationClient, m_patientName, this);
     m_medicationSearchPage = new MedicationSearchPage(m_communicationClient, m_patientName, this);
-    m_hospitalizationInfoPage = new HospitalizationInfoPage(m_communicationClient, m_patientName, this); // 旧占位
     m_hospitalPage = new HospitalPage(m_communicationClient, m_patientName, this); // 新实际页面
 
     tabWidget->addTab(m_appointmentPage, "我的预约");

@@ -34,6 +34,7 @@ MedicationSearchPage::MedicationSearchPage(CommunicationClient *c, const QString
     m_table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     m_table->setEditTriggers(QAbstractItemView::NoEditTriggers);
     m_table->setSelectionBehavior(QAbstractItemView::SelectRows);
+    m_table->verticalHeader()->setDefaultSectionSize(70); // 设置默认行高
     outer->addWidget(m_table,1);
 
     connect(m_searchBtn,&QPushButton::clicked,this,&MedicationSearchPage::onSearch);

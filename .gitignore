@@ -49,6 +49,7 @@ ui_*.h
 # VS Code settings
 .vscode/
 .cache/
+.cache/clangd/
 .clangd/
 *.idx
 *.pch

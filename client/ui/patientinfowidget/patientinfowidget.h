@@ -16,7 +16,6 @@ class AdvicePage;
 class PrescriptionPage;
 class HealthAssessmentPage;
 class MedicationSearchPage;
-class HospitalizationInfoPage;
 class HospitalPage;
 
 class PatientInfoWidget : public QWidget
@@ -42,7 +41,6 @@ private:
     PrescriptionPage *m_prescriptionPage = nullptr;
     HealthAssessmentPage *m_healthAssessmentPage = nullptr;
     MedicationSearchPage *m_medicationSearchPage = nullptr;
-    HospitalizationInfoPage *m_hospitalizationInfoPage = nullptr;
     HospitalPage *m_hospitalPage = nullptr; // 新住院页面
 
 private slots:
