@@ -1,5 +1,10 @@
-/home/test/CMakeFiles/hello.dir
-/home/test/CMakeFiles/edit_cache.dir
-/home/test/CMakeFiles/rebuild_cache.dir
-/home/test/CMakeFiles/hello_autogen_timestamp_deps.dir
-/home/test/CMakeFiles/hello_autogen.dir
+/home/xuwt/Qt/medical-system/CMakeFiles/edit_cache.dir
+/home/xuwt/Qt/medical-system/CMakeFiles/rebuild_cache.dir
+/home/xuwt/Qt/medical-system/client/CMakeFiles/hello.dir
+/home/xuwt/Qt/medical-system/client/CMakeFiles/edit_cache.dir
+/home/xuwt/Qt/medical-system/client/CMakeFiles/rebuild_cache.dir
+/home/xuwt/Qt/medical-system/client/CMakeFiles/hello_autogen.dir
+/home/xuwt/Qt/medical-system/server/CMakeFiles/server.dir
+/home/xuwt/Qt/medical-system/server/CMakeFiles/edit_cache.dir
+/home/xuwt/Qt/medical-system/server/CMakeFiles/rebuild_cache.dir
+/home/xuwt/Qt/medical-system/server/CMakeFiles/server_autogen.dir

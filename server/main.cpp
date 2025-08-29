@@ -19,54 +19,86 @@ int main(int argc, char *argv[]) {
         QJsonObject responsePayload;
         const QString action = payload.value("action").toString();
 
+        DBManager db("data/user.db"); // 使用新的扩展数据库
+
         if (action == "login") {
             responsePayload = loginModule.handleLogin(payload);
         } else if (action == "register") {
             responsePayload = loginModule.handleRegister(payload);
         } else if (action == "get_doctor_info") {
-            DBManager db("data/user.db");
             QString username = payload.value("username").toString();
-            QJsonObject dataObj;
-            QString department, phone;
-            bool ok = db.getDoctorDetails(username, department, phone);
+            QJsonObject doctorInfo;
+            bool ok = db.getDoctorInfo(username, doctorInfo);
             responsePayload["type"] = "doctor_info_response";
             responsePayload["success"] = ok;
             if (ok) {
-                dataObj["name"] = username;
-                dataObj["department"] = department;
-                dataObj["phone"] = phone;
-                responsePayload["data"] = dataObj;
+                responsePayload["data"] = doctorInfo;
             }
         } else if (action == "update_doctor_info") {
-            DBManager db("data/user.db");
             const QString username = payload.value("username").toString();
             QJsonObject data = payload.value("data").toObject();
-            const QString newName = data.value("name").toString();
-            const QString department = data.value("department").toString();
-            const QString phone = data.value("phone").toString();
-            bool ok = db.updateDoctorProfile(username, newName, department, phone);
+            bool ok = db.updateDoctorInfo(username, data);
             responsePayload["type"] = "update_doctor_info_response";
             responsePayload["success"] = ok;
         } else if (action == "get_patient_info") {
-            DBManager db("data/user.db");
             QString username = payload.value("username").toString();
-            QJsonObject dataObj;
-            int age; QString phone, address;
-            bool ok = db.getPatientDetails(username, age, phone, address);
+            QJsonObject patientInfo;
+            bool ok = db.getPatientInfo(username, patientInfo);
             responsePayload["type"] = "patient_info_response";
             responsePayload["success"] = ok;
             if (ok) {
-                dataObj["name"] = username;
-                dataObj["age"] = age;
-                dataObj["phone"] = phone;
-                dataObj["address"] = address;
-                responsePayload["data"] = dataObj;
+                responsePayload["data"] = patientInfo;
+            }
+        } else if (action == "update_patient_info") {
+            const QString username = payload.value("username").toString();
+            QJsonObject data = payload.value("data").toObject();
+            bool ok = db.updatePatientInfo(username, data);
+            responsePayload["type"] = "update_patient_info_response";
+            responsePayload["success"] = ok;
+        } else if (action == "create_appointment") {
+            bool ok = db.createAppointment(payload.value("data").toObject());
+            responsePayload["type"] = "create_appointment_response";
+            responsePayload["success"] = ok;
+        } else if (action == "get_appointments_by_patient") {
+            QString username = payload.value("username").toString();
+            QJsonArray appointments;
+            bool ok = db.getAppointmentsByPatient(username, appointments);
+            responsePayload["type"] = "appointments_response";
+            responsePayload["success"] = ok;
+            if (ok) {
+                responsePayload["data"] = appointments;
+            }
+        } else if (action == "get_appointments_by_doctor") {
+            QString username = payload.value("username").toString();
+            QJsonArray appointments;
+            bool ok = db.getAppointmentsByDoctor(username, appointments);
+            responsePayload["type"] = "appointments_response";
+            responsePayload["success"] = ok;
+            if (ok) {
+                responsePayload["data"] = appointments;
+            }
+        } else if (action == "get_all_doctors") {
+            QJsonArray doctors;
+            bool ok = db.getAllDoctors(doctors);
+            responsePayload["type"] = "doctors_response";
+            responsePayload["success"] = ok;
+            if (ok) {
+                responsePayload["data"] = doctors;
+            }
+        } else if (action == "get_medications") {
+            QJsonArray medications;
+            bool ok = db.getMedications(medications);
+            responsePayload["type"] = "medications_response";
+            responsePayload["success"] = ok;
+            if (ok) {
+                responsePayload["data"] = medications;
             }
         } else {
             responsePayload["type"] = "unknown_response";
             responsePayload["success"] = false;
             responsePayload["error"] = QStringLiteral("Unknown action: %1").arg(action);
         }
+
         // echo back uuid if present
         if (payload.contains("uuid"))
             responsePayload["request_uuid"] = payload.value("uuid").toString();

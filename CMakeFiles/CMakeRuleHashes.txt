@@ -1,4 +1,4 @@
 # Hashes of file build rules.
-5be26ae5530059844e04de51e5b840a9 CMakeFiles/hello_autogen
-5be26ae5530059844e04de51e5b840a9 CMakeFiles/hello_autogen_timestamp_deps
-f1b2f194bb9c343e9f789fed121a6c12 hello_autogen/timestamp
+31f6e94d24020733f690d159199f6e09 client/CMakeFiles/hello_autogen
+f2c9852e6834db24ca2c598a625ce68d client/hello_autogen/3YJK5W5UP7/qrc_resources.cpp
+57cbe0c40fc785026aaaefc1364a152d server/CMakeFiles/server_autogen

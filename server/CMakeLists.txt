@@ -8,6 +8,8 @@ find_package(Qt5 COMPONENTS Core Network Sql REQUIRED)
 set(srcs
     main.cpp
     core/database/database.cpp
+    # 如果你的数据库终端功能也想保留，可以添加：
+    # core/database/dbterminal.cpp  # 文件不存在，暂时注释掉
     core/network/src/server/communicationserver.cpp
     core/network/src/server/clienthandler.cpp
     core/network/src/server/messagerouter.cpp
