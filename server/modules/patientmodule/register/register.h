@@ -4,7 +4,7 @@
 #include <QString>
 #include <QList>
 #include <QJsonObject>
-#include <QTcpSocket>
+// 移除旧 QTcpSocket 依赖，改用 MessageRouter 广播机制
 
 // 医生排班信息结构体
 struct DoctorSchedule {
@@ -25,20 +25,12 @@ class RegisterManager : public QObject {
 public:
     explicit RegisterManager(QObject* parent = nullptr);
 
-    // 获取所有医生排班信息
     QList<DoctorSchedule> getAllDoctorSchedules();
 
-    // 根据医生编号挂号
     bool registerPatient(int doctorId, const QString& patientName, QString& errorMsg);
-
-    // 将医生排班信息转为 JSON
     static QJsonObject doctorScheduleToJson(const DoctorSchedule& ds);
-
 public slots:
-    // 网络层信号对应的槽
-    void onJsonReceived(const QJsonObject& json, QTcpSocket* socket);
-
+    void onRequest(const QJsonObject& payload);
 signals:
-    // 需要向客户端回复时发出的信号
-    void sendJsonToClient(const QJsonObject& json, QTcpSocket* socket);
+    void businessResponseReady(QJsonObject payload);
 };

@@ -363,3 +363,252 @@ medical-system
 └─ tests
 
 ```
+```
+medical-system
+├─ CMakeCache.txt
+├─ CMakeFiles
+│  ├─ 3.22.1
+│  │  ├─ CMakeCXXCompiler.cmake
+│  │  ├─ CMakeDetermineCompilerABI_CXX.bin
+│  │  ├─ CMakeSystem.cmake
+│  │  └─ CompilerIdCXX
+│  │     ├─ CMakeCXXCompilerId.cpp
+│  │     └─ a.out
+│  ├─ CMakeDirectoryInformation.cmake
+│  ├─ CMakeOutput.log
+│  ├─ CMakeRuleHashes.txt
+│  ├─ Makefile.cmake
+│  ├─ Makefile2
+│  ├─ TargetDirectories.txt
+│  ├─ cmake.check_cache
+│  └─ progress.marks
+├─ CMakeLists.txt
+├─ Makefile
+├─ README.md
+├─ client
+│  ├─ CMakeFiles
+│  │  ├─ CMakeDirectoryInformation.cmake
+│  │  ├─ hello.dir
+│  │  │  ├─ DependInfo.cmake
+│  │  │  ├─ build.make
+│  │  │  ├─ cmake_clean.cmake
+│  │  │  ├─ compiler_depend.make
+│  │  │  ├─ compiler_depend.ts
+│  │  │  ├─ core
+│  │  │  │  └─ network
+│  │  │  │     └─ src
+│  │  │  │        └─ client
+│  │  │  │           ├─ communicationclient.cpp.o
+│  │  │  │           ├─ communicationclient.cpp.o.d
+│  │  │  │           ├─ responsedispatcher.cpp.o
+│  │  │  │           ├─ responsedispatcher.cpp.o.d
+│  │  │  │           ├─ streamparser.cpp.o
+│  │  │  │           └─ streamparser.cpp.o.d
+│  │  │  ├─ depend.make
+│  │  │  ├─ flags.make
+│  │  │  ├─ hello_autogen
+│  │  │  │  ├─ 3YJK5W5UP7
+│  │  │  │  │  ├─ qrc_resources.cpp.o
+│  │  │  │  │  └─ qrc_resources.cpp.o.d
+│  │  │  │  ├─ mocs_compilation.cpp.o
+│  │  │  │  └─ mocs_compilation.cpp.o.d
+│  │  │  ├─ link.txt
+│  │  │  ├─ main.cpp.o
+│  │  │  ├─ main.cpp.o.d
+│  │  │  ├─ progress.make
+│  │  │  └─ ui
+│  │  │     ├─ doctorinfowidget
+│  │  │     │  ├─ doctorinfowidget.cpp.o
+│  │  │     │  └─ doctorinfowidget.cpp.o.d
+│  │  │     ├─ hello
+│  │  │     │  ├─ hello.cpp.o
+│  │  │     │  └─ hello.cpp.o.d
+│  │  │     ├─ loginwidget
+│  │  │     │  ├─ loginwidget.cpp.o
+│  │  │     │  └─ loginwidget.cpp.o.d
+│  │  │     └─ patientinfowidget
+│  │  │        ├─ patientinfowidget.cpp.o
+│  │  │        └─ patientinfowidget.cpp.o.d
+│  │  ├─ hello_autogen.dir
+│  │  │  ├─ AutoRcc_resources_3YJK5W5UP7_Info.json
+│  │  │  ├─ AutoRcc_resources_3YJK5W5UP7_Lock.lock
+│  │  │  ├─ AutoRcc_resources_3YJK5W5UP7_Used.txt
+│  │  │  ├─ AutogenInfo.json
+│  │  │  ├─ AutogenUsed.txt
+│  │  │  ├─ DependInfo.cmake
+│  │  │  ├─ ParseCache.txt
+│  │  │  ├─ build.make
+│  │  │  ├─ cmake_clean.cmake
+│  │  │  ├─ compiler_depend.make
+│  │  │  ├─ compiler_depend.ts
+│  │  │  └─ progress.make
+│  │  └─ progress.marks
+│  ├─ CMakeLists.txt
+│  ├─ Makefile
+│  ├─ cmake_install.cmake
+│  ├─ core
+│  │  └─ network
+│  │     ├─ CMakeLists.txt
+│  │     ├─ README.md
+│  │     ├─ examples
+│  │     │  └─ client_cli.cpp
+│  │     └─ src
+│  │        ├─ client
+│  │        │  ├─ communicationclient.cpp
+│  │        │  ├─ communicationclient.h
+│  │        │  ├─ responsedispatcher.cpp
+│  │        │  ├─ responsedispatcher.h
+│  │        │  ├─ streamparser.cpp
+│  │        │  └─ streamparser.h
+│  │        └─ protocol.h
+│  ├─ hello
+│  ├─ hello_autogen
+│  │  ├─ 3YJK5W5UP7
+│  │  │  └─ qrc_resources.cpp
+│  │  ├─ AKRC6WZMME
+│  │  │  ├─ moc_doctorinfowidget.cpp
+│  │  │  └─ moc_doctorinfowidget.cpp.d
+│  │  ├─ KUE7F3CO2C
+│  │  │  ├─ moc_hello.cpp
+│  │  │  └─ moc_hello.cpp.d
+│  │  ├─ MJCUNQZLOZ
+│  │  │  ├─ moc_loginwidget.cpp
+│  │  │  └─ moc_loginwidget.cpp.d
+│  │  ├─ XKFTU44BVS
+│  │  │  ├─ moc_communicationclient.cpp
+│  │  │  ├─ moc_communicationclient.cpp.d
+│  │  │  ├─ moc_responsedispatcher.cpp
+│  │  │  ├─ moc_responsedispatcher.cpp.d
+│  │  │  ├─ moc_streamparser.cpp
+│  │  │  └─ moc_streamparser.cpp.d
+│  │  ├─ ZEUGGMGZAI
+│  │  │  ├─ moc_patientinfowidget.cpp
+│  │  │  └─ moc_patientinfowidget.cpp.d
+│  │  ├─ moc_predefs.h
+│  │  └─ mocs_compilation.cpp
+│  ├─ main.cpp
+│  ├─ resources
+│  │  ├─ resources.qrc
+│  │  └─ style.qss
+│  └─ ui
+│     ├─ authdialog
+│     │  ├─ authdialog.cpp
+│     │  └─ authdialog.h
+│     ├─ doctorinfowidget
+│     │  ├─ doctorinfowidget.cpp
+│     │  └─ doctorinfowidget.h
+│     ├─ hello
+│     │  ├─ hello.cpp
+│     │  ├─ hello.h
+│     │  └─ hello.ui
+│     ├─ loginwidget
+│     │  ├─ loginwidget.cpp
+│     │  └─ loginwidget.h
+│     └─ patientinfowidget
+│        ├─ patientinfowidget.cpp
+│        └─ patientinfowidget.h
+├─ cmake_install.cmake
+├─ data
+│  └─ user.db
+├─ readme.md
+├─ server
+│  ├─ CMakeFiles
+│  │  ├─ CMakeDirectoryInformation.cmake
+│  │  ├─ progress.marks
+│  │  ├─ server.dir
+│  │  │  ├─ DependInfo.cmake
+│  │  │  ├─ build.make
+│  │  │  ├─ cmake_clean.cmake
+│  │  │  ├─ compiler_depend.make
+│  │  │  ├─ compiler_depend.ts
+│  │  │  ├─ core
+│  │  │  │  ├─ database
+│  │  │  │  │  ├─ database.cpp.o
+│  │  │  │  │  └─ database.cpp.o.d
+│  │  │  │  └─ network
+│  │  │  │     └─ src
+│  │  │  │        └─ server
+│  │  │  │           ├─ clienthandler.cpp.o
+│  │  │  │           ├─ clienthandler.cpp.o.d
+│  │  │  │           ├─ communicationserver.cpp.o
+│  │  │  │           ├─ communicationserver.cpp.o.d
+│  │  │  │           ├─ messagerouter.cpp.o
+│  │  │  │           └─ messagerouter.cpp.o.d
+│  │  │  ├─ depend.make
+│  │  │  ├─ flags.make
+│  │  │  ├─ link.txt
+│  │  │  ├─ main.cpp.o
+│  │  │  ├─ main.cpp.o.d
+│  │  │  ├─ modules
+│  │  │  │  └─ loginmodule
+│  │  │  │     ├─ loginmodule.cpp.o
+│  │  │  │     └─ loginmodule.cpp.o.d
+│  │  │  ├─ progress.make
+│  │  │  └─ server_autogen
+│  │  │     ├─ mocs_compilation.cpp.o
+│  │  │     └─ mocs_compilation.cpp.o.d
+│  │  └─ server_autogen.dir
+│  │     ├─ AutogenInfo.json
+│  │     ├─ AutogenUsed.txt
+│  │     ├─ DependInfo.cmake
+│  │     ├─ ParseCache.txt
+│  │     ├─ build.make
+│  │     ├─ cmake_clean.cmake
+│  │     ├─ compiler_depend.make
+│  │     ├─ compiler_depend.ts
+│  │     └─ progress.make
+│  ├─ CMakeLists.txt
+│  ├─ CMakeLists1.txt
+│  ├─ Makefile
+│  ├─ cmake_install.cmake
+│  ├─ core
+│  │  ├─ database
+│  │  │  ├─ CMakeLists.txt
+│  │  │  ├─ database.cpp
+│  │  │  ├─ database.h
+│  │  │  ├─ dbterminal.cpp
+│  │  │  └─ dbterminal.h
+│  │  ├─ network
+│  │  │  ├─ CMakeLists.txt
+│  │  │  ├─ README.md
+│  │  │  ├─ examples
+│  │  │  │  └─ server_main.cpp
+│  │  │  └─ src
+│  │  │     ├─ protocol.h
+│  │  │     └─ server
+│  │  │        ├─ clienthandler.cpp
+│  │  │        ├─ clienthandler.h
+│  │  │        ├─ communicationserver.cpp
+│  │  │        ├─ communicationserver.h
+│  │  │        ├─ messagerouter.cpp
+│  │  │        └─ messagerouter.h
+│  │  ├─ tcpserver.cpp
+│  │  └─ tcpserver.h
+│  ├─ main.cpp
+│  ├─ main1.cpp
+│  ├─ modules
+│  │  ├─ doctormodule
+│  │  ├─ loginmodule
+│  │  │  ├─ loginmodule.cpp
+│  │  │  └─ loginmodule.h
+│  │  └─ patientmodule
+│  │     └─ register
+│  │        ├─ register.cpp
+│  │        └─ register.h
+│  ├─ server
+│  └─ server_autogen
+│     ├─ F5YCKCVFAJ
+│     │  ├─ moc_clienthandler.cpp
+│     │  ├─ moc_clienthandler.cpp.d
+│     │  ├─ moc_communicationserver.cpp
+│     │  ├─ moc_communicationserver.cpp.d
+│     │  ├─ moc_messagerouter.cpp
+│     │  └─ moc_messagerouter.cpp.d
+│     ├─ URL7VJ5BZG
+│     │  ├─ moc_loginmodule.cpp
+│     │  └─ moc_loginmodule.cpp.d
+│     ├─ moc_predefs.h
+│     └─ mocs_compilation.cpp
+└─ tests
+
+```

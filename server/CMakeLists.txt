@@ -14,6 +14,7 @@ set(srcs
     core/network/src/server/clienthandler.cpp
     core/network/src/server/messagerouter.cpp
     modules/loginmodule/loginmodule.cpp
+    modules/patientmodule/register/register.cpp
 )
 
 add_executable(server

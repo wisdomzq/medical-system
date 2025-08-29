@@ -3,6 +3,9 @@
 
 #include <QWidget>
 #include <QLineEdit>
+
+class QTableWidget;
+class QPushButton;
 #include "core/network/src/client/communicationclient.h"
 
 class QTabWidget;
@@ -24,11 +27,23 @@ private:
     QLineEdit *addressEdit;
     CommunicationClient *m_communicationClient;
 
-    QWidget *createAppointmentPage();
+    QWidget *createAppointmentPage(); // 将扩展为医生排班 + 挂号
     QWidget *createCasePage();
     QWidget *createCommunicationPage();
     QWidget *createProfilePage();
     void requestPatientInfo();
+    void requestDoctorSchedule();
+    void sendRegisterRequest();
+
+    // 挂号页面控件
+    QWidget *appointmentPage = nullptr;
+    QTableWidget *doctorTable = nullptr;
+    QPushButton *refreshDoctorsBtn = nullptr;
+    QPushButton *registerBtn = nullptr;
+    QLineEdit *registerDoctorIdEdit = nullptr;
+    QLineEdit *registerPatientNameEdit = nullptr;
+    QTableWidget *appointmentsTable = nullptr; // 患者预约列表
+    QPushButton *refreshAppointmentsBtn = nullptr;
 
 private slots:
     void updateProfile();
