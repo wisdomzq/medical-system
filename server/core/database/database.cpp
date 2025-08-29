@@ -257,7 +257,7 @@ void DBManager::createPrescriptionItemsTable() {
 void DBManager::createMedicationsTable() {
     if (!m_db.tables().contains(QStringLiteral("medications"))) {
         QSqlQuery query(m_db);
-        QString sql = R"(
+    QString sql = R"(
             CREATE TABLE medications (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL,
@@ -272,6 +272,7 @@ void DBManager::createMedicationsTable() {
                 precautions TEXT,
                 side_effects TEXT,
                 contraindications TEXT,
+                image_path TEXT,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
             )
@@ -1229,11 +1230,12 @@ bool DBManager::searchMedications(const QString& keyword, QJsonArray& medication
         SELECT id, name, generic_name, category, manufacturer, specification,
                unit, price, stock_quantity, description
         FROM medications
-        WHERE name LIKE :keyword OR generic_name LIKE :keyword 
-              OR category LIKE :keyword OR manufacturer LIKE :keyword
+        WHERE name = :keyword OR generic_name = :keyword
+              OR category LIKE :like_keyword OR manufacturer LIKE :like_keyword
         ORDER BY name
     )");
-    query.bindValue(":keyword", "%" + keyword + "%");
+    query.bindValue(":keyword", keyword);
+    query.bindValue(":like_keyword", "%" + keyword + "%");
     
     if (!query.exec()) {
         qDebug() << "searchMedications error:" << query.lastError().text();
@@ -1251,7 +1253,8 @@ bool DBManager::searchMedications(const QString& keyword, QJsonArray& medication
         medication["unit"] = query.value("unit").toString();
         medication["price"] = query.value("price").toDouble();
         medication["stock_quantity"] = query.value("stock_quantity").toInt();
-        medication["description"] = query.value("description").toString();
+    medication["description"] = query.value("description").toString();
+    medication["precautions"] = query.value("precautions").toString();
         medications.append(medication);
     }
     return true;
@@ -1546,87 +1549,5 @@ void DBManager::insertSampleMedications() {
         if (!query.exec()) {
             qDebug() << "Insert sample medication error:" << query.lastError().text();
         }
-    }
-}
-
-// 数据清理和修复函数 - 清理数据不一致的情况
-bool DBManager::cleanupInconsistentData() {
-    qDebug() << "开始清理不一致的数据...";
-    
-    if (!m_db.transaction()) {
-        qDebug() << "Failed to start cleanup transaction.";
-        return false;
-    }
-    
-    try {
-        // 1. 清理在users表中存在但在doctors/patients表中不存在的用户
-        QSqlQuery orphanDoctorsQuery(m_db);
-        orphanDoctorsQuery.prepare(R"(
-            DELETE FROM users 
-            WHERE role = 'doctor' 
-            AND username NOT IN (SELECT username FROM doctors)
-        )");
-        
-        if (orphanDoctorsQuery.exec()) {
-            int deletedDoctors = orphanDoctorsQuery.numRowsAffected();
-            if (deletedDoctors > 0) {
-                qDebug() << "清理了" << deletedDoctors << "个孤立的医生用户记录";
-            }
-        }
-        
-        QSqlQuery orphanPatientsQuery(m_db);
-        orphanPatientsQuery.prepare(R"(
-            DELETE FROM users 
-            WHERE role = 'patient' 
-            AND username NOT IN (SELECT username FROM patients)
-        )");
-        
-        if (orphanPatientsQuery.exec()) {
-            int deletedPatients = orphanPatientsQuery.numRowsAffected();
-            if (deletedPatients > 0) {
-                qDebug() << "清理了" << deletedPatients << "个孤立的病人用户记录";
-            }
-        }
-        
-        // 2. 清理在doctors/patients表中存在但在users表中不存在的记录
-        QSqlQuery orphanDoctorDetailsQuery(m_db);
-        orphanDoctorDetailsQuery.prepare(R"(
-            DELETE FROM doctors 
-            WHERE username NOT IN (SELECT username FROM users WHERE role = 'doctor')
-        )");
-        
-        if (orphanDoctorDetailsQuery.exec()) {
-            int deletedDoctorDetails = orphanDoctorDetailsQuery.numRowsAffected();
-            if (deletedDoctorDetails > 0) {
-                qDebug() << "清理了" << deletedDoctorDetails << "个孤立的医生详情记录";
-            }
-        }
-        
-        QSqlQuery orphanPatientDetailsQuery(m_db);
-        orphanPatientDetailsQuery.prepare(R"(
-            DELETE FROM patients 
-            WHERE username NOT IN (SELECT username FROM users WHERE role = 'patient')
-        )");
-        
-        if (orphanPatientDetailsQuery.exec()) {
-            int deletedPatientDetails = orphanPatientDetailsQuery.numRowsAffected();
-            if (deletedPatientDetails > 0) {
-                qDebug() << "清理了" << deletedPatientDetails << "个孤立的病人详情记录";
-            }
-        }
-        
-        if (!m_db.commit()) {
-            qDebug() << "Failed to commit cleanup transaction.";
-            m_db.rollback();
-            return false;
-        }
-        
-        qDebug() << "数据清理完成。";
-        return true;
-        
-    } catch (...) {
-        m_db.rollback();
-        qDebug() << "数据清理过程中发生异常。";
-        return false;
     }
 }
