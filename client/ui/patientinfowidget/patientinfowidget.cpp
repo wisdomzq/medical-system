@@ -46,17 +46,19 @@ QWidget* PatientInfoWidget::createAppointmentPage() {
     QHBoxLayout *toolbar = new QHBoxLayout;
     refreshDoctorsBtn = new QPushButton("刷新医生排班");
     registerBtn = new QPushButton("挂号");
-    registerDoctorIdEdit = new QLineEdit; registerDoctorIdEdit->setPlaceholderText("医生ID");
-    registerPatientNameEdit = new QLineEdit; registerPatientNameEdit->setPlaceholderText("患者姓名(默认本人)");
+    registerDoctorIdEdit = new QLineEdit; registerDoctorIdEdit->setPlaceholderText("(序号可选)"); registerDoctorIdEdit->setFixedWidth(70);
+    registerDoctorNameEdit = new QLineEdit; registerDoctorNameEdit->setPlaceholderText("医生姓名"); registerDoctorNameEdit->setFixedWidth(120);
+    registerPatientNameEdit = new QLineEdit; registerPatientNameEdit->setPlaceholderText("患者用户名(默认本人)");
     toolbar->addWidget(refreshDoctorsBtn);
-    toolbar->addWidget(new QLabel("医生ID:")); toolbar->addWidget(registerDoctorIdEdit);
+    toolbar->addWidget(new QLabel("医生姓名:")); toolbar->addWidget(registerDoctorNameEdit);
+    toolbar->addWidget(new QLabel("序号:")); toolbar->addWidget(registerDoctorIdEdit);
     toolbar->addWidget(new QLabel("患者:")); toolbar->addWidget(registerPatientNameEdit);
     toolbar->addWidget(registerBtn);
     toolbar->addStretch();
 
-    doctorTable = new QTableWidget; // 列: ID, 姓名, 科室, 工作时间, 费用, 已预约/上限, 剩余
-    doctorTable->setColumnCount(7);
-    QStringList headers{"ID","姓名","科室","工作时间","费用","已/上限","剩余"};
+    doctorTable = new QTableWidget; // 列: 序号, 账号, 姓名, 科室, 工作时间, 费用, 已预约/上限, 剩余
+    doctorTable->setColumnCount(8);
+    QStringList headers{"序号","账号","姓名","科室","工作时间","费用","已/上限","剩余"};
     doctorTable->setHorizontalHeaderLabels(headers);
     doctorTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     doctorTable->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -91,6 +93,7 @@ QWidget* PatientInfoWidget::createAppointmentPage() {
     connect(doctorTable, &QTableWidget::cellClicked, this, [this](int row,int){
         if (!doctorTable) return;
         registerDoctorIdEdit->setText(doctorTable->item(row,0)->text());
+    registerDoctorNameEdit->setText(doctorTable->item(row,2)->text().isEmpty()? doctorTable->item(row,1)->text(): doctorTable->item(row,2)->text());
     });
 
     // 初次进入自动刷新
@@ -162,11 +165,11 @@ void PatientInfoWidget::requestDoctorSchedule() {
 }
 
 void PatientInfoWidget::sendRegisterRequest() {
-    int doctorId = registerDoctorIdEdit->text().toInt();
-    if (doctorId <= 0) { QMessageBox::warning(this, "提示", "请输入有效的医生ID"); return; }
+    QString docName = registerDoctorNameEdit->text().trimmed();
+    if (docName.isEmpty()) { QMessageBox::warning(this, "提示", "请输入或选择医生姓名"); return; }
     QString patient = registerPatientNameEdit->text().trimmed();
-    if (patient.isEmpty()) patient = m_patientName; // 默认本人
-    QJsonObject req; req["action"] = "register_doctor"; req["doctorId"] = doctorId; req["patientName"] = patient;
+    if (patient.isEmpty()) patient = m_patientName;
+    QJsonObject req; req["action"] = "register_doctor"; req["doctor_name"] = docName; req["patientName"] = patient;
     m_communicationClient->sendJson(req);
 }
 
@@ -199,15 +202,16 @@ void PatientInfoWidget::onResponseReceived(const QJsonObject &response)
                 auto *it=new QTableWidgetItem(text); doctorTable->setItem(row,col,it);
             };
             setItem(0, QString::number(o.value("doctorId").toInt()));
-            setItem(1, o.value("name").toString());
-            setItem(2, o.value("department").toString());
-            setItem(3, o.value("workTime").toString());
-            setItem(4, QString::number(o.value("fee").toDouble(),'f',2));
+            setItem(1, o.value("doctor_username").toString());
+            setItem(2, o.value("name").toString());
+            setItem(3, o.value("department").toString());
+            setItem(4, o.value("workTime").toString());
+            setItem(5, QString::number(o.value("fee").toDouble(),'f',2));
             int reserved = o.value("reservedPatients").toInt();
             int maxp = o.value("maxPatientsPerDay").toInt();
             int remain = o.value("remainingSlots").toInt();
-            setItem(5, QString("%1/%2").arg(reserved).arg(maxp));
-            setItem(6, QString::number(remain));
+            setItem(6, QString("%1/%2").arg(reserved).arg(maxp));
+            setItem(7, QString::number(remain));
             ++row;
         }
     }

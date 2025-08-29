@@ -1,9 +1,6 @@
 # Build output
 build/
 
-# User-specific files
-*.user
-
 # VS Code settings
 .vscode/
 .cache/

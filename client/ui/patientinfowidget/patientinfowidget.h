@@ -40,7 +40,8 @@ private:
     QTableWidget *doctorTable = nullptr;
     QPushButton *refreshDoctorsBtn = nullptr;
     QPushButton *registerBtn = nullptr;
-    QLineEdit *registerDoctorIdEdit = nullptr;
+    QLineEdit *registerDoctorIdEdit = nullptr; // 序号（可选）
+    QLineEdit *registerDoctorNameEdit = nullptr; // 医生姓名(注册时填写的用户名或 doctors.name)
     QLineEdit *registerPatientNameEdit = nullptr;
     QTableWidget *appointmentsTable = nullptr; // 患者预约列表
     QPushButton *refreshAppointmentsBtn = nullptr;
