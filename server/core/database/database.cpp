@@ -813,29 +813,126 @@ bool DBManager::updatePatientProfile(const QString& oldName, const QString& newN
 
 // 预约管理实现
 bool DBManager::createAppointment(const QJsonObject& appointmentData) {
+    QString doctorUsername = appointmentData["doctor_username"].toString();
+    QString appointmentDate = appointmentData["appointment_date"].toString();
+    QString appointmentTime = appointmentData["appointment_time"].toString();
+    
+    // 尝试严格的验证流程
+    bool strictValidationSuccess = true;
+    QString doctorDepartment;
+    double consultationFee = 0.0;
+    
+    // 1. 验证医生是否存在并获取医生信息
+    QSqlQuery doctorQuery(m_db);
+    doctorQuery.prepare(R"(
+        SELECT d.name, d.department, d.consultation_fee, d.title, d.specialization
+        FROM doctors d 
+        WHERE d.username = :username
+    )");
+    doctorQuery.bindValue(":username", doctorUsername);
+    
+    if (!doctorQuery.exec() || !doctorQuery.next()) {
+        qDebug() << "Doctor not found in doctors table, trying fallback:" << doctorQuery.lastError().text();
+        strictValidationSuccess = false;
+    } else {
+        doctorDepartment = doctorQuery.value("department").toString();
+        consultationFee = doctorQuery.value("consultation_fee").toDouble();
+    }
+    
+    // 2. 如果医生存在，验证排班
+    if (strictValidationSuccess) {
+        QSqlQuery scheduleQuery(m_db);
+        scheduleQuery.prepare(R"(
+            SELECT ds.start_time, ds.end_time, ds.max_appointments
+            FROM doctor_schedules ds
+            WHERE ds.doctor_username = :username 
+            AND ds.day_of_week = CAST(strftime('%w', :appointment_date) AS INTEGER)
+            AND ds.is_active = 1
+        )");
+        scheduleQuery.bindValue(":username", doctorUsername);
+        scheduleQuery.bindValue(":appointment_date", appointmentDate);
+        
+        if (!scheduleQuery.exec() || !scheduleQuery.next()) {
+            qDebug() << "Doctor has no schedule for this day, trying fallback:" << scheduleQuery.lastError().text();
+            strictValidationSuccess = false;
+        } else {
+            QString startTime = scheduleQuery.value("start_time").toString();
+            QString endTime = scheduleQuery.value("end_time").toString();
+            int maxAppointments = scheduleQuery.value("max_appointments").toInt();
+            
+            // 3. 验证预约时间是否在医生工作时间内
+            QTime apptTime = QTime::fromString(appointmentTime, "hh:mm");
+            QTime workStart = QTime::fromString(startTime, "hh:mm");
+            QTime workEnd = QTime::fromString(endTime, "hh:mm");
+            
+            if (apptTime < workStart || apptTime > workEnd) {
+                qDebug() << "Appointment time is outside doctor's working hours, trying fallback";
+                strictValidationSuccess = false;
+            } else {
+                // 4. 检查当天预约数量是否已满
+                QSqlQuery countQuery(m_db);
+                countQuery.prepare(R"(
+                    SELECT COUNT(*) FROM appointments 
+                    WHERE doctor_username = :username 
+                    AND appointment_date = :date 
+                    AND status != 'cancelled'
+                )");
+                countQuery.bindValue(":username", doctorUsername);
+                countQuery.bindValue(":date", appointmentDate);
+                
+                if (!countQuery.exec() || !countQuery.next()) {
+                    qDebug() << "Failed to count existing appointments, trying fallback:" << countQuery.lastError().text();
+                    strictValidationSuccess = false;
+                } else {
+                    int currentAppointments = countQuery.value(0).toInt();
+                    if (currentAppointments >= maxAppointments) {
+                        qDebug() << "Doctor's appointment slots are full for this day, trying fallback";
+                        strictValidationSuccess = false;
+                    }
+                }
+            }
+        }
+    }
+    
+    // 如果严格验证失败，使用传入的数据作为回退
+    if (!strictValidationSuccess) {
+        doctorDepartment = appointmentData["department"].toString();
+        consultationFee = appointmentData["fee"].toDouble();
+    }
+    
+    // 5. 创建预约记录（无论是否通过严格验证）
     QSqlQuery query(m_db);
     query.prepare(R"(
         INSERT INTO appointments (
             patient_username, doctor_username, appointment_date, 
-            appointment_time, department, chief_complaint, fee
+            appointment_time, department, chief_complaint, fee, status
         ) VALUES (
             :patient_username, :doctor_username, :appointment_date,
-            :appointment_time, :department, :chief_complaint, :fee
+            :appointment_time, :department, :chief_complaint, :fee, 'pending'
         )
     )");
     
     query.bindValue(":patient_username", appointmentData["patient_username"].toString());
-    query.bindValue(":doctor_username", appointmentData["doctor_username"].toString());
-    query.bindValue(":appointment_date", appointmentData["appointment_date"].toString());
-    query.bindValue(":appointment_time", appointmentData["appointment_time"].toString());
-    query.bindValue(":department", appointmentData["department"].toString());
+    query.bindValue(":doctor_username", doctorUsername);
+    query.bindValue(":appointment_date", appointmentDate);
+    query.bindValue(":appointment_time", appointmentTime);
+    query.bindValue(":department", doctorDepartment);
     query.bindValue(":chief_complaint", appointmentData["chief_complaint"].toString());
-    query.bindValue(":fee", appointmentData["fee"].toDouble());
+    query.bindValue(":fee", consultationFee);
     
     if (!query.exec()) {
-        qDebug() << "createAppointment error:" << query.lastError().text();
+        qDebug() << "createAppointment error:" << query.lastError().text()
+                 << " patient=" << appointmentData["patient_username"].toString()
+                 << " doctor=" << doctorUsername
+                 << " date=" << appointmentDate
+                 << " time=" << appointmentTime
+                 << " dept=" << doctorDepartment
+                 << " fee=" << consultationFee;
         return false;
     }
+    
+    qDebug() << "Appointment created successfully for patient:" << appointmentData["patient_username"].toString() 
+             << "with doctor:" << doctorUsername;
     return true;
 }
 
@@ -844,9 +941,15 @@ bool DBManager::getAppointmentsByPatient(const QString& patientUsername, QJsonAr
     query.prepare(R"(
         SELECT a.id, a.doctor_username, a.appointment_date, a.appointment_time,
                a.status, a.department, a.chief_complaint, a.fee,
-               d.name as doctor_name, d.title as doctor_title
+               d.name as doctor_name, d.title as doctor_title, d.specialization,
+               d.phone as doctor_phone, d.consultation_fee, d.work_number,
+               ds.start_time as schedule_start_time, ds.end_time as schedule_end_time,
+               ds.max_appointments as schedule_max_appointments
         FROM appointments a
         LEFT JOIN doctors d ON a.doctor_username = d.username
+        LEFT JOIN doctor_schedules ds ON (a.doctor_username = ds.doctor_username 
+            AND ds.day_of_week = CAST(strftime('%w', a.appointment_date) AS INTEGER)
+            AND ds.is_active = 1)
         WHERE a.patient_username = :patient_username
         ORDER BY a.appointment_date DESC, a.appointment_time DESC
     )");
@@ -869,6 +972,13 @@ bool DBManager::getAppointmentsByPatient(const QString& patientUsername, QJsonAr
         appointment["fee"] = query.value("fee").toDouble();
         appointment["doctor_name"] = query.value("doctor_name").toString();
         appointment["doctor_title"] = query.value("doctor_title").toString();
+        appointment["doctor_specialization"] = query.value("specialization").toString();
+        appointment["doctor_phone"] = query.value("doctor_phone").toString();
+        appointment["doctor_consultation_fee"] = query.value("consultation_fee").toDouble();
+        appointment["doctor_work_number"] = query.value("work_number").toString();
+        appointment["schedule_start_time"] = query.value("schedule_start_time").toString();
+        appointment["schedule_end_time"] = query.value("schedule_end_time").toString();
+        appointment["schedule_max_appointments"] = query.value("schedule_max_appointments").toInt();
         appointments.append(appointment);
     }
     return true;
@@ -879,9 +989,17 @@ bool DBManager::getAppointmentsByDoctor(const QString& doctorUsername, QJsonArra
     query.prepare(R"(
         SELECT a.id, a.patient_username, a.appointment_date, a.appointment_time,
                a.status, a.department, a.chief_complaint, a.fee,
-               p.name as patient_name, p.age as patient_age
+               p.name as patient_name, p.age as patient_age, p.phone as patient_phone,
+               p.gender as patient_gender, p.birth_date as patient_birth_date,
+               d.name as doctor_name, d.title as doctor_title, d.specialization,
+               ds.start_time as schedule_start_time, ds.end_time as schedule_end_time,
+               ds.max_appointments as schedule_max_appointments
         FROM appointments a
         LEFT JOIN patients p ON a.patient_username = p.username
+        LEFT JOIN doctors d ON a.doctor_username = d.username
+        LEFT JOIN doctor_schedules ds ON (a.doctor_username = ds.doctor_username 
+            AND ds.day_of_week = CAST(strftime('%w', a.appointment_date) AS INTEGER)
+            AND ds.is_active = 1)
         WHERE a.doctor_username = :doctor_username
         ORDER BY a.appointment_date DESC, a.appointment_time DESC
     )");
@@ -904,6 +1022,15 @@ bool DBManager::getAppointmentsByDoctor(const QString& doctorUsername, QJsonArra
         appointment["fee"] = query.value("fee").toDouble();
         appointment["patient_name"] = query.value("patient_name").toString();
         appointment["patient_age"] = query.value("patient_age").toInt();
+        appointment["patient_phone"] = query.value("patient_phone").toString();
+        appointment["patient_gender"] = query.value("patient_gender").toString();
+        appointment["patient_birth_date"] = query.value("patient_birth_date").toString();
+        appointment["doctor_name"] = query.value("doctor_name").toString();
+        appointment["doctor_title"] = query.value("doctor_title").toString();
+        appointment["doctor_specialization"] = query.value("specialization").toString();
+        appointment["schedule_start_time"] = query.value("schedule_start_time").toString();
+        appointment["schedule_end_time"] = query.value("schedule_end_time").toString();
+        appointment["schedule_max_appointments"] = query.value("schedule_max_appointments").toInt();
         appointments.append(appointment);
     }
     return true;
@@ -2043,5 +2170,124 @@ void DBManager::insertSampleDoctorSchedules() {
             qDebug() << "Insert sample doctor schedule error:" << query.lastError().text();
         }
     }
+}
+
+// 获取医生的详细排班和预约统计信息
+bool DBManager::getDoctorScheduleWithAppointmentStats(const QString& doctorUsername, QJsonArray& scheduleStats) {
+    QSqlQuery query(m_db);
+    query.prepare(R"(
+        SELECT 
+            ds.day_of_week, ds.start_time, ds.end_time, ds.max_appointments, ds.is_active,
+            d.name as doctor_name, d.title, d.department, d.specialization, d.consultation_fee,
+            (SELECT COUNT(*) FROM appointments a 
+             WHERE a.doctor_username = ds.doctor_username 
+             AND CAST(strftime('%w', a.appointment_date) AS INTEGER) = ds.day_of_week
+             AND a.status != 'cancelled'
+             AND date(a.appointment_date) = date('now')
+            ) as today_appointments,
+            (SELECT COUNT(*) FROM appointments a 
+             WHERE a.doctor_username = ds.doctor_username 
+             AND CAST(strftime('%w', a.appointment_date) AS INTEGER) = ds.day_of_week
+             AND a.status != 'cancelled'
+             AND date(a.appointment_date) >= date('now')
+             AND date(a.appointment_date) < date('now', '+7 days')
+            ) as week_appointments
+        FROM doctor_schedules ds
+        LEFT JOIN doctors d ON ds.doctor_username = d.username
+        WHERE ds.doctor_username = :username
+        ORDER BY ds.day_of_week
+    )");
+    query.bindValue(":username", doctorUsername);
+    
+    if (!query.exec()) {
+        qDebug() << "getDoctorScheduleWithAppointmentStats error:" << query.lastError().text();
+        return false;
+    }
+    
+    while (query.next()) {
+        QJsonObject scheduleInfo;
+        int dayOfWeek = query.value("day_of_week").toInt();
+        
+        // 转换星期几
+        QString dayName;
+        switch (dayOfWeek) {
+            case 0: dayName = "周日"; break;
+            case 1: dayName = "周一"; break;
+            case 2: dayName = "周二"; break;
+            case 3: dayName = "周三"; break;
+            case 4: dayName = "周四"; break;
+            case 5: dayName = "周五"; break;
+            case 6: dayName = "周六"; break;
+            default: dayName = "未知"; break;
+        }
+        
+        scheduleInfo["day_of_week"] = dayOfWeek;
+        scheduleInfo["day_name"] = dayName;
+        scheduleInfo["start_time"] = query.value("start_time").toString();
+        scheduleInfo["end_time"] = query.value("end_time").toString();
+        scheduleInfo["max_appointments"] = query.value("max_appointments").toInt();
+        scheduleInfo["is_active"] = query.value("is_active").toBool();
+        scheduleInfo["doctor_name"] = query.value("doctor_name").toString();
+        scheduleInfo["doctor_title"] = query.value("title").toString();
+        scheduleInfo["doctor_department"] = query.value("department").toString();
+        scheduleInfo["doctor_specialization"] = query.value("specialization").toString();
+        scheduleInfo["consultation_fee"] = query.value("consultation_fee").toDouble();
+        scheduleInfo["today_appointments"] = query.value("today_appointments").toInt();
+        scheduleInfo["week_appointments"] = query.value("week_appointments").toInt();
+        scheduleInfo["available_slots_today"] = query.value("max_appointments").toInt() - query.value("today_appointments").toInt();
+        
+        scheduleStats.append(scheduleInfo);
+    }
+    return true;
+}
+
+// 获取所有医生的排班概览（用于患者端选择医生）
+bool DBManager::getAllDoctorsScheduleOverview(QJsonArray& doctorsSchedule) {
+    QSqlQuery query(m_db);
+    query.prepare(R"(
+        SELECT 
+            d.username, d.name, d.title, d.department, d.specialization, 
+            d.consultation_fee, d.max_patients_per_day,
+            GROUP_CONCAT(
+                CASE ds.day_of_week 
+                    WHEN 0 THEN '周日' WHEN 1 THEN '周一' WHEN 2 THEN '周二' 
+                    WHEN 3 THEN '周三' WHEN 4 THEN '周四' WHEN 5 THEN '周五' 
+                    WHEN 6 THEN '周六' ELSE '未知' END || 
+                ' (' || ds.start_time || '-' || ds.end_time || ')', 
+                '; '
+            ) as working_days,
+            (SELECT COUNT(*) FROM appointments a 
+             WHERE a.doctor_username = d.username 
+             AND date(a.appointment_date) = date('now')
+             AND a.status != 'cancelled'
+            ) as today_total_appointments
+        FROM doctors d
+        LEFT JOIN doctor_schedules ds ON d.username = ds.doctor_username AND ds.is_active = 1
+        GROUP BY d.username, d.name, d.title, d.department, d.specialization, 
+                 d.consultation_fee, d.max_patients_per_day
+        ORDER BY d.department, d.name
+    )");
+    
+    if (!query.exec()) {
+        qDebug() << "getAllDoctorsScheduleOverview error:" << query.lastError().text();
+        return false;
+    }
+    
+    while (query.next()) {
+        QJsonObject doctorInfo;
+        doctorInfo["username"] = query.value("username").toString();
+        doctorInfo["name"] = query.value("name").toString();
+        doctorInfo["title"] = query.value("title").toString();
+        doctorInfo["department"] = query.value("department").toString();
+        doctorInfo["specialization"] = query.value("specialization").toString();
+        doctorInfo["consultation_fee"] = query.value("consultation_fee").toDouble();
+        doctorInfo["max_patients_per_day"] = query.value("max_patients_per_day").toInt();
+        doctorInfo["working_days"] = query.value("working_days").toString();
+        doctorInfo["today_appointments"] = query.value("today_total_appointments").toInt();
+        doctorInfo["available_slots_today"] = query.value("max_patients_per_day").toInt() - query.value("today_total_appointments").toInt();
+        
+        doctorsSchedule.append(doctorInfo);
+    }
+    return true;
 }
 

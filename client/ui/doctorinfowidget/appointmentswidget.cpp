@@ -75,8 +75,39 @@ void AppointmentsWidget::onJsonReceived(const QJsonObject& obj) {
             const auto date = appt.value("appointment_date").toString();
             const auto time = appt.value("appointment_time").toString();
             const auto ts = date + " " + time;
+            
             auto* nameItem = new QTableWidgetItem(patientName);
             auto* timeItem = new QTableWidgetItem(ts);
+            
+            // 添加更丰富的患者信息工具提示
+            QString patientTooltip = QString("患者: %1").arg(patientName);
+            if (!appt.value("patient_age").toString().isEmpty()) {
+                patientTooltip += QString("\n年龄: %1").arg(appt.value("patient_age").toInt());
+            }
+            if (!appt.value("patient_gender").toString().isEmpty()) {
+                patientTooltip += QString("\n性别: %1").arg(appt.value("patient_gender").toString());
+            }
+            if (!appt.value("patient_phone").toString().isEmpty()) {
+                patientTooltip += QString("\n电话: %1").arg(appt.value("patient_phone").toString());
+            }
+            if (!appt.value("chief_complaint").toString().isEmpty()) {
+                patientTooltip += QString("\n主诉: %1").arg(appt.value("chief_complaint").toString());
+            }
+            nameItem->setToolTip(patientTooltip);
+            
+            // 添加排班信息工具提示
+            QString scheduleTooltip = QString("预约时间: %1").arg(ts);
+            if (!appt.value("schedule_start_time").toString().isEmpty()) {
+                scheduleTooltip += QString("\n工作时间: %1 - %2")
+                    .arg(appt.value("schedule_start_time").toString())
+                    .arg(appt.value("schedule_end_time").toString());
+            }
+            if (appt.value("schedule_max_appointments").toInt() > 0) {
+                scheduleTooltip += QString("\n当日最大预约数: %1")
+                    .arg(appt.value("schedule_max_appointments").toInt());
+            }
+            timeItem->setToolTip(scheduleTooltip);
+            
             table_->setItem(row, 0, nameItem);
             table_->setItem(row, 1, timeItem);
             auto* btn = new QPushButton(tr("详情"), table_);

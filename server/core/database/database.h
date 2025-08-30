@@ -39,6 +39,10 @@ public:
     bool getAppointmentsByDoctor(const QString& doctorUsername, QJsonArray& appointments);
     bool updateAppointmentStatus(int appointmentId, const QString& status);
     bool deleteAppointment(int appointmentId);
+    
+    // 增强的预约排班管理
+    bool getDoctorScheduleWithAppointmentStats(const QString& doctorUsername, QJsonArray& scheduleStats);
+    bool getAllDoctorsScheduleOverview(QJsonArray& doctorsSchedule);
 
     // 病例管理
     bool createMedicalRecord(const QJsonObject& recordData);
