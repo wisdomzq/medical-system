@@ -84,6 +84,7 @@ void DBManager::createDoctorsTable() {
                 specialization TEXT,
                 consultation_fee DECIMAL(10,2) DEFAULT 0.00,
                 max_patients_per_day INTEGER DEFAULT 20,
+                photo BLOB,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (username) REFERENCES users(username)
@@ -91,6 +92,24 @@ void DBManager::createDoctorsTable() {
         )";
         if (!query.exec(sql)) {
             qDebug() << "创建doctors表失败:" << query.lastError().text();
+        }
+    }
+    // 表已存在时，确保新增列 photo 存在（SQLite 迁移）
+    {
+        QSqlQuery info(m_db);
+        if (info.exec("PRAGMA table_info(doctors)")) {
+            bool hasPhoto = false;
+            while (info.next()) {
+                if (info.value(1).toString().compare("photo", Qt::CaseInsensitive) == 0) {
+                    hasPhoto = true; break;
+                }
+            }
+            if (!hasPhoto) {
+                QSqlQuery alter(m_db);
+                if (!alter.exec("ALTER TABLE doctors ADD COLUMN photo BLOB")) {
+                    qDebug() << "为doctors表添加photo列失败:" << alter.lastError().text();
+                }
+            }
         }
     }
 }
@@ -484,7 +503,7 @@ bool DBManager::getDoctorInfo(const QString& username, QJsonObject& doctorInfo) 
     QSqlQuery query(m_db);
     query.prepare(R"(
         SELECT name, department, phone, email, work_number, title, 
-               specialization, consultation_fee, max_patients_per_day
+               specialization, consultation_fee, max_patients_per_day, photo
         FROM doctors WHERE username = :username
     )");
     query.bindValue(":username", username);
@@ -499,6 +518,10 @@ bool DBManager::getDoctorInfo(const QString& username, QJsonObject& doctorInfo) 
         doctorInfo["specialization"] = query.value("specialization").toString();
         doctorInfo["consultation_fee"] = query.value("consultation_fee").toDouble();
         doctorInfo["max_patients_per_day"] = query.value("max_patients_per_day").toInt();
+        QByteArray photo = query.value("photo").toByteArray();
+        if (!photo.isEmpty()) {
+            doctorInfo["photo"] = QString::fromUtf8(photo.toBase64());
+        }
         return true;
     }
     qDebug() << "getDoctorInfo error:" << query.lastError().text();
@@ -531,33 +554,41 @@ bool DBManager::getPatientInfo(const QString& username, QJsonObject& patientInfo
 }
 
 bool DBManager::updateDoctorInfo(const QString& username, const QJsonObject& data) {
+    // 动态构造 SQL，只有在传入 photo 时才更新照片，避免无意清空
+    QStringList setClauses;
+    setClauses << "name = :name"
+               << "department = :department"
+               << "phone = :phone"
+               << "email = :email"
+               << "work_number = :work_number"
+               << "title = :title"
+               << "specialization = :specialization"
+               << "consultation_fee = :consultation_fee"
+               << "max_patients_per_day = :max_patients_per_day";
+    bool withPhoto = data.contains("photo");
+    if (withPhoto) {
+        setClauses << "photo = :photo";
+    }
+    QString sql = QString("UPDATE doctors SET %1, updated_at = CURRENT_TIMESTAMP WHERE username = :username")
+                      .arg(setClauses.join(", "));
     QSqlQuery query(m_db);
-    query.prepare(R"(
-        UPDATE doctors SET 
-            name = :name, 
-            department = :department, 
-            phone = :phone, 
-            email = :email,
-            work_number = :work_number,
-            title = :title,
-            specialization = :specialization,
-            consultation_fee = :consultation_fee,
-            max_patients_per_day = :max_patients_per_day,
-            updated_at = CURRENT_TIMESTAMP
-        WHERE username = :username
-    )");
-    
-    query.bindValue(":name", data["name"].toString());
-    query.bindValue(":department", data["department"].toString());
-    query.bindValue(":phone", data["phone"].toString());
-    query.bindValue(":email", data["email"].toString());
-    query.bindValue(":work_number", data["work_number"].toString());
-    query.bindValue(":title", data["title"].toString());
-    query.bindValue(":specialization", data["specialization"].toString());
-    query.bindValue(":consultation_fee", data["consultation_fee"].toDouble());
-    query.bindValue(":max_patients_per_day", data["max_patients_per_day"].toInt());
+    query.prepare(sql);
+
+    query.bindValue(":name", data.value("name").toString());
+    query.bindValue(":department", data.value("department").toString());
+    query.bindValue(":phone", data.value("phone").toString());
+    query.bindValue(":email", data.value("email").toString());
+    query.bindValue(":work_number", data.value("work_number").toString());
+    query.bindValue(":title", data.value("title").toString());
+    query.bindValue(":specialization", data.value("specialization").toString());
+    query.bindValue(":consultation_fee", data.value("consultation_fee").toDouble());
+    query.bindValue(":max_patients_per_day", data.value("max_patients_per_day").toInt());
+    if (withPhoto) {
+        QByteArray ba = QByteArray::fromBase64(data.value("photo").toString().toUtf8());
+        query.bindValue(":photo", ba);
+    }
     query.bindValue(":username", username);
-    
+
     if (!query.exec()) {
         qDebug() << "updateDoctorInfo error:" << query.lastError().text();
         return false;
@@ -1531,7 +1562,7 @@ QString DBManager::getUserRole(const QString& username) {
 // 获取所有医生列表
 bool DBManager::getAllDoctors(QJsonArray& doctors) {
     QSqlQuery query(m_db);
-    if (!query.exec("SELECT username, name, department, title, specialization, consultation_fee FROM doctors")) {
+    if (!query.exec("SELECT username, name, department, title, specialization, consultation_fee, phone, email, work_number, max_patients_per_day FROM doctors")) {
         qDebug() << "getAllDoctors error:" << query.lastError().text();
         return false;
     }
@@ -1544,6 +1575,10 @@ bool DBManager::getAllDoctors(QJsonArray& doctors) {
         doctor["title"] = query.value("title").toString();
         doctor["specialization"] = query.value("specialization").toString();
         doctor["consultation_fee"] = query.value("consultation_fee").toDouble();
+        doctor["phone"] = query.value("phone").toString();
+        doctor["email"] = query.value("email").toString();
+        doctor["work_number"] = query.value("work_number").toString();
+        doctor["max_patients_per_day"] = query.value("max_patients_per_day").toInt();
         doctors.append(doctor);
     }
     return true;
@@ -1552,7 +1587,7 @@ bool DBManager::getAllDoctors(QJsonArray& doctors) {
 // 按科室获取医生列表
 bool DBManager::getDoctorsByDepartment(const QString& department, QJsonArray& doctors) {
     QSqlQuery query(m_db);
-    query.prepare("SELECT username, name, department, title, specialization, consultation_fee FROM doctors WHERE department = :department");
+    query.prepare("SELECT username, name, department, title, specialization, consultation_fee, phone, email, work_number, max_patients_per_day FROM doctors WHERE department = :department");
     query.bindValue(":department", department);
     
     if (!query.exec()) {
@@ -1568,6 +1603,10 @@ bool DBManager::getDoctorsByDepartment(const QString& department, QJsonArray& do
         doctor["title"] = query.value("title").toString();
         doctor["specialization"] = query.value("specialization").toString();
         doctor["consultation_fee"] = query.value("consultation_fee").toDouble();
+        doctor["phone"] = query.value("phone").toString();
+        doctor["email"] = query.value("email").toString();
+        doctor["work_number"] = query.value("work_number").toString();
+        doctor["max_patients_per_day"] = query.value("max_patients_per_day").toInt();
         doctors.append(doctor);
     }
     return true;

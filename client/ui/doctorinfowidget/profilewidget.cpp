@@ -108,7 +108,13 @@ void ProfileWidget::onJsonReceived(const QJsonObject& resp) {
         feeEdit_->setValue(d.value("consultation_fee").toDouble());
         dailyLimitEdit_->setValue(d.value("max_patients_per_day").toInt());
         parseWorkTitle(d.value("title").toString());
-        // 照片：当前数据库无图片列，这里仅保留预览占位；可后续扩展存储方案
+        // 照片：如后端返回 base64，解析预览
+        const auto photoB64 = d.value("photo").toString();
+        if (!photoB64.isEmpty()) {
+            photoBytes_ = QByteArray::fromBase64(photoB64.toUtf8());
+            QPixmap px; px.loadFromData(photoBytes_);
+            photoPreview_->setPixmap(px.scaled(photoPreview_->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        }
     } else if (type == "update_doctor_info_response") {
         if (resp.value("success").toBool()) {
             QMessageBox::information(this, "提示", "保存成功");
@@ -156,7 +162,10 @@ void ProfileWidget::onSave() {
     data["specialization"] = bioEdit_->toPlainText(); // 个人资料
     data["consultation_fee"] = feeEdit_->value();
     data["max_patients_per_day"] = dailyLimitEdit_->value();
-    // 照片暂不入库（数据库当前无此列）；如需保存，可扩展 doctors 表新增列 photo BLOB。
+    // 照片：若已选择，随请求以 base64 发送（后端 BLOB 列 photo）
+    if (!photoBytes_.isEmpty()) {
+        data["photo"] = QString::fromUtf8(photoBytes_.toBase64());
+    }
 
     QJsonObject req; req["action"] = "update_doctor_info"; req["username"] = doctorName_; req["data"] = data;
     client_->sendJson(req);
