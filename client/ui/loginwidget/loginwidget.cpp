@@ -102,14 +102,35 @@ LoginWidget::LoginWidget(QWidget* parent)
     QVBoxLayout* doctorLoginLayout = new QVBoxLayout(doctorLoginPage);
     doctorLoginNameEdit = new QLineEdit(this);
     doctorLoginPasswordEdit = new QLineEdit(this);
+    doctorLoginNameEdit->setPlaceholderText(QStringLiteral("请输入用户名"));
+    doctorLoginPasswordEdit->setPlaceholderText(QStringLiteral("请输入密码"));
+    doctorLoginNameEdit->setClearButtonEnabled(true);
+    doctorLoginPasswordEdit->setClearButtonEnabled(true);
     doctorLoginPasswordEdit->setEchoMode(QLineEdit::Password);
-    doctorLoginButton = new QPushButton("登录", this);
-    goToDoctorRegisterButton = new QPushButton("没有账户？点击注册", this);
+    doctorLoginButton = new QPushButton(QStringLiteral("立即登录"), this);
+    doctorLoginButton->setObjectName("PrimaryLoginBtn");
+    goToDoctorRegisterButton = new QPushButton(QStringLiteral("没有账号？ 立即注册"), this);
+    goToDoctorRegisterButton->setObjectName("RegisterLink");
+    goToDoctorRegisterButton->setFlat(true);
     backFromDoctorLoginButton = new QPushButton("返回", this); // <-- 创建按钮
 
-    QFormLayout* doctorFormLayout = new QFormLayout();
-    doctorFormLayout->addRow("医生姓名：", doctorLoginNameEdit);
-    doctorFormLayout->addRow("密码：", doctorLoginPasswordEdit);
+    // 下划线输入行（图标 + 编辑框）
+    auto makeUnderRow = [](QLineEdit* edit, const QString& iconRes, QWidget* parent){
+        QWidget* row = new QWidget(parent);
+        row->setObjectName("UnderRow");
+        QHBoxLayout* hl = new QHBoxLayout(row);
+        hl->setContentsMargins(0,0,0,0);
+        hl->setSpacing(8);
+        QLabel* icon = new QLabel(row);
+        icon->setObjectName("InputIcon");
+        icon->setFixedSize(24,24);
+        icon->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+        icon->setPixmap(QIcon(iconRes).pixmap(18,18));
+        edit->setFrame(false);
+        hl->addWidget(icon);
+        hl->addWidget(edit, 1);
+        return row;
+    };
 
     // 左图右表单卡片
     QHBoxLayout* doctorContent = new QHBoxLayout();
@@ -130,11 +151,22 @@ LoginWidget::LoginWidget(QWidget* parent)
     doctorCardLayout->setContentsMargins(24, 24, 24, 24);
     doctorCardLayout->addWidget(createTitleLabel());
     doctorCardLayout->addSpacing(6);
-    doctorCardLayout->addLayout(doctorFormLayout);
+    doctorCardLayout->addWidget(makeUnderRow(doctorLoginNameEdit, ":/icons/用户名.svg", doctorLoginCard));
+    doctorCardLayout->addWidget(makeUnderRow(doctorLoginPasswordEdit, ":/icons/密码.svg", doctorLoginCard));
     doctorCardLayout->addSpacing(6);
+    // 登录按钮
     doctorCardLayout->addWidget(doctorLoginButton);
-    doctorCardLayout->addWidget(goToDoctorRegisterButton);
-    doctorCardLayout->addWidget(backFromDoctorLoginButton);
+    // 返回图标 + 注册链接 同排
+    QHBoxLayout* linksDoc = new QHBoxLayout();
+    backFromDoctorLoginButton->setText(QString());
+    backFromDoctorLoginButton->setObjectName("BackIconBtn");
+    backFromDoctorLoginButton->setIcon(QIcon(":/icons/返回.svg"));
+    backFromDoctorLoginButton->setIconSize(QSize(18,18));
+    backFromDoctorLoginButton->setFlat(true);
+    linksDoc->addWidget(backFromDoctorLoginButton, 0, Qt::AlignLeft);
+    linksDoc->addStretch();
+    linksDoc->addWidget(goToDoctorRegisterButton, 0, Qt::AlignRight);
+    doctorCardLayout->addLayout(linksDoc);
     doctorContent->addWidget(doctorLoginCard, 0);
     doctorLoginLayout->addStretch();
     doctorLoginLayout->addLayout(doctorContent);
@@ -146,14 +178,19 @@ LoginWidget::LoginWidget(QWidget* parent)
     QVBoxLayout* patientLoginLayout = new QVBoxLayout(patientLoginPage);
     patientLoginNameEdit = new QLineEdit(this);
     patientLoginPasswordEdit = new QLineEdit(this);
+    patientLoginNameEdit->setPlaceholderText(QStringLiteral("请输入用户名"));
+    patientLoginPasswordEdit->setPlaceholderText(QStringLiteral("请输入密码"));
+    patientLoginNameEdit->setClearButtonEnabled(true);
+    patientLoginPasswordEdit->setClearButtonEnabled(true);
     patientLoginPasswordEdit->setEchoMode(QLineEdit::Password);
-    patientLoginButton = new QPushButton("登录", this);
-    goToPatientRegisterButton = new QPushButton("没有账户？点击注册", this);
+    patientLoginButton = new QPushButton(QStringLiteral("立即登录"), this);
+    patientLoginButton->setObjectName("PrimaryLoginBtn");
+    goToPatientRegisterButton = new QPushButton(QStringLiteral("没有账号？ 立即注册"), this);
+    goToPatientRegisterButton->setObjectName("RegisterLink");
+    goToPatientRegisterButton->setFlat(true);
     backFromPatientLoginButton = new QPushButton("返回", this); // <-- 创建按钮
 
-    QFormLayout* patientFormLayout = new QFormLayout();
-    patientFormLayout->addRow("病人姓名：", patientLoginNameEdit);
-    patientFormLayout->addRow("密码：", patientLoginPasswordEdit);
+    // 使用同样的下划线输入行
 
     // 左图右表单卡片
     QHBoxLayout* patientContent = new QHBoxLayout();
@@ -172,11 +209,20 @@ LoginWidget::LoginWidget(QWidget* parent)
     patientCardLayout->setContentsMargins(24, 24, 24, 24);
     patientCardLayout->addWidget(createTitleLabel());
     patientCardLayout->addSpacing(6);
-    patientCardLayout->addLayout(patientFormLayout);
+    patientCardLayout->addWidget(makeUnderRow(patientLoginNameEdit, ":/icons/用户名.svg", patientLoginCard));
+    patientCardLayout->addWidget(makeUnderRow(patientLoginPasswordEdit, ":/icons/密码.svg", patientLoginCard));
     patientCardLayout->addSpacing(6);
     patientCardLayout->addWidget(patientLoginButton);
-    patientCardLayout->addWidget(goToPatientRegisterButton);
-    patientCardLayout->addWidget(backFromPatientLoginButton);
+    QHBoxLayout* linksPat = new QHBoxLayout();
+    backFromPatientLoginButton->setText(QString());
+    backFromPatientLoginButton->setObjectName("BackIconBtn");
+    backFromPatientLoginButton->setIcon(QIcon(":/icons/返回.svg"));
+    backFromPatientLoginButton->setIconSize(QSize(18,18));
+    backFromPatientLoginButton->setFlat(true);
+    linksPat->addWidget(backFromPatientLoginButton, 0, Qt::AlignLeft);
+    linksPat->addStretch();
+    linksPat->addWidget(goToPatientRegisterButton, 0, Qt::AlignRight);
+    patientCardLayout->addLayout(linksPat);
     patientContent->addWidget(patientLoginCard, 0);
     patientLoginLayout->addStretch();
     patientLoginLayout->addLayout(patientContent);
@@ -191,20 +237,62 @@ LoginWidget::LoginWidget(QWidget* parent)
     doctorRegisterPasswordEdit->setEchoMode(QLineEdit::Password);
     doctorDepartmentEdit = new QLineEdit(this);
     doctorPhoneEdit = new QLineEdit(this);
+    // 占位提示与清空按钮
+    doctorRegisterNameEdit->setPlaceholderText(QStringLiteral("请输入姓名/用户名"));
+    doctorRegisterPasswordEdit->setPlaceholderText(QStringLiteral("请输入密码"));
+    doctorDepartmentEdit->setPlaceholderText(QStringLiteral("请输入科室"));
+    doctorPhoneEdit->setPlaceholderText(QStringLiteral("请输入电话"));
+    doctorRegisterNameEdit->setClearButtonEnabled(true);
+    doctorRegisterPasswordEdit->setClearButtonEnabled(true);
+    doctorDepartmentEdit->setClearButtonEnabled(true);
+    doctorPhoneEdit->setClearButtonEnabled(true);
     doctorRegisterButton = new QPushButton("注册", this);
-    backToDoctorLoginButton = new QPushButton("返回登录", this);
-    
-    QFormLayout* doctorRegisterForm = new QFormLayout();
-    doctorRegisterForm->addRow("医生姓名：", doctorRegisterNameEdit);
-    doctorRegisterForm->addRow("密码：", doctorRegisterPasswordEdit);
-    doctorRegisterForm->addRow("科室：", doctorDepartmentEdit);
-    doctorRegisterForm->addRow("电话：", doctorPhoneEdit);
+    doctorRegisterButton->setObjectName("PrimaryLoginBtn");
+    backToDoctorLoginButton = new QPushButton(QStringLiteral("返回登录"), this);
+    backToDoctorLoginButton->setObjectName("RegisterLink");
+    backToDoctorLoginButton->setFlat(true);
 
+    // 左图右表单卡片
+    QHBoxLayout* doctorRegContent = new QHBoxLayout();
+    doctorRegContent->setSpacing(32);
+    QLabel* doctorRegIllustration = new QLabel(doctorRegisterPage);
+    doctorRegIllustration->setObjectName("LoginIllustration");
+    doctorRegIllustration->setMinimumSize(360, 300);
+    doctorRegIllustration->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    doctorRegIllustration->setAlignment(Qt::AlignCenter);
+    doctorRegContent->addWidget(doctorRegIllustration, 1);
+
+    QWidget* doctorRegisterCard = new QWidget(doctorRegisterPage);
+    doctorRegisterCard->setObjectName("LoginFormCard");
+    doctorRegisterCard->setFixedWidth(380);
+    QVBoxLayout* doctorRegisterCardLayout = new QVBoxLayout(doctorRegisterCard);
+    doctorRegisterCardLayout->setSpacing(14);
+    doctorRegisterCardLayout->setContentsMargins(24,24,24,24);
+    doctorRegisterCardLayout->addWidget(createTitleLabel());
+    doctorRegisterCardLayout->addSpacing(6);
+    doctorRegisterCardLayout->addWidget(makeUnderRow(doctorRegisterNameEdit, ":/icons/用户名.svg", doctorRegisterCard));
+    doctorRegisterCardLayout->addWidget(makeUnderRow(doctorRegisterPasswordEdit, ":/icons/密码.svg", doctorRegisterCard));
+    doctorRegisterCardLayout->addWidget(makeUnderRow(doctorDepartmentEdit, ":/icons/科室.svg", doctorRegisterCard));
+    doctorRegisterCardLayout->addWidget(makeUnderRow(doctorPhoneEdit, ":/icons/电话.svg", doctorRegisterCard));
+    doctorRegisterCardLayout->addSpacing(6);
+    doctorRegisterCardLayout->addWidget(doctorRegisterButton);
+    // 返回图标 + 返回登录链接
+    QHBoxLayout* linksDocReg = new QHBoxLayout();
+    QPushButton* backIconDocReg = new QPushButton(doctorRegisterCard);
+    backIconDocReg->setObjectName("BackIconBtn");
+    backIconDocReg->setIcon(QIcon(":/icons/返回.svg"));
+    backIconDocReg->setIconSize(QSize(18,18));
+    backIconDocReg->setFlat(true);
+    linksDocReg->addWidget(backIconDocReg, 0, Qt::AlignLeft);
+    linksDocReg->addStretch();
+    linksDocReg->addWidget(backToDoctorLoginButton, 0, Qt::AlignRight);
+    doctorRegisterCardLayout->addLayout(linksDocReg);
+
+    QObject::connect(backIconDocReg, &QPushButton::clicked, this, &LoginWidget::showDoctorLogin);
+
+    doctorRegContent->addWidget(doctorRegisterCard, 0);
     doctorRegisterLayout->addStretch();
-    doctorRegisterLayout->addWidget(createTitleLabel());
-    doctorRegisterLayout->addLayout(doctorRegisterForm);
-    doctorRegisterLayout->addWidget(doctorRegisterButton);
-    doctorRegisterLayout->addWidget(backToDoctorLoginButton);
+    doctorRegisterLayout->addLayout(doctorRegContent);
     doctorRegisterLayout->addStretch();
 
 
@@ -217,21 +305,65 @@ LoginWidget::LoginWidget(QWidget* parent)
     patientAgeEdit = new QLineEdit(this);
     patientPhoneEdit = new QLineEdit(this);
     patientAddressEdit = new QLineEdit(this);
+    // 占位提示与清空按钮
+    patientRegisterNameEdit->setPlaceholderText(QStringLiteral("请输入姓名/用户名"));
+    patientRegisterPasswordEdit->setPlaceholderText(QStringLiteral("请输入密码"));
+    patientAgeEdit->setPlaceholderText(QStringLiteral("请输入年龄"));
+    patientPhoneEdit->setPlaceholderText(QStringLiteral("请输入电话"));
+    patientAddressEdit->setPlaceholderText(QStringLiteral("请输入地址"));
+    patientRegisterNameEdit->setClearButtonEnabled(true);
+    patientRegisterPasswordEdit->setClearButtonEnabled(true);
+    patientAgeEdit->setClearButtonEnabled(true);
+    patientPhoneEdit->setClearButtonEnabled(true);
+    patientAddressEdit->setClearButtonEnabled(true);
     patientRegisterButton = new QPushButton("注册", this);
-    backToPatientLoginButton = new QPushButton("返回登录", this);
+    patientRegisterButton->setObjectName("PrimaryLoginBtn");
+    backToPatientLoginButton = new QPushButton(QStringLiteral("返回登录"), this);
+    backToPatientLoginButton->setObjectName("RegisterLink");
+    backToPatientLoginButton->setFlat(true);
 
-    QFormLayout* patientRegisterForm = new QFormLayout();
-    patientRegisterForm->addRow("病人姓名：", patientRegisterNameEdit);
-    patientRegisterForm->addRow("密码：", patientRegisterPasswordEdit);
-    patientRegisterForm->addRow("年龄：", patientAgeEdit);
-    patientRegisterForm->addRow("电话：", patientPhoneEdit);
-    patientRegisterForm->addRow("地址：", patientAddressEdit);
-    
+    // 左图右表单卡片
+    QHBoxLayout* patientRegContent = new QHBoxLayout();
+    patientRegContent->setSpacing(32);
+    QLabel* patientRegIllustration = new QLabel(patientRegisterPage);
+    patientRegIllustration->setObjectName("LoginIllustration");
+    patientRegIllustration->setMinimumSize(360, 300);
+    patientRegIllustration->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    patientRegIllustration->setAlignment(Qt::AlignCenter);
+    patientRegContent->addWidget(patientRegIllustration, 1);
+
+    QWidget* patientRegisterCard = new QWidget(patientRegisterPage);
+    patientRegisterCard->setObjectName("LoginFormCard");
+    patientRegisterCard->setFixedWidth(380);
+    QVBoxLayout* patientRegisterCardLayout = new QVBoxLayout(patientRegisterCard);
+    patientRegisterCardLayout->setSpacing(14);
+    patientRegisterCardLayout->setContentsMargins(24,24,24,24);
+    patientRegisterCardLayout->addWidget(createTitleLabel());
+    patientRegisterCardLayout->addSpacing(6);
+    patientRegisterCardLayout->addWidget(makeUnderRow(patientRegisterNameEdit, ":/icons/用户名.svg", patientRegisterCard));
+    patientRegisterCardLayout->addWidget(makeUnderRow(patientRegisterPasswordEdit, ":/icons/密码.svg", patientRegisterCard));
+    patientRegisterCardLayout->addWidget(makeUnderRow(patientAgeEdit, ":/icons/年龄.svg", patientRegisterCard));
+    patientRegisterCardLayout->addWidget(makeUnderRow(patientPhoneEdit, ":/icons/电话.svg", patientRegisterCard));
+    patientRegisterCardLayout->addWidget(makeUnderRow(patientAddressEdit, ":/icons/地址.svg", patientRegisterCard));
+    patientRegisterCardLayout->addSpacing(6);
+    patientRegisterCardLayout->addWidget(patientRegisterButton);
+    // 返回图标 + 返回登录链接
+    QHBoxLayout* linksPatReg = new QHBoxLayout();
+    QPushButton* backIconPatReg = new QPushButton(patientRegisterCard);
+    backIconPatReg->setObjectName("BackIconBtn");
+    backIconPatReg->setIcon(QIcon(":/icons/返回.svg"));
+    backIconPatReg->setIconSize(QSize(18,18));
+    backIconPatReg->setFlat(true);
+    linksPatReg->addWidget(backIconPatReg, 0, Qt::AlignLeft);
+    linksPatReg->addStretch();
+    linksPatReg->addWidget(backToPatientLoginButton, 0, Qt::AlignRight);
+    patientRegisterCardLayout->addLayout(linksPatReg);
+
+    QObject::connect(backIconPatReg, &QPushButton::clicked, this, &LoginWidget::showPatientLogin);
+
+    patientRegContent->addWidget(patientRegisterCard, 0);
     patientRegisterLayout->addStretch();
-    patientRegisterLayout->addWidget(createTitleLabel());
-    patientRegisterLayout->addLayout(patientRegisterForm);
-    patientRegisterLayout->addWidget(patientRegisterButton);
-    patientRegisterLayout->addWidget(backToPatientLoginButton);
+    patientRegisterLayout->addLayout(patientRegContent);
     patientRegisterLayout->addStretch();
 
     // --- Add all pages to the stacked widget ---

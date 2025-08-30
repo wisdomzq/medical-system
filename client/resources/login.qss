@@ -10,6 +10,7 @@ QLabel#LoginTitle {
 	font-size: 36px;    /* 更大字号 */
 	font-weight: 800;   /* 更强字重 */
 	padding: 28px 0;
+	background: transparent; /* 去掉任何继承的背景 */
 }
 
 /* 按钮与输入 */
@@ -24,10 +25,9 @@ QPushButton:hover { background: #1565c0; }
 QPushButton:pressed { background: #0d47a1; }
 
 QLineEdit {
-	background: #fff;
-	border: 1px solid #d0d7de;
-	border-radius: 6px;
-	padding: 6px 10px;
+	background: transparent;
+	border: none;
+	padding: 6px 0;
 }
 
 /* 表单行标题 */
@@ -74,9 +74,6 @@ QPushButton#RoleBtnDoctor:hover {
 	background: #ffafcf;
 }
 QPushButton#RoleBtnPatient { /* 蓝青系 */
-	background: #63a4ff;
-}
-QPushButton#RoleBtnPatient:hover {
 	background: #7ab3ff;
 }
 
@@ -84,6 +81,45 @@ QPushButton#RoleBtnPatient:hover {
 QLabel#LoginIllustration {
 	background: #f1f5f9; /* 占位淡灰蓝，可替换为插图 pixmap */
 	border-radius: 12px;
+	background-origin: content;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+/* 下划线输入行 */
+QWidget#UnderRow {
+	border-bottom: 1px solid #e5e7eb;
+}
+QWidget#UnderRow QLabel#InputIcon {
+	color: #6b7280;
+}
+
+QPushButton#RegisterLink {
+	color: #2f6fec;
+	text-align: right;
+}
+
+/* 主按钮：大圆角 */
+QPushButton#PrimaryLoginBtn {
+	background: #2f6fec;
+	border-radius: 24px;
+	padding: 12px 18px;
+	font-weight: 600;
+}
+QPushButton#PrimaryLoginBtn:hover { background: #275fd0; }
+QPushButton#PrimaryLoginBtn:pressed { background: #1f4fb5; }
+
+/* 使用 background.jpeg 作为插图背景（覆盖占位色） */
+QLabel#LoginIllustration {
+	image: url(:/background.jpeg);
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+/* 卡片内标题与控件背景清理（防止灰底） */
+QWidget#LoginFormCard QLabel#LoginTitle,
+QWidget#LoginFormCard QLabel,
+QWidget#LoginFormCard QLineEdit {
+	background: transparent;
 }
 
 QWidget#LoginFormCard {
@@ -93,9 +129,18 @@ QWidget#LoginFormCard {
 	/* 简单阴影效果（Qt 不支持 box-shadow，用双层边模拟） */
 }
 
-QWidget#LoginFormCard QPushButton {
-	background: #2f6fec; /* 品牌主色登录按钮 */
-	border-radius: 8px;
+/* 注册链接按钮在卡片中保持文本样式 */
+QPushButton#RegisterLink {
+	background: transparent;
+	border: none;
 }
-QWidget#LoginFormCard QPushButton:hover { background: #275fd0; }
-QWidget#LoginFormCard QPushButton:pressed { background: #1f4fb5; }
+
+/* 返回图标按钮样式 */
+QPushButton#BackIconBtn {
+	background: transparent;
+	border: none;
+	padding: 4px;
+}
+QPushButton#BackIconBtn:hover {
+	background: rgba(0,0,0,0.04);
+}
