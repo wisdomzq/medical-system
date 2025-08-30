@@ -232,9 +232,14 @@ void DoctorListPage::openDoctorInfo(const QString& doctorUsername)
         m_doctorInfoPage->deleteLater();
     }
     
-    m_doctorInfoPage = new DoctorInfoPage(doctorUsername, m_client, this);
+    // 创建独立的医生信息窗口（不传递父窗口）
+    m_doctorInfoPage = new DoctorInfoPage(doctorUsername, m_client, nullptr);
     connect(m_doctorInfoPage, &DoctorInfoPage::closeRequested, this, &DoctorListPage::onDoctorInfoClosed);
+    
+    // 显示窗口并置于前台
     m_doctorInfoPage->show();
+    m_doctorInfoPage->raise();
+    m_doctorInfoPage->activateWindow();
 }
 
 void DoctorListPage::onDoctorInfoClosed()

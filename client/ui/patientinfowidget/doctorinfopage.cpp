@@ -1,6 +1,7 @@
 #include "doctorinfopage.h"
 #include "core/network/src/client/communicationclient.h"
 #include <QApplication>
+#include <QScreen>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
@@ -22,40 +23,67 @@ DoctorInfoPage::DoctorInfoPage(const QString& doctorUsername, CommunicationClien
 
 void DoctorInfoPage::setupUI()
 {
+    // 设置为独立的顶级窗口
     setWindowTitle("医生详细信息");
     setFixedSize(800, 600);
     setAttribute(Qt::WA_DeleteOnClose);
+    
+    // 设置窗口标志，使其成为独立的可移动窗口
+    setWindowFlags(Qt::Window | Qt::WindowCloseButtonHint | Qt::WindowMinimizeButtonHint);
+    
+    // 设置为模态窗口，但允许用户移动
+    setWindowModality(Qt::ApplicationModal);
+    
+    // 设置窗口图标（可选）
+    // setWindowIcon(QIcon(":/icons/doctor.png"));
+    
+    // 居中显示窗口
+    QScreen* screen = QApplication::primaryScreen();
+    if (screen) {
+        QRect screenGeometry = screen->availableGeometry();
+        move(screenGeometry.center() - rect().center());
+    }
     
     // 设置窗口样式
     setStyleSheet(
         "QWidget {"
         "    background-color: #f5f5f5;"
         "}"
+        "QWidget#DoctorInfoPage {"
+        "    border: 2px solid #3498db;"
+        "    border-radius: 10px;"
+        "}"
     );
+    
+    // 设置对象名称以便样式表定位
+    setObjectName("DoctorInfoPage");
     
     // 主布局
     m_mainLayout = new QVBoxLayout(this);
-    m_mainLayout->setContentsMargins(10, 10, 10, 10);
+    m_mainLayout->setContentsMargins(15, 15, 15, 15);
     m_mainLayout->setSpacing(10);
     
     // 标题栏和关闭按钮
     QHBoxLayout* headerLayout = new QHBoxLayout();
     QLabel* titleLabel = new QLabel("医生详细信息");
-    titleLabel->setStyleSheet("font-size: 18px; font-weight: bold; color: #2c3e50;");
+    titleLabel->setStyleSheet("font-size: 20px; font-weight: bold; color: #2c3e50; margin-bottom: 5px;");
     
     m_closeButton = new QPushButton("✕");
-    m_closeButton->setFixedSize(30, 30);
+    m_closeButton->setFixedSize(35, 35);
     m_closeButton->setStyleSheet(
         "QPushButton {"
         "    background-color: #e74c3c;"
         "    color: white;"
         "    border: none;"
-        "    border-radius: 15px;"
-        "    font-size: 16px;"
+        "    border-radius: 17px;"
+        "    font-size: 18px;"
         "    font-weight: bold;"
         "}"
         "QPushButton:hover {"
         "    background-color: #c0392b;"
+        "}"
+        "QPushButton:pressed {"
+        "    background-color: #a93226;"
         "}"
     );
     
@@ -65,12 +93,37 @@ void DoctorInfoPage::setupUI()
     
     m_mainLayout->addLayout(headerLayout);
     
+    // 分隔线
+    QFrame* separatorLine = new QFrame();
+    separatorLine->setFrameShape(QFrame::HLine);
+    separatorLine->setFrameShadow(QFrame::Sunken);
+    separatorLine->setStyleSheet("color: #bdc3c7; margin: 5px 0;");
+    m_mainLayout->addWidget(separatorLine);
+    
     // 滚动区域
     m_scrollArea = new QScrollArea();
     m_scrollArea->setWidgetResizable(true);
     m_scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     m_scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-    m_scrollArea->setStyleSheet("QScrollArea { border: none; background-color: #f5f5f5; }");
+    m_scrollArea->setStyleSheet(
+        "QScrollArea { "
+        "    border: none; "
+        "    background-color: #f5f5f5; "
+        "}"
+        "QScrollBar:vertical {"
+        "    background-color: #ecf0f1;"
+        "    width: 12px;"
+        "    border-radius: 6px;"
+        "}"
+        "QScrollBar::handle:vertical {"
+        "    background-color: #bdc3c7;"
+        "    border-radius: 6px;"
+        "    min-height: 20px;"
+        "}"
+        "QScrollBar::handle:vertical:hover {"
+        "    background-color: #95a5a6;"
+        "}"
+    );
     
     m_contentWidget = new QWidget();
     m_contentWidget->setStyleSheet("background-color: #f5f5f5;");
@@ -88,6 +141,7 @@ void DoctorInfoPage::setupUI()
         "    border: 1px solid #bdc3c7;"
         "    border-radius: 8px;"
         "    margin: 5px;"
+        "    box-shadow: 0 2px 4px rgba(0,0,0,0.1);"
         "}"
     );
     
@@ -101,6 +155,7 @@ void DoctorInfoPage::setupUI()
         "    border: 1px solid #bdc3c7;"
         "    border-radius: 8px;"
         "    margin: 5px;"
+        "    box-shadow: 0 2px 4px rgba(0,0,0,0.1);"
         "}"
     );
     
@@ -114,6 +169,7 @@ void DoctorInfoPage::setupUI()
         "    border: 1px solid #bdc3c7;"
         "    border-radius: 8px;"
         "    margin: 5px;"
+        "    box-shadow: 0 2px 4px rgba(0,0,0,0.1);"
         "}"
     );
     
@@ -129,10 +185,7 @@ void DoctorInfoPage::setupUI()
     // 连接信号
     connect(m_closeButton, &QPushButton::clicked, this, &DoctorInfoPage::onCloseButtonClicked);
     
-    // 确保窗口可见
-    show();
-    raise();
-    activateWindow();
+    // 不在这里显示窗口，让调用方控制显示时机
 }
 
 void DoctorInfoPage::loadDoctorInfo()
@@ -144,13 +197,14 @@ void DoctorInfoPage::loadDoctorInfo()
         return;
     }
     
-    // 使用和医生列表相同的action，然后筛选出我们需要的医生
+    // 使用专门的get_doctor_info接口获取医生详细信息
     QJsonObject request;
-    request["action"] = "get_all_doctors";
+    request["action"] = "get_doctor_info";
+    request["username"] = m_doctorUsername;
     
-    qDebug() << "Sending get_all_doctors request";
+    qDebug() << "Sending get_doctor_info request for username:" << m_doctorUsername;
     
-    // 使用和DoctorListPage完全相同的方式
+    // 连接信号处理响应
     connect(m_client, &CommunicationClient::jsonReceived, this, [this](QJsonObject response) {
         qDebug() << "=== Lambda received response ===";
         qDebug() << "Response keys:" << response.keys();
@@ -160,40 +214,35 @@ void DoctorInfoPage::loadDoctorInfo()
         
         qDebug() << "Action:" << action << "Type:" << type;
         
-        if (action == "get_all_doctors" || type == "doctors_response") {
-            qDebug() << "Processing doctors response";
+        // 处理get_doctor_info的响应
+        if (action == "get_doctor_info" || type == "doctor_info_response") {
+            qDebug() << "Processing doctor info response";
             
             // 断开连接避免重复处理
             disconnect(m_client, &CommunicationClient::jsonReceived, this, nullptr);
             
             if (response.value("success").toBool()) {
-                QJsonArray doctors = response.value("data").toArray();
-                qDebug() << "Received" << doctors.size() << "doctors";
+                QJsonObject doctorData = response.value("data").toObject();
+                qDebug() << "Received doctor data:" << doctorData;
                 
-                // 查找指定的医生
-                QJsonObject targetDoctor;
-                for (const QJsonValue& value : doctors) {
-                    QJsonObject doctor = value.toObject();
-                    if (doctor.value("username").toString() == m_doctorUsername) {
-                        targetDoctor = doctor;
-                        break;
-                    }
-                }
-                
-                if (!targetDoctor.isEmpty()) {
-                    qDebug() << "Found target doctor:" << targetDoctor;
-                    displayDoctorInfo(targetDoctor);
+                if (!doctorData.isEmpty()) {
+                    // 添加用户名到数据中，供显示使用
+                    doctorData["username"] = m_doctorUsername;
+                    displayDoctorInfo(doctorData);
                 } else {
-                    qDebug() << "Doctor not found:" << m_doctorUsername;
-                    QMessageBox::warning(this, "错误", "未找到指定医生信息");
+                    qDebug() << "Doctor data is empty";
+                    QMessageBox::warning(this, "错误", "医生信息为空");
                 }
             } else {
                 QString error = response.value("error").toString();
+                if (error.isEmpty()) {
+                    error = response.value("message").toString();
+                }
                 qDebug() << "Request failed:" << error;
                 QMessageBox::warning(this, "错误", "获取医生信息失败: " + error);
             }
         } else {
-            qDebug() << "Ignoring unrelated response";
+            qDebug() << "Ignoring unrelated response, action:" << action << "type:" << type;
         }
     });
     
@@ -201,46 +250,6 @@ void DoctorInfoPage::loadDoctorInfo()
     m_client->sendJson(request);
 }
 
-void DoctorInfoPage::onJsonReceived(const QJsonObject& response)
-{
-    qDebug() << "=== DoctorInfoPage::onJsonReceived CALLED ===";
-    qDebug() << "DoctorInfoPage received ANY response:" << response;
-    
-    QString action = response.value("action").toString();
-    QString type = response.value("type").toString();
-    
-    qDebug() << "Response Action:" << action << "Type:" << type;
-    
-    // 更宽泛地处理医生信息相关的响应
-    if (action.contains("doctorinfo") || type.contains("doctorinfo") || 
-        action == "doctorinfo_get_details" || type == "doctorinfo_details_response") {
-        
-        qDebug() << "Processing doctor info response...";
-        
-        // 断开信号连接，避免重复处理
-        disconnect(m_client, &CommunicationClient::jsonReceived, this, &DoctorInfoPage::onJsonReceived);
-        
-        if (!response.value("success").toBool()) {
-            QString error = response.value("error").toString();
-            qDebug() << "Doctor info request failed:" << error;
-            QMessageBox::warning(this, "错误", "获取医生信息失败: " + error);
-            return;
-        }
-        
-        QJsonObject doctorData = response.value("data").toObject();
-        qDebug() << "Doctor data received:" << doctorData;
-        
-        if (doctorData.isEmpty()) {
-            qDebug() << "Doctor data is empty!";
-            QMessageBox::warning(this, "错误", "医生信息为空");
-            return;
-        }
-        
-        displayDoctorInfo(doctorData);
-    } else {
-        qDebug() << "Ignoring non-doctor-info response, action:" << action << "type:" << type;
-    }
-}
 
 void DoctorInfoPage::displayDoctorInfo(const QJsonObject& doctorData)
 {
@@ -290,7 +299,7 @@ void DoctorInfoPage::displayBasicInfo(const QJsonObject& doctorInfo)
     
     // 标题
     QLabel* titleLabel = new QLabel("基本信息");
-    titleLabel->setStyleSheet("font-size: 18px; font-weight: bold; color: #2c3e50; margin-bottom: 10px;");
+    titleLabel->setStyleSheet("font-size: 16px; font-weight: bold; color: #2c3e50; margin-bottom: 10px;");
     basicLayout->addWidget(titleLabel);
     
     // 主要信息区域
@@ -300,13 +309,13 @@ void DoctorInfoPage::displayBasicInfo(const QJsonObject& doctorInfo)
     // 头像区域
     QVBoxLayout* photoLayout = new QVBoxLayout();
     QLabel* photoLabel = new QLabel();
-    photoLabel->setFixedSize(120, 120);
+    photoLabel->setFixedSize(100, 100);
     photoLabel->setStyleSheet(
         "QLabel {"
         "    border: 2px solid #3498db;"
         "    border-radius: 10px;"
         "    background-color: #ecf0f1;"
-        "    font-size: 48px;"
+        "    font-size: 36px;"
         "}"
     );
     photoLabel->setAlignment(Qt::AlignCenter);
@@ -317,7 +326,7 @@ void DoctorInfoPage::displayBasicInfo(const QJsonObject& doctorInfo)
         QByteArray photoData = QByteArray::fromBase64(photoBase64.toUtf8());
         QPixmap photo;
         if (photo.loadFromData(photoData)) {
-            photoLabel->setPixmap(photo.scaled(120, 120, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+            photoLabel->setPixmap(photo.scaled(100, 100, Qt::KeepAspectRatio, Qt::SmoothTransformation));
         } else {
             photoLabel->setText("👨‍⚕️");
         }
@@ -328,50 +337,77 @@ void DoctorInfoPage::displayBasicInfo(const QJsonObject& doctorInfo)
     photoLayout->addWidget(photoLabel);
     photoLayout->addStretch();
     
-    // 详细信息区域
-    QVBoxLayout* detailLayout = new QVBoxLayout();
-    detailLayout->setSpacing(8);
+    // 详细信息区域 - 使用两列布局
+    QGridLayout* detailGrid = new QGridLayout();
+    detailGrid->setSpacing(10);
+    detailGrid->setColumnMinimumWidth(0, 80);
+    detailGrid->setColumnStretch(1, 1);
+    detailGrid->setColumnMinimumWidth(2, 80);  
+    detailGrid->setColumnStretch(3, 1);
     
     // 创建信息标签的函数
-    auto createInfoLabel = [&](const QString& label, const QString& value) {
-        QHBoxLayout* rowLayout = new QHBoxLayout();
-        
+    auto addInfoRow = [&](int row, int col, const QString& label, const QString& value) {
         QLabel* labelWidget = new QLabel(label + ":");
-        labelWidget->setFixedWidth(80);
-        labelWidget->setStyleSheet("font-weight: bold; color: #34495e;");
+        labelWidget->setStyleSheet("font-weight: bold; color: #34495e; padding: 3px;");
         
         QLabel* valueWidget = new QLabel(value.isEmpty() ? "未设置" : value);
-        valueWidget->setStyleSheet("color: #2c3e50; background-color: #f8f9fa; padding: 5px; border-radius: 3px;");
+        valueWidget->setStyleSheet(
+            "color: #2c3e50; "
+            "background-color: #f8f9fa; "
+            "padding: 5px 8px; "
+            "border-radius: 3px; "
+            "border: 1px solid #e9ecef;"
+        );
+        valueWidget->setWordWrap(true);
         
-        rowLayout->addWidget(labelWidget);
-        rowLayout->addWidget(valueWidget);
-        rowLayout->addStretch();
+        detailGrid->addWidget(labelWidget, row, col * 2);
+        detailGrid->addWidget(valueWidget, row, col * 2 + 1);
         
-        detailLayout->addLayout(rowLayout);
         qDebug() << "Created info row:" << label << "=" << value;
     };
     
-    // 添加医生信息 - 适应get_all_doctors返回的字段
-    createInfoLabel("姓名", doctorInfo.value("name").toString());
-    createInfoLabel("用户名", doctorInfo.value("username").toString());
-    createInfoLabel("科室", doctorInfo.value("department").toString());
-    createInfoLabel("职称", doctorInfo.value("title").toString());
-    createInfoLabel("专业", doctorInfo.value("specialization").toString());
-    createInfoLabel("工号", doctorInfo.value("work_number").toString());
-    createInfoLabel("挂号费", QString("¥%1").arg(doctorInfo.value("consultation_fee").toDouble(), 0, 'f', 2));
-    createInfoLabel("日患者上限", QString::number(doctorInfo.value("max_patients_per_day").toInt()));
-    createInfoLabel("电话", doctorInfo.value("phone").toString());
-    createInfoLabel("邮箱", doctorInfo.value("email").toString());
+    // 添加医生信息 - 分两列显示
+    int row = 0;
+    addInfoRow(row, 0, "姓名", doctorInfo.value("name").toString());
+    addInfoRow(row++, 1, "用户名", doctorInfo.value("username").toString());
+    
+    addInfoRow(row, 0, "科室", doctorInfo.value("department").toString());
+    addInfoRow(row++, 1, "职称", doctorInfo.value("title").toString());
+    
+    addInfoRow(row, 0, "工号", doctorInfo.value("work_number").toString());
+    addInfoRow(row++, 1, "挂号费", QString("¥%1").arg(doctorInfo.value("consultation_fee").toDouble(), 0, 'f', 2));
+    
+    addInfoRow(row, 0, "电话", doctorInfo.value("phone").toString());
+    addInfoRow(row++, 1, "邮箱", doctorInfo.value("email").toString());
+    
+    addInfoRow(row, 0, "日患者上限", QString::number(doctorInfo.value("max_patients_per_day").toInt()));
+    addInfoRow(row++, 1, "", "");  // 空白占位
+    
+    // 专业特长单独占一行
+    QLabel* specLabel = new QLabel("专业特长:");
+    specLabel->setStyleSheet("font-weight: bold; color: #34495e; padding: 3px;");
+    
+    QLabel* specValue = new QLabel(doctorInfo.value("specialization").toString().isEmpty() ? 
+                                   "未设置" : doctorInfo.value("specialization").toString());
+    specValue->setStyleSheet(
+        "color: #2c3e50; "
+        "background-color: #f8f9fa; "
+        "padding: 8px; "
+        "border-radius: 3px; "
+        "border: 1px solid #e9ecef;"
+    );
+    specValue->setWordWrap(true);
+    
+    detailGrid->addWidget(specLabel, row, 0);
+    detailGrid->addWidget(specValue, row, 1, 1, 3);  // 跨越3列
     
     mainInfoLayout->addLayout(photoLayout);
-    mainInfoLayout->addLayout(detailLayout);
+    mainInfoLayout->addLayout(detailGrid);
     mainInfoLayout->addStretch();
     
     basicLayout->addLayout(mainInfoLayout);
     
     qDebug() << "displayBasicInfo completed, all widgets added to layout";
-    qDebug() << "Frame visibility:" << m_basicInfoFrame->isVisible();
-    qDebug() << "Frame size:" << m_basicInfoFrame->size();
 }
 
 void DoctorInfoPage::displaySchedule(const QJsonArray& schedules)
@@ -391,44 +427,89 @@ void DoctorInfoPage::displaySchedule(const QJsonArray& schedules)
     
     QVBoxLayout* scheduleLayout = new QVBoxLayout(m_scheduleFrame);
     scheduleLayout->setContentsMargins(15, 15, 15, 15);
-    scheduleLayout->setSpacing(15);
+    scheduleLayout->setSpacing(10);
     
     // 标题
     QLabel* titleLabel = new QLabel("工作排班");
-    titleLabel->setStyleSheet("font-size: 18px; font-weight: bold; color: #2c3e50; margin-bottom: 10px;");
+    titleLabel->setStyleSheet("font-size: 16px; font-weight: bold; color: #2c3e50; margin-bottom: 10px;");
     scheduleLayout->addWidget(titleLabel);
     
     if (schedules.isEmpty()) {
+        // 显示暂无排班信息的提示
+        QFrame* infoFrame = new QFrame();
+        infoFrame->setStyleSheet(
+            "QFrame {"
+            "    background-color: #f8f9fa;"
+            "    border: 1px solid #dee2e6;"
+            "    border-radius: 5px;"
+            "    padding: 20px;"
+            "}"
+        );
+        
+        QVBoxLayout* infoLayout = new QVBoxLayout(infoFrame);
+        
+        QLabel* iconLabel = new QLabel("📅");
+        iconLabel->setAlignment(Qt::AlignCenter);
+        iconLabel->setStyleSheet("font-size: 32px; margin-bottom: 10px;");
+        
         QLabel* noScheduleLabel = new QLabel("暂无排班信息");
-        noScheduleLabel->setStyleSheet("color: #7f8c8d; font-style: italic; font-size: 14px; padding: 20px;");
-        scheduleLayout->addWidget(noScheduleLabel);
+        noScheduleLabel->setStyleSheet("color: #6c757d; font-size: 14px; font-weight: bold;");
+        noScheduleLabel->setAlignment(Qt::AlignCenter);
+        
+        QLabel* tipLabel = new QLabel("请联系管理员设置医生的工作排班时间");
+        tipLabel->setStyleSheet("color: #6c757d; font-size: 12px; margin-top: 5px;");
+        tipLabel->setAlignment(Qt::AlignCenter);
+        
+        infoLayout->addWidget(iconLabel);
+        infoLayout->addWidget(noScheduleLabel);
+        infoLayout->addWidget(tipLabel);
+        
+        scheduleLayout->addWidget(infoFrame);
         return;
     }
     
-    // 创建排班表格
-    QGridLayout* gridLayout = new QGridLayout();
-    gridLayout->setSpacing(2);
+    // 如果有排班信息，创建简化的排班表格
+    QFrame* tableFrame = new QFrame();
+    tableFrame->setStyleSheet(
+        "QFrame {"
+        "    background-color: #ffffff;"
+        "    border: 1px solid #dee2e6;"
+        "    border-radius: 5px;"
+        "}"
+    );
+    
+    QVBoxLayout* tableLayout = new QVBoxLayout(tableFrame);
+    tableLayout->setContentsMargins(0, 0, 0, 0);
+    tableLayout->setSpacing(0);
     
     // 表头
-    QStringList headers = {"星期", "上班时间", "下班时间", "最大预约数", "状态"};
-    for (int i = 0; i < headers.size(); ++i) {
-        QLabel* header = new QLabel(headers[i]);
-        header->setStyleSheet(
-            "QLabel {"
-            "    font-weight: bold;"
-            "    background-color: #3498db;"
-            "    color: white;"
-            "    padding: 10px;"
-            "    border: 1px solid #2980b9;"
-            "}"
-        );
-        header->setAlignment(Qt::AlignCenter);
-        gridLayout->addWidget(header, 0, i);
+    QFrame* headerFrame = new QFrame();
+    headerFrame->setStyleSheet("background-color: #e9ecef; border-bottom: 1px solid #dee2e6;");
+    QHBoxLayout* headerLayout = new QHBoxLayout(headerFrame);
+    headerLayout->setContentsMargins(10, 10, 10, 10);
+    
+    QStringList headers = {"星期", "工作时间", "最大患者数", "状态"};
+    for (const QString& header : headers) {
+        QLabel* headerLabel = new QLabel(header);
+        headerLabel->setStyleSheet("font-weight: bold; color: #495057;");
+        headerLabel->setAlignment(Qt::AlignCenter);
+        headerLayout->addWidget(headerLabel);
     }
     
-    // 排班数据
+    tableLayout->addWidget(headerFrame);
+    
+    // 排班数据行
     for (int i = 0; i < schedules.size(); ++i) {
         QJsonObject schedule = schedules[i].toObject();
+        
+        QFrame* rowFrame = new QFrame();
+        rowFrame->setStyleSheet(
+            QString("background-color: %1; border-bottom: 1px solid #dee2e6;")
+            .arg(i % 2 == 0 ? "#ffffff" : "#f8f9fa")
+        );
+        
+        QHBoxLayout* rowLayout = new QHBoxLayout(rowFrame);
+        rowLayout->setContentsMargins(10, 8, 10, 8);
         
         QString dayName = schedule.value("day_name").toString();
         QString startTime = schedule.value("start_time").toString();
@@ -436,29 +517,24 @@ void DoctorInfoPage::displaySchedule(const QJsonArray& schedules)
         int maxAppointments = schedule.value("max_appointments").toInt();
         bool isActive = schedule.value("is_active").toBool();
         
-        QStringList rowData = {
-            dayName,
-            startTime,
-            endTime,
-            QString::number(maxAppointments),
-            isActive ? "正常" : "休息"
-        };
+        QString timeRange = startTime + " - " + endTime;
+        QString status = isActive ? "正常上班" : "休息";
+        QString statusColor = isActive ? "#28a745" : "#dc3545";
+        
+        QStringList rowData = {dayName, timeRange, QString::number(maxAppointments), status};
+        QStringList colors = {"#212529", "#212529", "#212529", statusColor};
         
         for (int j = 0; j < rowData.size(); ++j) {
             QLabel* cell = new QLabel(rowData[j]);
-            cell->setStyleSheet(
-                QString("QLabel {"
-                "    padding: 8px;"
-                "    border: 1px solid #bdc3c7;"
-                "    background-color: %1;"
-                "}").arg(i % 2 == 0 ? "#ffffff" : "#f8f9fa")
-            );
+            cell->setStyleSheet(QString("color: %1;").arg(colors[j]));
             cell->setAlignment(Qt::AlignCenter);
-            gridLayout->addWidget(cell, i + 1, j);
+            rowLayout->addWidget(cell);
         }
+        
+        tableLayout->addWidget(rowFrame);
     }
     
-    scheduleLayout->addLayout(gridLayout);
+    scheduleLayout->addWidget(tableFrame);
 }
 
 void DoctorInfoPage::displayStatistics(const QJsonObject& statistics)
@@ -484,33 +560,35 @@ void DoctorInfoPage::displayStatistics(const QJsonObject& statistics)
     
     // 标题
     QLabel* titleLabel = new QLabel("统计信息");
-    titleLabel->setStyleSheet("font-size: 18px; font-weight: bold; color: #2c3e50; margin-bottom: 10px;");
+    titleLabel->setStyleSheet("font-size: 16px; font-weight: bold; color: #2c3e50; margin-bottom: 10px;");
     statsLayout->addWidget(titleLabel);
     
-    // 统计数据网格
+    // 统计数据网格 - 2x2布局
     QGridLayout* statsGrid = new QGridLayout();
-    statsGrid->setSpacing(15);
+    statsGrid->setSpacing(10);
     
     auto createStatItem = [&](int row, int col, const QString& label, const QString& value, const QString& color) {
         QFrame* itemFrame = new QFrame();
         itemFrame->setStyleSheet(
             "QFrame {"
             "    background-color: #ffffff;"
-            "    border: 1px solid #e0e0e0;"
-            "    border-radius: 8px;"
-            "    padding: 15px;"
+            "    border: 2px solid #e0e0e0;"
+            "    border-radius: 6px;"
+            "    padding: 10px;"
             "}"
         );
+        itemFrame->setMinimumHeight(80);
         
         QVBoxLayout* itemLayout = new QVBoxLayout(itemFrame);
         itemLayout->setAlignment(Qt::AlignCenter);
+        itemLayout->setSpacing(5);
         
         QLabel* valueLabel = new QLabel(value);
-        valueLabel->setStyleSheet(QString("font-size: 28px; font-weight: bold; color: %1;").arg(color));
+        valueLabel->setStyleSheet(QString("font-size: 24px; font-weight: bold; color: %1;").arg(color));
         valueLabel->setAlignment(Qt::AlignCenter);
         
         QLabel* labelWidget = new QLabel(label);
-        labelWidget->setStyleSheet("font-size: 14px; color: #7f8c8d; margin-top: 5px;");
+        labelWidget->setStyleSheet("font-size: 12px; color: #7f8c8d;");
         labelWidget->setAlignment(Qt::AlignCenter);
         
         itemLayout->addWidget(valueLabel);
@@ -520,13 +598,20 @@ void DoctorInfoPage::displayStatistics(const QJsonObject& statistics)
         qDebug() << "Created stat item:" << label << "=" << value;
     };
     
-    // 显示统计数据，如果没有数据则显示默认值
-    createStatItem(0, 0, "总患者数", QString::number(statistics.value("total_patients").toInt()), "#3498db");
-    createStatItem(0, 1, "今日患者数", QString::number(statistics.value("today_patients").toInt()), "#2ecc71");
-    createStatItem(1, 0, "本月患者数", QString::number(statistics.value("month_patients").toInt()), "#f39c12");
-    createStatItem(1, 1, "平均评分", QString::number(statistics.value("average_rating").toDouble(), 'f', 1), "#e74c3c");
+    // 显示统计数据 - 如果没有数据则显示默认值0
+    createStatItem(0, 0, "总患者数", QString::number(statistics.value("total_patients").toInt(0)), "#3498db");
+    createStatItem(0, 1, "今日患者数", QString::number(statistics.value("today_patients").toInt(0)), "#2ecc71");
+    createStatItem(1, 0, "本月患者数", QString::number(statistics.value("month_patients").toInt(0)), "#f39c12");
+    createStatItem(1, 1, "平均评分", 
+                   QString::number(statistics.value("average_rating").toDouble(0.0), 'f', 1) + "★", "#e74c3c");
     
     statsLayout->addLayout(statsGrid);
+    
+    // 添加说明文字
+    QLabel* noteLabel = new QLabel("注：统计数据暂未实现，显示为默认值");
+    noteLabel->setStyleSheet("color: #95a5a6; font-size: 11px; font-style: italic; margin-top: 5px;");
+    noteLabel->setAlignment(Qt::AlignCenter);
+    statsLayout->addWidget(noteLabel);
 }
 
 void DoctorInfoPage::onCloseButtonClicked()

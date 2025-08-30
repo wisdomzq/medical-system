@@ -23,7 +23,6 @@ public:
 
 private slots:
     void onCloseButtonClicked();
-    void onJsonReceived(const QJsonObject& response);
 
 private:
     void setupUI();
