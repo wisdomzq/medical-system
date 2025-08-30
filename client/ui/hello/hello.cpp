@@ -18,8 +18,6 @@ Hello::Hello(QWidget* parent)
 
     connect(loginWidget, &LoginWidget::doctorLoggedIn, this, &Hello::showDoctorUI);
     connect(loginWidget, &LoginWidget::patientLoggedIn, this, &Hello::showPatientUI);
-    connect(doctorInfoWidget, &DoctorInfoWidget::backToLogin, this, &Hello::showLoginUI);
-    connect(patientInfoWidget, &PatientInfoWidget::backToLogin, this, &Hello::showLoginUI);
 
     stackedWidget->setCurrentWidget(loginWidget);
 }

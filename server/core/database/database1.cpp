@@ -41,7 +41,13 @@ void DBManager::initDatabase() {
     createPrescriptionItemsTable();
     createMedicationsTable();
     createDoctorSchedulesTable();
+<<<<<<< HEAD:server/core/database/database.cpp
     createHospitalizationsTable(); // 添加住院表
+=======
+    createHospitalizationsTable();
+    createAttendanceTable();
+    createLeaveRequestsTable();
+>>>>>>> f054b07 (WIP: attendance/leave/cancel feature + DB tables + routing + UI wiring):server/core/database/database1.cpp
     
     // 插入示例数据
     insertSampleDoctors();
@@ -329,6 +335,146 @@ void DBManager::createHospitalizationsTable() {
     }
 }
 
+<<<<<<< HEAD:server/core/database/database.cpp
+=======
+void DBManager::createAttendanceTable() {
+    if (!m_db.tables().contains(QStringLiteral("attendance"))) {
+        QSqlQuery query(m_db);
+        QString sql = R"(
+            CREATE TABLE attendance (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                doctor_username TEXT NOT NULL,
+                checkin_date DATE NOT NULL,
+                checkin_time TIME NOT NULL,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (doctor_username) REFERENCES users(username)
+            )
+        )";
+        if (!query.exec(sql)) {
+            qDebug() << "创建attendance表失败:" << query.lastError().text();
+        } else {
+            QSqlQuery idx(m_db);
+            idx.exec("CREATE INDEX IF NOT EXISTS idx_attendance_doctor_date ON attendance(doctor_username, checkin_date)");
+        }
+    }
+}
+
+void DBManager::createLeaveRequestsTable() {
+    if (!m_db.tables().contains(QStringLiteral("leave_requests"))) {
+        QSqlQuery query(m_db);
+        QString sql = R"(
+            CREATE TABLE leave_requests (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                doctor_username TEXT NOT NULL,
+                leave_date DATE NOT NULL,
+                reason TEXT,
+                status TEXT NOT NULL DEFAULT 'active' CHECK(status IN ('active','cancelled','approved','rejected')),
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (doctor_username) REFERENCES users(username)
+            )
+        )";
+        if (!query.exec(sql)) {
+            qDebug() << "创建leave_requests表失败:" << query.lastError().text();
+        } else {
+            QSqlQuery idx(m_db);
+            idx.exec("CREATE INDEX IF NOT EXISTS idx_leave_doctor_status ON leave_requests(doctor_username, status)");
+        }
+    }
+}
+
+bool DBManager::createAttendanceRecord(const QJsonObject &data) {
+    QSqlQuery q(m_db);
+    q.prepare(R"(INSERT INTO attendance (doctor_username, checkin_date, checkin_time)
+                VALUES (:u, :d, :t))");
+    q.bindValue(":u", data.value("doctor_username").toString());
+    q.bindValue(":d", data.value("checkin_date").toString());
+    q.bindValue(":t", data.value("checkin_time").toString());
+    if (!q.exec()) { qDebug() << "createAttendanceRecord error:" << q.lastError().text(); return false; }
+    return true;
+}
+
+bool DBManager::createLeaveRequest(const QJsonObject &data) {
+    QSqlQuery q(m_db);
+    q.prepare(R"(INSERT INTO leave_requests (doctor_username, leave_date, reason, status)
+                VALUES (:u, :d, :r, 'active'))");
+    q.bindValue(":u", data.value("doctor_username").toString());
+    q.bindValue(":d", data.value("leave_date").toString());
+    q.bindValue(":r", data.value("reason").toString());
+    if (!q.exec()) { qDebug() << "createLeaveRequest error:" << q.lastError().text(); return false; }
+    return true;
+}
+
+bool DBManager::getActiveLeavesByDoctor(const QString &doctorUsername, QJsonArray &leaves) {
+    QSqlQuery q(m_db);
+    q.prepare(R"(SELECT id, doctor_username, leave_date, reason, status, created_at FROM leave_requests
+                 WHERE doctor_username=:u AND status='active' ORDER BY created_at DESC)");
+    q.bindValue(":u", doctorUsername);
+    if (!q.exec()) { qDebug() << "getActiveLeavesByDoctor error:" << q.lastError().text(); return false; }
+    while (q.next()) {
+        QJsonObject o; o["id"] = q.value("id").toInt(); o["doctor_username"] = q.value("doctor_username").toString();
+        o["leave_date"] = q.value("leave_date").toString(); o["reason"] = q.value("reason").toString();
+        o["status"] = q.value("status").toString(); o["created_at"] = q.value("created_at").toString();
+        leaves.append(o);
+    }
+    return true;
+}
+
+bool DBManager::cancelLeaveById(int leaveId) {
+    QSqlQuery q(m_db);
+    q.prepare("UPDATE leave_requests SET status='cancelled', updated_at=CURRENT_TIMESTAMP WHERE id=:id AND status='active'");
+    q.bindValue(":id", leaveId);
+    if (!q.exec()) { qDebug() << "cancelLeaveById error:" << q.lastError().text(); return false; }
+    return q.numRowsAffected() > 0;
+}
+
+bool DBManager::cancelActiveLeaveForDoctor(const QString &doctorUsername) {
+    QSqlQuery q(m_db);
+    q.prepare(R"(UPDATE leave_requests
+                 SET status='cancelled', updated_at=CURRENT_TIMESTAMP
+                 WHERE id IN (
+                    SELECT id FROM leave_requests WHERE doctor_username=:u AND status='active' ORDER BY created_at DESC LIMIT 1
+                 ))");
+    q.bindValue(":u", doctorUsername);
+    if (!q.exec()) { qDebug() << "cancelActiveLeaveForDoctor error:" << q.lastError().text(); return false; }
+    return q.numRowsAffected() > 0;
+}
+
+bool DBManager::createHospitalization(const QJsonObject &data) {
+    QSqlQuery q(m_db);
+    q.prepare(R"(INSERT INTO hospitalizations (patient_username, doctor_username, ward_number, bed_number, admission_date, discharge_date, status)
+                VALUES (:p, :d, :w, :b, :ad, :dd, :st))");
+    q.bindValue(":p", data.value("patient_username").toString());
+    q.bindValue(":d", data.value("doctor_username").toString());
+    q.bindValue(":w", data.value("ward_number").toString());
+    q.bindValue(":b", data.value("bed_number").toString());
+    q.bindValue(":ad", data.value("admission_date").toString());
+    q.bindValue(":dd", data.value("discharge_date").toString());
+    q.bindValue(":st", data.value("status").toString().isEmpty()? QString("active") : data.value("status").toString());
+    if(!q.exec()) { qDebug() << "createHospitalization error:" << q.lastError().text(); return false; }
+    return true;
+}
+
+static bool fetchHospitalizations(QSqlDatabase &db, QSqlQuery &q, QJsonArray &list) {
+    if(!q.exec()) { qDebug() << "fetchHospitalizations query exec error:" << q.lastError().text(); return false; }
+    while(q.next()) {
+        QJsonObject o; o["id"]=q.value("id").toInt(); o["patient_username"]=q.value("patient_username").toString(); o["doctor_username"]=q.value("doctor_username").toString(); o["ward_number"]=q.value("ward_number").toString(); o["bed_number"]=q.value("bed_number").toString(); o["admission_date"]=q.value("admission_date").toString(); o["discharge_date"]=q.value("discharge_date").toString(); o["status"]=q.value("status").toString(); list.append(o); }
+    return true;
+}
+
+bool DBManager::getHospitalizationsByPatient(const QString &patientUsername, QJsonArray &list) {
+    QSqlQuery q(m_db); q.prepare("SELECT * FROM hospitalizations WHERE patient_username=:p ORDER BY admission_date DESC"); q.bindValue(":p", patientUsername); return fetchHospitalizations(m_db,q,list);
+}
+
+bool DBManager::getAllHospitalizations(QJsonArray &list) {
+    QSqlQuery q(m_db); q.prepare("SELECT * FROM hospitalizations ORDER BY admission_date DESC"); return fetchHospitalizations(m_db,q,list);
+}
+
+bool DBManager::getHospitalizationsByDoctor(const QString &doctorUsername, QJsonArray &list) {
+    QSqlQuery q(m_db); q.prepare("SELECT * FROM hospitalizations WHERE doctor_username=:d ORDER BY admission_date DESC"); q.bindValue(":d", doctorUsername); return fetchHospitalizations(m_db,q,list);
+}
+
+>>>>>>> f054b07 (WIP: attendance/leave/cancel feature + DB tables + routing + UI wiring):server/core/database/database1.cpp
 bool DBManager::authenticateUser(const QString& username, const QString& password) {
     QSqlQuery query(m_db);
     query.prepare("SELECT username FROM users WHERE username = :username AND password = :password");

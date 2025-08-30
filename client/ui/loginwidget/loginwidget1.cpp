@@ -307,15 +307,11 @@ void LoginWidget::onResponseReceived(const QJsonObject &response)
     if (type == "login_response") {
         if (success) {
             QMessageBox::information(this, "登录成功", "登录成功！");
-            QString role = response["role"].toString();
+            const QString role = response["role"].toString();
             if (role == "doctor") {
-                DoctorInfoWidget* doctorWidget = new DoctorInfoWidget(doctorLoginNameEdit->text());
-                doctorWidget->show();
-                this->close();
+                emit doctorLoggedIn(doctorLoginNameEdit->text());
             } else if (role == "patient") {
-                PatientInfoWidget* patientWidget = new PatientInfoWidget(patientLoginNameEdit->text());
-                patientWidget->show();
-                this->close();
+                emit patientLoggedIn(patientLoginNameEdit->text());
             }
         } else {
             // 使用服务器返回的登录失败消息

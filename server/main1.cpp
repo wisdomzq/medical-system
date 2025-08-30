@@ -9,6 +9,9 @@
 #include "modules/patientmodule/evaluate/evaluate.h"
 #include "core/database/database.h"
 #include "core/database/database_config.h"
+#include "modules/doctormodule/profile/profile.h"
+#include "modules/doctormodule/assignment/assignment.h"
+#include "modules/doctormodule/attendance/attendance.h"
 
 int main(int argc, char *argv[]) {
     QCoreApplication a(argc, argv);
@@ -16,9 +19,18 @@ int main(int argc, char *argv[]) {
 
     CommunicationServer server;
     LoginModule loginModule;
+<<<<<<< HEAD:server/main.cpp
     MedicineModule medicineModule; // 负责药品相关请求
+<<<<<<< HEAD:server/main.cpp
     EvaluateModule evaluateModule; // 负责评价相关请求
     
+=======
+=======
+    DoctorProfileModule doctorProfileModule;
+    DoctorAssignmentModule doctorAssignmentModule;
+    DoctorAttendanceModule doctorAttendanceModule;
+>>>>>>> f054b07 (WIP: attendance/leave/cancel feature + DB tables + routing + UI wiring):server/main1.cpp
+>>>>>>> ec31eeb (WIP: attendance/leave/cancel feature + DB tables + routing + UI wiring):server/main1.cpp
 
     QObject::connect(&MessageRouter::instance(), &MessageRouter::requestReceived,
                      [&](const QJsonObject &payload) {
@@ -36,21 +48,12 @@ int main(int argc, char *argv[]) {
             responsePayload = loginModule.handleLogin(payload);
         } else if (action == "register") {
             responsePayload = loginModule.handleRegister(payload);
-        } else if (action == "get_doctor_info") {
-            QString username = payload.value("username").toString();
-            QJsonObject doctorInfo;
-            bool ok = db.getDoctorInfo(username, doctorInfo);
-            responsePayload["type"] = "doctor_info_response";
-            responsePayload["success"] = ok;
-            if (ok) {
-                responsePayload["data"] = doctorInfo;
-            }
-        } else if (action == "update_doctor_info") {
-            const QString username = payload.value("username").toString();
-            QJsonObject data = payload.value("data").toObject();
-            bool ok = db.updateDoctorInfo(username, data);
-            responsePayload["type"] = "update_doctor_info_response";
-            responsePayload["success"] = ok;
+        } else if (action == "get_doctor_info" || action == "update_doctor_info") {
+            responsePayload = doctorProfileModule.handle(payload);
+        } else if (action == "get_doctor_assignment" || action == "update_doctor_assignment") {
+            responsePayload = doctorAssignmentModule.handle(payload);
+        } else if (action == "doctor_checkin" || action == "doctor_leave" || action == "get_active_leaves" || action == "cancel_leave") {
+            responsePayload = doctorAttendanceModule.handle(payload);
         } else if (action == "get_patient_info") {
             QString username = payload.value("username").toString();
             QJsonObject patientInfo;
@@ -96,6 +99,49 @@ int main(int argc, char *argv[]) {
             if (ok) {
                 responsePayload["data"] = doctors;
             }
+<<<<<<< HEAD:server/main.cpp
+=======
+        } else if (action == "get_medical_records_by_patient") {
+            QJsonArray records;
+            bool ok = db.getMedicalRecordsByPatient(payload.value("patient_username").toString(), records);
+            responsePayload["type"] = "medical_records_response";
+            responsePayload["success"] = ok;
+            if (ok) responsePayload["data"] = records;
+        } else if (action == "get_medical_records_by_doctor") {
+            QJsonArray records;
+            bool ok = db.getMedicalRecordsByDoctor(payload.value("doctor_username").toString(), records);
+            responsePayload["type"] = "medical_records_response";
+            responsePayload["success"] = ok;
+            if (ok) responsePayload["data"] = records;
+        } else if (action == "create_medical_record") {
+            bool ok = db.createMedicalRecord(payload.value("data").toObject());
+            responsePayload["type"] = "create_medical_record_response";
+            responsePayload["success"] = ok;
+            if (ok) {
+                // 获取 last_insert_rowid
+                QSqlQuery q; q.exec("SELECT last_insert_rowid() AS id");
+                if (q.next()) responsePayload["record_id"] = q.value("id").toInt();
+            }
+        } else if (action == "update_medical_record") {
+            bool ok = db.updateMedicalRecord(payload.value("record_id").toInt(), payload.value("data").toObject());
+            responsePayload["type"] = "update_medical_record_response";
+            responsePayload["success"] = ok;
+        } else if (action == "get_medical_advices_by_record") {
+            QJsonArray advices; bool ok = db.getMedicalAdviceByRecord(payload.value("record_id").toInt(), advices);
+            responsePayload["type"] = "medical_advices_response"; responsePayload["success"] = ok; if (ok) responsePayload["data"] = advices;
+        } else if (action == "create_medical_advice") {
+            bool ok = db.createMedicalAdvice(payload.value("data").toObject());
+            responsePayload["type"] = "create_medical_advice_response";
+            responsePayload["success"] = ok;
+        } else if (action == "get_medications") {
+            QJsonArray medications;
+            bool ok = db.getMedications(medications);
+            responsePayload["type"] = "medications_response";
+            responsePayload["success"] = ok;
+            if (ok) {
+                responsePayload["data"] = medications;
+            }
+>>>>>>> f054b07 (WIP: attendance/leave/cancel feature + DB tables + routing + UI wiring):server/main1.cpp
         } else if (action == "create_hospitalization") {
             bool ok = db.createHospitalization(payload.value("data").toObject());
             responsePayload["type"] = "create_hospitalization_response";
