@@ -11,6 +11,7 @@
 #include "modules/patientmodule/advice/advice.h"
 #include "modules/patientmodule/doctorinfo/doctorinfo.h"
 #include "modules/patientmodule/register/register.h"
+#include "modules/patientmodule/medicalrecord/medicalrecord.h"
 #include "core/database/database.h"
 #include "core/database/database_config.h"
 #include "modules/doctormodule/profile/profile.h"
@@ -30,6 +31,7 @@ int main(int argc, char *argv[]) {
     AdviceModule adviceModule; // 负责医嘱相关请求
     DoctorInfoModule doctorInfoModule; // 负责医生信息相关请求
     RegisterManager registerManager; // 负责挂号相关请求
+    MedicalRecordModule medicalRecordModule; // 负责病例相关请求
     
     DoctorProfileModule doctorProfileModule;
     DoctorAssignmentModule doctorAssignmentModule;

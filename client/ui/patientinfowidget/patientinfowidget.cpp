@@ -3,6 +3,7 @@
 #include "core/network/src/client/communicationclient.h"
 #include "appointmentpage.h"
 #include "profilepage.h"
+#include "casepage.h"
 #include "placeholderpages.h"
 #include "hospitalpage.h"
 #include "medicationpage.h"

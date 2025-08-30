@@ -20,6 +20,7 @@ set(srcs
     modules/patientmodule/prescription/prescription.cpp
     modules/patientmodule/advice/advice.cpp
     modules/patientmodule/doctorinfo/doctorinfo.cpp
+    modules/patientmodule/medicalrecord/medicalrecord.cpp
     modules/doctormodule/profile/profile.cpp
     modules/doctormodule/assignment/assignment.cpp
     modules/doctormodule/attendance/attendance.cpp
