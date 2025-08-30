@@ -1,0 +1,32 @@
+/* 仅患者界面样式（作用于 PatientInfoWidget 的子控件） */
+
+/* 左侧模块导航：侧边栏风格（作用于对象名为 leftNav 的 QListWidget） */
+#leftNav {
+	min-width: 180px; max-width: 220px;
+	border-right: 1px solid #e6e6e6;
+	background: #fbfcfe;
+}
+#leftNav { outline: none; }
+#leftNav::item { height: 36px; color: #3a3a3a; padding: 6px 10px 6px 12px; border: none; }
+#leftNav::item:selected { background: #eaf2ff; color: #2d8cf0; border-left: 3px solid #2d8cf0; font-weight: 600; }
+#leftNav::item:hover { background: #f2f6ff; }
+
+/* 退出登录项的特殊样式（通过文本匹配较难，这里给最后一项统一强调色） */
+#leftNav::item:last { color: #d0021b; }
+#leftNav::item:last:selected { background: #ffecec; color: #b00015; border-left: 3px solid #ff6b6b; font-weight: 600; }
+
+QPushButton {
+	background: #2d8cf0; color: #fff; border: none; padding: 6px 12px; border-radius: 4px;
+}
+QPushButton:hover { background: #1e6fb8; }
+QPushButton:disabled { background: #bfcbd9; color: #f0f0f0; }
+
+QLineEdit, QTextEdit, QSpinBox, QDoubleSpinBox, QTimeEdit, QDateEdit {
+	border: 1px solid #cdd4db; border-radius: 4px; padding: 4px; background: #ffffff;
+}
+QLabel { color: #333; }
+
+QTableWidget { gridline-color: #e6e6e6; }
+QHeaderView::section {
+	background: #f2f3f5; padding: 6px; border: 1px solid #e0e0e0;
+}
