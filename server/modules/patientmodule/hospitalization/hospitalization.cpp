@@ -1,6 +1,5 @@
 #include "hospitalization.h"
 #include "core/network/messagerouter.h"
-#include "core/network/protocol.h"
 #include "core/database/database.h"
 #include "core/database/database_config.h"
 #include "core/logging/logging.h"
@@ -64,5 +63,5 @@ void HospitalizationModule::handleAll(const QJsonObject &payload) {
 void HospitalizationModule::reply(QJsonObject resp, const QJsonObject &orig) {
     if (orig.contains("uuid")) resp["request_uuid"] = orig.value("uuid").toString();
     Log::response("Hospitalization", resp);
-    emit businessResponse(Protocol::MessageType::JsonResponse, resp);
+    emit businessResponse(resp);
 }

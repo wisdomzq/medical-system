@@ -1,6 +1,5 @@
 #include "doctorlist.h"
 #include "core/network/messagerouter.h"
-#include "core/network/protocol.h"
 #include "core/database/database.h"
 #include "core/database/database_config.h"
 #include "core/logging/logging.h"
@@ -40,5 +39,5 @@ void DoctorListModule::handleByDepartment(const QJsonObject &payload) {
 void DoctorListModule::reply(QJsonObject resp, const QJsonObject &orig) {
     if (orig.contains("uuid")) resp["request_uuid"] = orig.value("uuid").toString();
     Log::response("DoctorList", resp);
-    emit businessResponse(Protocol::MessageType::JsonResponse, resp);
+    emit businessResponse(resp);
 }

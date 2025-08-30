@@ -1,8 +1,6 @@
 #pragma once
 #include <QObject>
 #include <QJsonObject>
-#include "core/network/protocol.h"
-
 // EvaluateModule: 提供健康评估相关接口
 // 动作:
 // 1. evaluate_get_config -> 返回问卷链接 & 当前余额
@@ -12,7 +10,7 @@ class EvaluateModule : public QObject {
 public:
     explicit EvaluateModule(QObject *parent=nullptr);
 signals:
-    void businessResponse(Protocol::MessageType type, QJsonObject payload);
+    void businessResponse(QJsonObject payload);
 private slots:
     void onRequest(const QJsonObject &payload);
 private:

@@ -3,15 +3,13 @@
 
 #include <QObject>
 #include <QJsonObject>
-#include "core/network/protocol.h"
-
 class DoctorInfoModule : public QObject {
     Q_OBJECT
 
 public:
     explicit DoctorInfoModule(QObject* parent = nullptr);
 signals:
-    void businessResponse(Protocol::MessageType type, QJsonObject payload);
+    void businessResponse(QJsonObject payload);
 
 public:
     // 处理医生信息相关请求

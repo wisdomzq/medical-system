@@ -1,15 +1,13 @@
 #pragma once
 #include <QObject>
 #include <QJsonObject>
-#include "core/network/protocol.h"
-
 // 汇总“create/update/lookup”类医疗数据动作，避免 main.cpp if-else
 class MedicalCrudModule : public QObject {
     Q_OBJECT
 public:
     explicit MedicalCrudModule(QObject *parent=nullptr);
 signals:
-    void businessResponse(Protocol::MessageType type, QJsonObject payload);
+    void businessResponse(QJsonObject payload);
 private slots:
     void onRequest(const QJsonObject &payload);
 private:

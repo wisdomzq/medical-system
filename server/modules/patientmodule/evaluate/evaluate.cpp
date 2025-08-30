@@ -1,6 +1,5 @@
 #include "evaluate.h"
 #include "core/network/messagerouter.h"
-#include "core/network/protocol.h"
 #include "core/database/database_config.h"
 #include "core/logging/logging.h"
 #include <QSqlQuery>
@@ -129,5 +128,5 @@ bool EvaluateModule::updateBalance(const QString &patientUsername, double delta,
 void EvaluateModule::sendResponse(QJsonObject resp, const QJsonObject &orig) {
     if(orig.contains("uuid")) resp["request_uuid"] = orig.value("uuid").toString();
     Log::response("Evaluate", resp);
-    emit businessResponse(Protocol::MessageType::JsonResponse, resp);
+    emit businessResponse(resp);
 }

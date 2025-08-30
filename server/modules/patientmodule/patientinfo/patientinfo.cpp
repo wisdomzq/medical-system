@@ -1,6 +1,5 @@
 #include "patientinfo.h"
 #include "core/network/messagerouter.h"
-#include "core/network/protocol.h"
 #include "core/database/database.h"
 #include "core/database/database_config.h"
 #include "core/logging/logging.h"
@@ -47,5 +46,5 @@ void PatientInfoModule::handleUpdate(const QJsonObject &payload) {
 void PatientInfoModule::reply(QJsonObject resp, const QJsonObject &orig) {
     if (orig.contains("uuid")) resp["request_uuid"] = orig.value("uuid").toString();
     Log::response("PatientInfo", resp);
-    emit businessResponse(Protocol::MessageType::JsonResponse, resp);
+    emit businessResponse(resp);
 }

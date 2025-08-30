@@ -60,8 +60,7 @@ void MessageRouter::handleJson(ClientHandler* sender, const Header& header, QJso
     qInfo() << "[Router] 已广播业务请求 uuid=" << uuid;
 }
 
-void MessageRouter::onBusinessResponse(MessageType type,
-                                       QJsonObject payload)
+void MessageRouter::onBusinessResponse(QJsonObject payload)
 {
     // 从响应 payload 中读取 request_uuid
     const QString uuid = payload.value("request_uuid").toString();
@@ -80,7 +79,8 @@ void MessageRouter::onBusinessResponse(MessageType type,
         qWarning() << "[Router] 目标连接已失效，丢弃响应 uuid=" << uuid;
         return;
     }
-    emit responseReady(target, type, payload);
+    // 统一为 JSON 响应类型
+    emit responseReady(target, MessageType::JsonResponse, payload);
     qInfo() << "[Router] 已路由响应给目标连接 uuid=" << uuid;
 }
 

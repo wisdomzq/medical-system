@@ -1,14 +1,12 @@
 #pragma once
 #include <QObject>
 #include <QJsonObject>
-#include "core/network/protocol.h"
-
 class HospitalizationModule : public QObject {
     Q_OBJECT
 public:
     explicit HospitalizationModule(QObject *parent=nullptr);
 signals:
-    void businessResponse(Protocol::MessageType type, QJsonObject payload);
+    void businessResponse(QJsonObject payload);
 private slots:
     void onRequest(const QJsonObject &payload);
 private:

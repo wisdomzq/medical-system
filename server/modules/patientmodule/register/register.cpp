@@ -4,7 +4,6 @@
 #include <QDebug>
 #include "core/database/database.h"
 #include "core/network/messagerouter.h"
-#include "core/network/protocol.h"
 #include <QCoreApplication>
 #include <QDir>
 #include <QSqlDatabase>
@@ -152,7 +151,7 @@ void RegisterManager::onRequest(const QJsonObject& payload) {
         QJsonObject resp; resp["type"] = "doctor_schedule_response"; resp["success"] = true; resp["data"] = arr;
     if (payload.contains("uuid")) resp["request_uuid"] = payload.value("uuid").toString();
     qDebug() << "[RegisterManager] 回传 doctor_schedule_response request_uuid=" << resp.value("request_uuid").toString();
-    emit businessResponse(Protocol::MessageType::JsonResponse, resp);
+    emit businessResponse(resp);
     } else if (action == "register_doctor") {
         qDebug() << "[RegisterManager] 处理挂号请求...";
         QString patientName = payload.value("patientName").toString();
@@ -216,6 +215,6 @@ void RegisterManager::onRequest(const QJsonObject& payload) {
     qDebug() << "[RegisterManager] 回传 register_doctor_response success=" << ok
          << ", request_uuid=" << resp.value("request_uuid").toString();
         
-    emit businessResponse(Protocol::MessageType::JsonResponse, resp);
+    emit businessResponse(resp);
     }
 }

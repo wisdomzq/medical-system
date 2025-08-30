@@ -1,6 +1,5 @@
 #include "medicalcrud.h"
 #include "core/network/messagerouter.h"
-#include "core/network/protocol.h"
 #include "core/database/database.h"
 #include "core/database/database_config.h"
 #include "core/logging/logging.h"
@@ -82,5 +81,5 @@ void MedicalCrudModule::handleGetPrescriptionsByPatient(const QJsonObject &paylo
 void MedicalCrudModule::reply(QJsonObject resp, const QJsonObject &orig) {
     if (orig.contains("uuid")) resp["request_uuid"] = orig.value("uuid").toString();
     Log::response("MedicalCrud", resp);
-    emit businessResponse(Protocol::MessageType::JsonResponse, resp);
+    emit businessResponse(resp);
 }

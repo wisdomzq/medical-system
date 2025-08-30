@@ -1,6 +1,5 @@
 #include "router.h"
 #include "core/network/messagerouter.h"
-#include "core/network/protocol.h"
 #include "modules/doctormodule/profile/profile.h"
 #include "modules/doctormodule/assignment/assignment.h"
 #include "modules/doctormodule/attendance/attendance.h"
@@ -37,5 +36,5 @@ void DoctorRouterModule::onRequest(const QJsonObject &payload) {
 void DoctorRouterModule::reply(QJsonObject resp, const QJsonObject &orig) {
     if (orig.contains("uuid")) resp["request_uuid"] = orig.value("uuid").toString();
     Log::response("DoctorRouter", resp);
-    emit businessResponse(Protocol::MessageType::JsonResponse, resp);
+    emit businessResponse(resp);
 }

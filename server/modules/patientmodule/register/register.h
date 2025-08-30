@@ -5,8 +5,6 @@
 #include <QList>
 #include <QJsonObject>
 // 移除旧 QTcpSocket 依赖，改用 MessageRouter 广播机制
-#include "core/network/protocol.h"
-
 // 医生排班信息结构体
 struct DoctorSchedule {
     int doctorId;
@@ -33,5 +31,5 @@ public:
 public slots:
     void onRequest(const QJsonObject& payload);
 signals:
-    void businessResponse(Protocol::MessageType type, QJsonObject payload);
+    void businessResponse(QJsonObject payload);
 };

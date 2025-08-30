@@ -4,14 +4,12 @@
  #include <QNetworkAccessManager>
  #include <QNetworkReply>
  #include <QJsonArray>
- #include "core/network/protocol.h"
-
- class MedicineModule : public QObject {
+  class MedicineModule : public QObject {
 	 Q_OBJECT
  public:
 	 explicit MedicineModule(QObject *parent=nullptr);
  signals:
- 	 void businessResponse(Protocol::MessageType type, QJsonObject payload);
+	 void businessResponse(QJsonObject payload);
  private slots:
 	 void onRequest(const QJsonObject &payload);
 	 void onRemoteFinished();

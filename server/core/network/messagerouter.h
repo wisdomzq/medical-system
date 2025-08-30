@@ -21,8 +21,7 @@ public slots:
     void onRequestReady(ClientHandler* sender, Protocol::Header header, QJsonObject payload);
 
     // 业务层回馈响应：payload 内需包含 request_uuid，用于路由回对应连接
-    void onBusinessResponse(Protocol::MessageType type,
-                            QJsonObject payload);
+    void onBusinessResponse(QJsonObject payload);
 
 signals:
     // 向指定的 ClientHandler 返回响应（由路由器发射，具体发送在对应 handler 线程执行）

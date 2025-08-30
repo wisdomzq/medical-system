@@ -1,7 +1,6 @@
 #include "medicine.h"
 #include "core/database/database.h"
 #include "core/database/database_config.h"
-#include "core/network/protocol.h"
 #include "core/network/messagerouter.h"
 #include "core/logging/logging.h"
 #include <QDateTime>
@@ -282,5 +281,5 @@ void MedicineModule::sendResponse(QJsonObject resp, const QJsonObject& orig)
     if (orig.contains("uuid"))
         resp["request_uuid"] = orig.value("uuid").toString();
     Log::response("Medicine", resp);
-    emit businessResponse(Protocol::MessageType::JsonResponse, resp);
+    emit businessResponse(resp);
 }

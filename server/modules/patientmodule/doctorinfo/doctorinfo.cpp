@@ -2,7 +2,6 @@
 #include "core/database/database.h"
 #include "core/database/database_config.h"
 #include "core/network/messagerouter.h"
-#include "core/network/protocol.h"
 #include "core/logging/logging.h"
 #include <QJsonArray>
 #include <QDebug>
@@ -13,7 +12,6 @@
 #include "core/database/database.h"
 #include "core/database/database_config.h"
 #include "core/network/messagerouter.h"
-#include "core/network/protocol.h"
 #include <QJsonArray>
 #include <QDebug>
 
@@ -130,5 +128,5 @@ void DoctorInfoModule::onRequestReceived(const QJsonObject& payload) {
     }
     Log::response("DoctorInfo", response);
     // 通过发射信号回复
-    emit businessResponse(Protocol::MessageType::JsonResponse, response);
+    emit businessResponse(response);
 }

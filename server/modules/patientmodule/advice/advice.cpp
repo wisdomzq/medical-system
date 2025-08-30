@@ -2,7 +2,6 @@
 #include "core/database/database.h"
 #include "core/database/database_config.h"
 #include "core/network/messagerouter.h"
-#include "core/network/protocol.h"
 #include "core/logging/logging.h"
 #include <QJsonArray>
 #include <QDebug>
@@ -162,6 +161,6 @@ void AdviceModule::onRequestReceived(const QJsonObject& payload) {
         }
     Log::response("Advice", response);
         // 发送响应
-        emit businessResponse(Protocol::MessageType::JsonResponse, response);
+    emit businessResponse(response);
     }
 }

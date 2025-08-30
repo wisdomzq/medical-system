@@ -1,7 +1,6 @@
 #include "loginrouter.h"
 #include "loginmodule.h"
 #include "core/network/messagerouter.h"
-#include "core/network/protocol.h"
 #include "core/logging/logging.h"
 #include <QDebug>
 
@@ -34,5 +33,5 @@ void LoginRouter::onRequest(const QJsonObject &payload) {
 void LoginRouter::reply(QJsonObject resp, const QJsonObject &orig) {
     if (orig.contains("uuid")) resp["request_uuid"] = orig.value("uuid").toString();
     Log::response("LoginRouter", resp);
-    emit businessResponse(Protocol::MessageType::JsonResponse, resp);
+    emit businessResponse(resp);
 }
