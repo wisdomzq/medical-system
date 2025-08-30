@@ -10,6 +10,7 @@
 #include "modules/patientmodule/prescription/prescription.h"
 #include "modules/patientmodule/advice/advice.h"
 #include "modules/patientmodule/doctorinfo/doctorinfo.h"
+#include "modules/patientmodule/register/register.h"
 #include "core/database/database.h"
 #include "core/database/database_config.h"
 #include "modules/doctormodule/profile/profile.h"
@@ -28,6 +29,7 @@ int main(int argc, char *argv[]) {
     PrescriptionModule prescriptionModule; // 负责处方相关请求
     AdviceModule adviceModule; // 负责医嘱相关请求
     DoctorInfoModule doctorInfoModule; // 负责医生信息相关请求
+    RegisterManager registerManager; // 负责挂号相关请求
     
     DoctorProfileModule doctorProfileModule;
     DoctorAssignmentModule doctorAssignmentModule;
@@ -38,11 +40,14 @@ int main(int argc, char *argv[]) {
                      [&](const QJsonObject &payload) {
         QJsonObject responsePayload;
         const QString action = payload.value("action").toString();
+        qDebug() << "[MainServer] 收到请求，action:" << action;
 
         DBManager db(DatabaseConfig::getDatabasePath()); // 使用统一的数据库路径配置
 
-        // 这些动作由 MedicineModule 处理，这里直接返回避免产生 unknown_response 干扰
-        if(action == "get_medications" || action == "search_medications" || action == "search_medications_remote"||action.startsWith("evaluate_")||action.startsWith("prescription_")||action.startsWith("advice_")||action.startsWith("doctorinfo_")) {
+        // 这些动作由特定模块处理，这里直接返回避免产生 unknown_response 干扰
+        if(action == "get_medications" || action == "search_medications" || action == "search_medications_remote"||
+           action.startsWith("evaluate_")||action.startsWith("prescription_")||action.startsWith("advice_")||action.startsWith("doctorinfo_")) {
+            qDebug() << "[MainServer] 动作" << action << "由其他模块处理，跳过";
             return; // 不发送重复响应
         }
 
@@ -72,9 +77,22 @@ int main(int argc, char *argv[]) {
             responsePayload["type"] = "update_patient_info_response";
             responsePayload["success"] = ok;
         } else if (action == "create_appointment") {
-            bool ok = db.createAppointment(payload.value("data").toObject());
+            QJsonObject data = payload.value("data").toObject();
+            bool ok = db.createAppointment(data);
             responsePayload["type"] = "create_appointment_response";
             responsePayload["success"] = ok;
+            if(!ok){
+                // 简单再做一次可诊断检查：确认 patient 与 doctor 是否存在
+                QString diag;
+                DBManager diagDb(DatabaseConfig::getDatabasePath());
+                QJsonObject doctorInfo, patientInfo;
+                bool doctorExists = diagDb.getDoctorInfo(data.value("doctor_username").toString(), doctorInfo);
+                bool patientExists = diagDb.getPatientInfo(data.value("patient_username").toString(), patientInfo);
+                if(!doctorExists) diag += "医生不存在; ";
+                if(!patientExists) diag += "患者不存在; ";
+                if(diag.isEmpty()) diag = "数据库插入失败(可能字段不匹配或外键约束)";
+                responsePayload["error"] = diag;
+            }
         } else if (action == "get_appointments_by_patient") {
             QString username = payload.value("username").toString();
             QJsonArray appointments;
@@ -100,6 +118,101 @@ int main(int argc, char *argv[]) {
             responsePayload["success"] = ok;
             if (ok) {
                 responsePayload["data"] = doctors;
+            }
+        } else if (action == "register_doctor") {
+            qDebug() << "[MainServer] 处理挂号请求";
+            // 使用RegisterManager的逻辑
+            QString patientName = payload.value("patientName").toString();
+            QString err; bool ok = false;
+            
+            // 获取医生列表（使用RegisterManager的getAllDoctorSchedules逻辑）
+            QJsonArray doctors;
+            if (db.getAllDoctors(doctors)) {
+                QString docName = payload.value("doctor_name").toString();
+                int doctorId = payload.value("doctorId").toInt();
+                
+                // 如果有明确的医生ID，优先使用
+                if (doctorId > 0 && doctorId <= doctors.size()) {
+                    QJsonObject doctor = doctors[doctorId - 1].toObject();
+                    QString doctorUsername = doctor.value("username").toString();
+                    QString department = doctor.value("department").toString();
+                    double fee = doctor.value("consultation_fee").toDouble();
+                    
+                    // 创建预约
+                    QJsonObject appt;
+                    appt["patient_username"] = patientName;
+                    appt["doctor_username"] = doctorUsername;
+                    appt["appointment_date"] = QDate::currentDate().toString("yyyy-MM-dd");
+                    appt["appointment_time"] = QTime::currentTime().toString("HH:mm");
+                    appt["department"] = department;
+                    appt["chief_complaint"] = QString("预约挂号 - %1").arg(doctor.value("name").toString());
+                    appt["fee"] = fee;
+                    
+                    ok = db.createAppointment(appt);
+                    if (!ok) {
+                        err = "创建预约失败，请稍后重试";
+                    }
+                } else {
+                    // 根据医生姓名查找
+                    bool found = false;
+                    for (int i = 0; i < doctors.size(); ++i) {
+                        QJsonObject doctor = doctors[i].toObject();
+                        if (doctor.value("name").toString() == docName || doctor.value("username").toString() == docName) {
+                            QString doctorUsername = doctor.value("username").toString();
+                            QString department = doctor.value("department").toString();
+                            double fee = doctor.value("consultation_fee").toDouble();
+                            
+                            // 创建预约
+                            QJsonObject appt;
+                            appt["patient_username"] = patientName;
+                            appt["doctor_username"] = doctorUsername;
+                            appt["appointment_date"] = QDate::currentDate().toString("yyyy-MM-dd");
+                            appt["appointment_time"] = QTime::currentTime().toString("HH:mm");
+                            appt["department"] = department;
+                            appt["chief_complaint"] = QString("预约挂号 - %1").arg(doctor.value("name").toString());
+                            appt["fee"] = fee;
+                            
+                            ok = db.createAppointment(appt);
+                            if (!ok) {
+                                err = "创建预约失败，请稍后重试";
+                            }
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        err = "医生不存在或序号无效";
+                    }
+                }
+            } else {
+                err = "获取医生列表失败";
+            }
+            
+            responsePayload["type"] = "register_doctor_response";
+            responsePayload["success"] = ok;
+            if (!ok) {
+                responsePayload["error"] = err;
+            } else {
+                responsePayload["message"] = "挂号成功";
+                responsePayload["doctor_name"] = payload.value("doctor_name").toString();
+                responsePayload["patient_name"] = patientName;
+            }
+        } else if (action == "get_doctors_schedule_overview") {
+            QJsonArray doctorsSchedule;
+            bool ok = db.getAllDoctorsScheduleOverview(doctorsSchedule);
+            responsePayload["type"] = "doctors_schedule_overview_response";
+            responsePayload["success"] = ok;
+            if (ok) {
+                responsePayload["data"] = doctorsSchedule;
+            }
+        } else if (action == "get_doctor_schedule_with_stats") {
+            QString doctorUsername = payload.value("doctor_username").toString();
+            QJsonArray scheduleStats;
+            bool ok = db.getDoctorScheduleWithAppointmentStats(doctorUsername, scheduleStats);
+            responsePayload["type"] = "doctor_schedule_stats_response";
+            responsePayload["success"] = ok;
+            if (ok) {
+                responsePayload["data"] = scheduleStats;
             }
         } else if (action == "get_medical_records_by_patient") {
             QJsonArray records;

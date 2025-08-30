@@ -12,13 +12,17 @@
 #include <QSqlError>
 
 RegisterManager::RegisterManager(QObject* parent): QObject(parent) {
+    qDebug() << "[RegisterManager] 构造函数被调用，开始连接信号槽...";
     connect(&MessageRouter::instance(), &MessageRouter::requestReceived,
-            this, &RegisterManager::onRequest);
+            this, &RegisterManager::onRequest, Qt::DirectConnection);
+    qDebug() << "[RegisterManager] 信号槽连接完成";
     connect(this, &RegisterManager::businessResponseReady, this, [](QJsonObject payload){
+        qDebug() << "[RegisterManager] 准备发送响应:" << payload;
         if (!payload.contains("request_uuid") && payload.contains("uuid"))
             payload.insert("request_uuid", payload.value("uuid").toString());
         MessageRouter::instance().onBusinessResponse(Protocol::MessageType::JsonResponse, payload);
-    });
+    }, Qt::DirectConnection);
+    qDebug() << "[RegisterManager] RegisterManager初始化完成";
 }
 
 // 获取所有医生排班信息
@@ -75,33 +79,41 @@ QList<DoctorSchedule> RegisterManager::getAllDoctorSchedules() {
 bool RegisterManager::registerPatient(int doctorId, const QString& patientName, QString& errorMsg) {
     // 使用内存中的排班列表（含 fallback），避免 doctors 表为空导致失败
     QList<DoctorSchedule> schedules = getAllDoctorSchedules();
-    QString doctorUsername; QString department; double fee = 0.0;
+    QString doctorUsername; QString department; double fee = 0.0; QString doctorName;
+    
     if (doctorId <= 0 || doctorId > schedules.size()) {
         errorMsg = QStringLiteral("医生序号无效");
         return false;
     }
+    
     const DoctorSchedule &ds = schedules.at(doctorId - 1); // 序号从1开始
     doctorUsername = ds.jobNumber; // username
+    doctorName = ds.name;
     department = ds.department;
     fee = ds.fee;
 
     QDir dir2(QCoreApplication::applicationDirPath());
     for (int i=0;i<4 && !dir2.exists("data");++i) dir2.cdUp();
     DBManager db(dir2.filePath("data/user.db"));
+    
     const QDate today = QDate::currentDate();
     const QTime now = QTime::currentTime();
+    
+    // 使用DBManager的createAppointment方法
     QJsonObject appt;
     appt["patient_username"] = patientName;
     appt["doctor_username"] = doctorUsername;
     appt["appointment_date"] = today.toString("yyyy-MM-dd");
     appt["appointment_time"] = now.toString("HH:mm");
     appt["department"] = department;
-    appt["chief_complaint"] = QString();
+    appt["chief_complaint"] = QString("预约挂号 - %1").arg(doctorName);
     appt["fee"] = fee;
+    
     if (!db.createAppointment(appt)) {
-        errorMsg = QStringLiteral("创建预约失败");
+        errorMsg = QStringLiteral("创建预约失败，请稍后重试");
         return false;
     }
+    
     return true;
 }
 
@@ -124,6 +136,15 @@ QJsonObject RegisterManager::doctorScheduleToJson(const DoctorSchedule& ds) {
 
 void RegisterManager::onRequest(const QJsonObject& payload) {
     const QString action = payload.value("action").toString(payload.value("type").toString());
+    qDebug() << "[RegisterManager] 收到请求，action:" << action;
+    
+    // 只处理挂号相关的动作
+    if (action != "get_doctor_schedule" && action != "register_doctor") {
+        return; // 不处理非挂号相关的请求
+    }
+    
+    qDebug() << "[RegisterManager] 处理挂号相关请求:" << payload;
+    
     if (action == "get_doctor_schedule") {
         auto list = getAllDoctorSchedules();
         QJsonArray arr; for (auto &ds : list) arr.append(doctorScheduleToJson(ds));
@@ -131,33 +152,68 @@ void RegisterManager::onRequest(const QJsonObject& payload) {
         if (payload.contains("uuid")) resp["request_uuid"] = payload.value("uuid").toString();
         emit businessResponseReady(resp);
     } else if (action == "register_doctor") {
+        qDebug() << "[RegisterManager] 处理挂号请求...";
         QString patientName = payload.value("patientName").toString();
+        qDebug() << "[RegisterManager] 患者姓名:" << patientName;
         QString err; bool ok = false;
         QList<DoctorSchedule> schedules = getAllDoctorSchedules();
-        auto findByName = [&](const QString& target)->int { int idx=1; for (auto &ds : schedules) { if (ds.name == target) return idx; ++idx; } return -1; };
-        auto findByUser = [&](const QString& target)->int { int idx=1; for (auto &ds : schedules) { if (ds.jobNumber == target) return idx; ++idx; } return -1; };
+        
+        auto findByName = [&](const QString& target)->int { 
+            int idx=1; 
+            for (auto &ds : schedules) { 
+                if (ds.name == target || ds.jobNumber == target) return idx; 
+                ++idx; 
+            } 
+            return -1; 
+        };
+        
+        auto findByUser = [&](const QString& target)->int { 
+            int idx=1; 
+            for (auto &ds : schedules) { 
+                if (ds.jobNumber == target) return idx; 
+                ++idx; 
+            } 
+            return -1; 
+        };
+        
         int matchId = -1;
-        if (payload.contains("doctor_name")) {
+        
+        // 优先使用明确的医生ID
+        if (payload.contains("doctorId")) {
+            matchId = payload.value("doctorId").toInt();
+        } else if (payload.contains("doctor_name")) {
             QString docName = payload.value("doctor_name").toString();
             matchId = findByName(docName);
-            if (matchId<0) matchId = findByUser(docName); // 兼容姓名==账号
         } else if (payload.contains("doctor_username")) {
             QString docUser = payload.value("doctor_username").toString();
             matchId = findByUser(docUser);
-        } else if (payload.contains("doctorId")) {
-            matchId = payload.value("doctorId").toInt();
         }
-        if (matchId>0) {
+        
+        if (matchId > 0 && matchId <= schedules.size()) {
+            qDebug() << "[RegisterManager] 找到医生，序号:" << matchId << "开始挂号...";
             ok = registerPatient(matchId, patientName, err);
+            qDebug() << "[RegisterManager] 挂号结果:" << ok << "错误信息:" << err;
         } else {
-            err = QStringLiteral("医生不存在");
+            err = QStringLiteral("医生不存在或序号无效");
+            qDebug() << "[RegisterManager] 医生不存在，matchId:" << matchId << "schedules.size():" << schedules.size();
         }
-        QJsonObject resp; resp["type"] = "register_doctor_response"; resp["success"] = ok; if(!ok) resp["error"] = err; else resp["message"] = QStringLiteral("挂号成功");
-        if (ok) {
+        
+        QJsonObject resp; 
+        resp["type"] = "register_doctor_response"; 
+        resp["success"] = ok; 
+        
+        if(!ok) {
+            resp["error"] = err;
+        } else {
+            resp["message"] = QStringLiteral("挂号成功");
             resp["doctor_name"] = payload.value("doctor_name").toString();
             resp["patient_name"] = patientName;
         }
-        if (payload.contains("uuid")) resp["request_uuid"] = payload.value("uuid").toString();
+        
+        if (payload.contains("uuid")) {
+            resp["request_uuid"] = payload.value("uuid").toString();
+        }
+        
         emit businessResponseReady(resp);
     }
 }
