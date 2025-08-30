@@ -2,6 +2,7 @@
     <qresource prefix="/">
         <file>style.qss</file>
     <file>doctorinfo.qss</file>
+    <file>patientinfo.qss</file>
     <file>login.qss</file>
     <file>icons/考勤.svg</file>
     <file>icons/聊天室.svg</file>
@@ -12,5 +13,14 @@
     <file>icons/退出登录.svg</file>
     <file>icons/医生.svg</file>
     <file>icons/病人.svg</file>
+    <file>icons/我的预约.svg</file>
+    <file>icons/我的病例.svg</file>
+    <file>icons/医患沟通.svg</file>
+    <file>icons/查看医生信息.svg</file>
+    <file>icons/医嘱.svg</file>
+    <file>icons/处方.svg</file>
+    <file>icons/评估与充值.svg</file>
+    <file>icons/药品搜索.svg</file>
+    <file>icons/住院信息.svg</file>
     </qresource>
 </RCC>

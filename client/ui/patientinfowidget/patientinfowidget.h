@@ -4,6 +4,8 @@
 #include <QWidget>
 #include <QObject>
 class QTabWidget;
+class QListWidget;
+class QStackedWidget;
 class CommunicationClient;
 
 // 前向声明各子页面类
@@ -29,6 +31,8 @@ public:
 
 private:
     QTabWidget *tabWidget = nullptr;
+    QListWidget *navList = nullptr;
+    QStackedWidget *pages = nullptr;
     QString m_patientName;
     CommunicationClient *m_communicationClient = nullptr;
 
