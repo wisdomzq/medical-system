@@ -7,6 +7,7 @@
 #include <QSqlError>
 #include <QJsonDocument>
 #include <QDebug>
+#include <QRandomGenerator>
 
 static const char* WALLET_TABLE_SQL = "CREATE TABLE IF NOT EXISTS patient_wallets (\n"
                                       " patient_username TEXT PRIMARY KEY,\n"
@@ -64,7 +65,11 @@ void EvaluateModule::handleRecharge(const QJsonObject &payload) {
 }
 
 double EvaluateModule::ensureAndFetchBalance(const QString &patientUsername) {
-    QSqlDatabase tempDb = QSqlDatabase::addDatabase("QSQLITE", QString("evaluate_conn_%1").arg(reinterpret_cast<quintptr>(this)) + QString::number(qrand()));
+    QSqlDatabase tempDb = QSqlDatabase::addDatabase(
+        "QSQLITE",
+        QString("evaluate_conn_%1").arg(reinterpret_cast<quintptr>(this))
+            + QString::number(QRandomGenerator::global()->generate())
+    );
     tempDb.setDatabaseName(DatabaseConfig::getDatabasePath());
     if(!tempDb.open()) { qWarning() << "[EvaluateModule] 打开数据库失败:" << tempDb.lastError().text(); return 0.0; }
     {
@@ -93,7 +98,11 @@ double EvaluateModule::ensureAndFetchBalance(const QString &patientUsername) {
 }
 
 bool EvaluateModule::updateBalance(const QString &patientUsername, double delta, double &newBalance, QString &err) {
-    QSqlDatabase tempDb = QSqlDatabase::addDatabase("QSQLITE", QString("evaluate_conn_upd_%1").arg(reinterpret_cast<quintptr>(this)) + QString::number(qrand()));
+    QSqlDatabase tempDb = QSqlDatabase::addDatabase(
+        "QSQLITE",
+        QString("evaluate_conn_upd_%1").arg(reinterpret_cast<quintptr>(this))
+            + QString::number(QRandomGenerator::global()->generate())
+    );
     tempDb.setDatabaseName(DatabaseConfig::getDatabasePath());
     if(!tempDb.open()) { err = QStringLiteral("数据库打开失败"); return false; }
     {
