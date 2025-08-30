@@ -22,6 +22,8 @@ set(srcs
     ui/patientinfowidget/appointmentpage.h
     ui/patientinfowidget/profilepage.cpp
     ui/patientinfowidget/profilepage.h
+    ui/patientinfowidget/casepage.cpp
+    ui/patientinfowidget/casepage.h
     ui/patientinfowidget/placeholderpages.cpp
     ui/patientinfowidget/placeholderpages.h
     ui/patientinfowidget/hospitalpage.cpp
