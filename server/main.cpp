@@ -7,6 +7,7 @@
 #include "modules/loginmodule/loginmodule.h"
 #include "modules/patientmodule/medicine/medicine.h"
 #include "modules/patientmodule/evaluate/evaluate.h"
+#include "modules/patientmodule/prescription/prescription.h"
 #include "core/database/database.h"
 #include "core/database/database_config.h"
 #include "modules/doctormodule/profile/profile.h"
@@ -22,6 +23,7 @@ int main(int argc, char *argv[]) {
 
     MedicineModule medicineModule; // 负责药品相关请求
     EvaluateModule evaluateModule; // 负责评价相关请求
+    PrescriptionModule prescriptionModule; // 负责处方相关请求
     
     DoctorProfileModule doctorProfileModule;
     DoctorAssignmentModule doctorAssignmentModule;
@@ -36,7 +38,7 @@ int main(int argc, char *argv[]) {
         DBManager db(DatabaseConfig::getDatabasePath()); // 使用统一的数据库路径配置
 
         // 这些动作由 MedicineModule 处理，这里直接返回避免产生 unknown_response 干扰
-        if(action == "get_medications" || action == "search_medications" || action == "search_medications_remote"||action.startsWith("evaluate_")) {
+        if(action == "get_medications" || action == "search_medications" || action == "search_medications_remote"||action.startsWith("evaluate_")||action.startsWith("prescription_")) {
             return; // 不发送重复响应
         }
 

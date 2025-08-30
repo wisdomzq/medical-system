@@ -7,6 +7,7 @@
 #include "hospitalpage.h"
 #include "medicationpage.h"
 #include "evaluatepage.h"
+#include "prescriptionpage.h"
 #include <QVBoxLayout>
 #include <QTabWidget>
 #include <QJsonObject>

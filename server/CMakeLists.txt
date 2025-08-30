@@ -17,6 +17,7 @@ set(srcs
     modules/patientmodule/register/register.cpp
     modules/patientmodule/medicine/medicine.cpp
     modules/patientmodule/evaluate/evaluate.cpp
+    modules/patientmodule/prescription/prescription.cpp
     modules/doctormodule/profile/profile.cpp
     modules/doctormodule/assignment/assignment.cpp
     modules/doctormodule/attendance/attendance.cpp

@@ -29,6 +29,8 @@ set(srcs
     ui/patientinfowidget/medicationpage.h
     ui/patientinfowidget/evaluatepage.cpp
     ui/patientinfowidget/evaluatepage.h
+    ui/patientinfowidget/prescriptionpage.cpp
+    ui/patientinfowidget/prescriptionpage.h
     core/network/src/client/communicationclient.cpp
     core/network/src/client/responsedispatcher.cpp
     core/network/src/client/streamparser.cpp
