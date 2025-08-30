@@ -9,7 +9,6 @@ QLabel#LoginTitle {
 	color: #0d47a1;
 	font-size: 36px;    /* 更大字号 */
 	font-weight: 800;   /* 更强字重 */
-	letter-spacing: 6px;
 	padding: 28px 0;
 }
 
@@ -34,20 +33,69 @@ QLineEdit {
 /* 表单行标题 */
 QLabel { color: #374151; }
 
-/* 身份选择按钮（图标在上文字在下） */
-QToolButton#RoleButton {
+/* 身份卡片：上圆形图标 + 下方按钮 */
+QLabel#RoleCircle {
+	/* 兼容性考虑：使用纯色代替渐变 */
+	background: #d2c8f4;
+	border-radius: 60px; /* 半径 = 宽高/2，形成圆形 */
+	border: 0px solid transparent;
+}
+QWidget#SelectionGroup {
 	background: #ffffff;
-	border: 1px solid #d0d7de;
+	border: 1px solid #e5e7eb; /* 灰色细边 */
 	border-radius: 12px;
-	padding: 16px 18px;
-	min-width: 160px;
-	color: #374151;
-	font-size: 16px;
 }
-QToolButton#RoleButton:hover { border-color: #1976d2; background: #f6faff; }
-QToolButton#RoleButton:checked {
-	border: 2px solid #1976d2;
-	background: #eef5ff;
-	color: #0d47a1;
+
+QWidget#RoleCard {
+	background: transparent; /* 去掉身份卡片自身灰色背景 */
+	border: none;
+}
+
+QLabel#UserTypeLabel {
+	color: #111827;
+	font-size: 22px;
 	font-weight: 600;
+	background: transparent; /* 去掉灰底条 */
+	border: none;
 }
+
+QPushButton#RoleBtnDoctor, QPushButton#RoleBtnPatient {
+	border: none;
+	border-radius: 20px; /* 圆角按钮 */
+	color: #fff;
+	font-weight: 600;
+	padding: 12px 24px; /* 更舒展的按钮内边距 */
+	min-height: 16px; /* 确保按钮有足够高度显示圆角 */
+}
+QPushButton#RoleBtnDoctor { /* 粉色系 */
+	background: #ff9ac2;
+}
+QPushButton#RoleBtnDoctor:hover {
+	background: #ffafcf;
+}
+QPushButton#RoleBtnPatient { /* 蓝青系 */
+	background: #63a4ff;
+}
+QPushButton#RoleBtnPatient:hover {
+	background: #7ab3ff;
+}
+
+/* 登录页：左图右卡片布局样式 */
+QLabel#LoginIllustration {
+	background: #f1f5f9; /* 占位淡灰蓝，可替换为插图 pixmap */
+	border-radius: 12px;
+}
+
+QWidget#LoginFormCard {
+	background: #ffffff;
+	border-radius: 14px;
+	border: 1px solid #eef2f7;
+	/* 简单阴影效果（Qt 不支持 box-shadow，用双层边模拟） */
+}
+
+QWidget#LoginFormCard QPushButton {
+	background: #2f6fec; /* 品牌主色登录按钮 */
+	border-radius: 8px;
+}
+QWidget#LoginFormCard QPushButton:hover { background: #275fd0; }
+QWidget#LoginFormCard QPushButton:pressed { background: #1f4fb5; }

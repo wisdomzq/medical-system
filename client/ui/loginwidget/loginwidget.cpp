@@ -40,40 +40,60 @@ LoginWidget::LoginWidget(QWidget* parent)
     QVBoxLayout* selectionLayout = new QVBoxLayout(selectionPage);
 
     QLabel* userTypeLabel = new QLabel("请选择您的身份：", this);
+    userTypeLabel->setObjectName("UserTypeLabel");
     QFont userTypeFont;
-    userTypeFont.setPointSize(16);
+    userTypeFont.setPointSize(20);
     userTypeLabel->setFont(userTypeFont);
     userTypeLabel->setAlignment(Qt::AlignCenter);
 
-    // 身份卡片使用 QToolButton：图标在上、文字在下，可选中高亮
-    auto makeRoleBtn = [&](const QString &title, const QString &icon){
-        QToolButton *btn = new QToolButton(this);
-        btn->setObjectName("RoleButton");
-        btn->setText(title);
-        btn->setIcon(QIcon(icon));
-        btn->setIconSize(QSize(96,96));
-        btn->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-        btn->setCheckable(true);
-        btn->setAutoExclusive(true); // 在同一父容器下实现互斥
-        return btn;
+    // 身份卡片：上圆形图标 + 下按钮
+    auto makeRoleCard = [&](const QString &icon, const QString &btnText, const QString &btnObjName, std::function<void()> onClick){
+        QWidget *card = new QWidget(this);
+        card->setObjectName("RoleCard");
+        QVBoxLayout *cl = new QVBoxLayout(card);
+        cl->setContentsMargins(12,12,12,12);
+        cl->setSpacing(12);
+        // 圆形图标容器
+        QLabel *circle = new QLabel(card);
+        circle->setObjectName("RoleCircle");
+        circle->setFixedSize(120,120);
+        circle->setAlignment(Qt::AlignCenter);
+        QPixmap pm = QIcon(icon).pixmap(72,72);
+        circle->setPixmap(pm);
+        cl->addWidget(circle, 0, Qt::AlignHCenter);
+        // 下方动作按钮
+        QPushButton *btn = new QPushButton(btnText, card);
+        btn->setObjectName(btnObjName);
+        btn->setFixedSize(160, 40);
+        cl->addWidget(btn, 0, Qt::AlignHCenter);
+        QObject::connect(btn, &QPushButton::clicked, card, [onClick]{ onClick(); });
+        return card;
     };
 
-    QToolButton *doctorBtn = makeRoleBtn("医生", ":/icons/医生.svg");
-    QToolButton *patientBtn = makeRoleBtn("病人", ":/icons/病人.svg");
+    QWidget *doctorCard = makeRoleCard(":/icons/医生.svg", QStringLiteral("我是医生"), "RoleBtnDoctor", [this]{ showDoctorLogin(); });
+    QWidget *patientCard = makeRoleCard(":/icons/病人.svg", QStringLiteral("我是病人"), "RoleBtnPatient", [this]{ showPatientLogin(); });
 
     QHBoxLayout* btnLayout = new QHBoxLayout();
     btnLayout->addStretch();
-    btnLayout->addWidget(doctorBtn);
+    btnLayout->addWidget(doctorCard);
     btnLayout->addSpacing(40);
-    btnLayout->addWidget(patientBtn);
+    btnLayout->addWidget(patientCard);
     btnLayout->addStretch();
+
+    // 外层带圆角边框的容器，包住提示文字与身份选择
+    QWidget* selectionGroup = new QWidget(selectionPage);
+    selectionGroup->setObjectName("SelectionGroup");
+    QVBoxLayout* groupLayout = new QVBoxLayout(selectionGroup);
+    groupLayout->setContentsMargins(24, 24, 24, 24);
+    groupLayout->setSpacing(16);
+    groupLayout->addWidget(userTypeLabel);
+    groupLayout->addSpacing(12);
+    groupLayout->addLayout(btnLayout);
 
     selectionLayout->addStretch();
     selectionLayout->addWidget(createTitleLabel()); // Use helper for title
     selectionLayout->addSpacing(20);
-    selectionLayout->addWidget(userTypeLabel);
-    selectionLayout->addSpacing(20);
-    selectionLayout->addLayout(btnLayout);
+    selectionLayout->addWidget(selectionGroup, 0, Qt::AlignHCenter);
     selectionLayout->addStretch();
 
 
@@ -91,14 +111,33 @@ LoginWidget::LoginWidget(QWidget* parent)
     doctorFormLayout->addRow("医生姓名：", doctorLoginNameEdit);
     doctorFormLayout->addRow("密码：", doctorLoginPasswordEdit);
 
+    // 左图右表单卡片
+    QHBoxLayout* doctorContent = new QHBoxLayout();
+    doctorContent->setSpacing(32);
+    // 左侧插图区域
+    QLabel* doctorIllustration = new QLabel(doctorLoginPage);
+    doctorIllustration->setObjectName("LoginIllustration");
+    doctorIllustration->setMinimumSize(360, 300);
+    doctorIllustration->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    doctorIllustration->setAlignment(Qt::AlignCenter);
+    doctorContent->addWidget(doctorIllustration, 1);
+    // 右侧表单卡片
+    QWidget* doctorLoginCard = new QWidget(doctorLoginPage);
+    doctorLoginCard->setObjectName("LoginFormCard");
+    doctorLoginCard->setFixedWidth(380);
+    QVBoxLayout* doctorCardLayout = new QVBoxLayout(doctorLoginCard);
+    doctorCardLayout->setSpacing(14);
+    doctorCardLayout->setContentsMargins(24, 24, 24, 24);
+    doctorCardLayout->addWidget(createTitleLabel());
+    doctorCardLayout->addSpacing(6);
+    doctorCardLayout->addLayout(doctorFormLayout);
+    doctorCardLayout->addSpacing(6);
+    doctorCardLayout->addWidget(doctorLoginButton);
+    doctorCardLayout->addWidget(goToDoctorRegisterButton);
+    doctorCardLayout->addWidget(backFromDoctorLoginButton);
+    doctorContent->addWidget(doctorLoginCard, 0);
     doctorLoginLayout->addStretch();
-    doctorLoginLayout->addWidget(createTitleLabel());
-    doctorLoginLayout->addSpacing(20);
-    doctorLoginLayout->addLayout(doctorFormLayout);
-    doctorLoginLayout->addSpacing(10);
-    doctorLoginLayout->addWidget(doctorLoginButton);
-    doctorLoginLayout->addWidget(goToDoctorRegisterButton);
-    doctorLoginLayout->addWidget(backFromDoctorLoginButton); // <-- 添加到布局
+    doctorLoginLayout->addLayout(doctorContent);
     doctorLoginLayout->addStretch();
 
 
@@ -116,14 +155,31 @@ LoginWidget::LoginWidget(QWidget* parent)
     patientFormLayout->addRow("病人姓名：", patientLoginNameEdit);
     patientFormLayout->addRow("密码：", patientLoginPasswordEdit);
 
+    // 左图右表单卡片
+    QHBoxLayout* patientContent = new QHBoxLayout();
+    patientContent->setSpacing(32);
+    QLabel* patientIllustration = new QLabel(patientLoginPage);
+    patientIllustration->setObjectName("LoginIllustration");
+    patientIllustration->setMinimumSize(360, 300);
+    patientIllustration->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    patientIllustration->setAlignment(Qt::AlignCenter);
+    patientContent->addWidget(patientIllustration, 1);
+    QWidget* patientLoginCard = new QWidget(patientLoginPage);
+    patientLoginCard->setObjectName("LoginFormCard");
+    patientLoginCard->setFixedWidth(380);
+    QVBoxLayout* patientCardLayout = new QVBoxLayout(patientLoginCard);
+    patientCardLayout->setSpacing(14);
+    patientCardLayout->setContentsMargins(24, 24, 24, 24);
+    patientCardLayout->addWidget(createTitleLabel());
+    patientCardLayout->addSpacing(6);
+    patientCardLayout->addLayout(patientFormLayout);
+    patientCardLayout->addSpacing(6);
+    patientCardLayout->addWidget(patientLoginButton);
+    patientCardLayout->addWidget(goToPatientRegisterButton);
+    patientCardLayout->addWidget(backFromPatientLoginButton);
+    patientContent->addWidget(patientLoginCard, 0);
     patientLoginLayout->addStretch();
-    patientLoginLayout->addWidget(createTitleLabel());
-    patientLoginLayout->addSpacing(20);
-    patientLoginLayout->addLayout(patientFormLayout);
-    patientLoginLayout->addSpacing(10);
-    patientLoginLayout->addWidget(patientLoginButton);
-    patientLoginLayout->addWidget(goToPatientRegisterButton);
-    patientLoginLayout->addWidget(backFromPatientLoginButton); // <-- 添加到布局
+    patientLoginLayout->addLayout(patientContent);
     patientLoginLayout->addStretch();
 
 
@@ -187,9 +243,7 @@ LoginWidget::LoginWidget(QWidget* parent)
 
     // --- Connect signals and slots ---
     // Navigation
-    // 选择后进入对应登录页
-    connect(doctorBtn, &QToolButton::clicked, this, [this]{ showDoctorLogin(); });
-    connect(patientBtn, &QToolButton::clicked, this, [this]{ showPatientLogin(); });
+    // 进入对应登录页的连接在卡片中已绑定
     connect(goToDoctorRegisterButton, &QPushButton::clicked, this, &LoginWidget::showDoctorRegister);
     connect(goToPatientRegisterButton, &QPushButton::clicked, this, &LoginWidget::showPatientRegister);
     connect(backToDoctorLoginButton, &QPushButton::clicked, this, &LoginWidget::showDoctorLogin);
