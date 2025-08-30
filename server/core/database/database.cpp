@@ -5,6 +5,8 @@
 #include <QFile>
 #include <QDateTime>
 #include <QJsonArray>
+#include <QTimer>
+#include <QCoreApplication>
 
 DBManager::DBManager(const QString& path) {
     // 使用唯一的连接名称，避免与TcpServer冲突
@@ -23,11 +25,23 @@ DBManager::DBManager(const QString& path) {
 }
 
 DBManager::~DBManager() {
-    QString connectionName = m_db.connectionName();
+    const QString connectionName = m_db.connectionName();
     if (m_db.isOpen()) {
         m_db.close();
     }
-    QSqlDatabase::removeDatabase(connectionName); // 使用正确的连接名称
+    // 释放该连接的最后一个句柄
+    m_db = QSqlDatabase();
+
+    // 如果有事件循环，延后到本轮事件循环结束再移除连接，
+    // 可避免析构顺序导致的 "still in use" 警告。
+    if (QCoreApplication::instance()) {
+        QTimer::singleShot(0, [connectionName]() {
+            QSqlDatabase::removeDatabase(connectionName);
+        });
+    } else {
+        // 无事件循环时，直接移除
+        QSqlDatabase::removeDatabase(connectionName);
+    }
 }
 
 void DBManager::initDatabase() {
