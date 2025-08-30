@@ -10,6 +10,7 @@
 #include <QHeaderView>
 #include <QDate>
 #include <QTime>
+#include <QMessageBox>
 #include <QJsonObject>
 #include <QJsonArray>
 #include "core/network/src/client/communicationclient.h"
@@ -38,20 +39,27 @@ AttendanceWidget::AttendanceWidget(const QString& doctorName, QWidget* parent)
     {
         auto* l = new QVBoxLayout(pageCheckIn);
         l->addWidget(new QLabel(QString("%1 - 日常打卡").arg(doctorName_), pageCheckIn));
-        auto* row = new QHBoxLayout();
+    auto* row = new QHBoxLayout();
         auto* lbDate = new QLabel(tr("日期(yyyy-MM-dd):"), pageCheckIn);
         auto* leDate = new QLineEdit(QDate::currentDate().toString("yyyy-MM-dd"), pageCheckIn);
         auto* lbTime = new QLabel(tr("时间(HH:mm:ss):"), pageCheckIn);
         auto* leTime = new QLineEdit(QTime::currentTime().toString("HH:mm:ss"), pageCheckIn);
-        btnDoCheckIn_ = new QPushButton(tr("打卡"), pageCheckIn);
-        row->addWidget(lbDate); row->addWidget(leDate); row->addWidget(lbTime); row->addWidget(leTime); row->addWidget(btnDoCheckIn_);
+    btnDoCheckIn_ = new QPushButton(tr("打卡"), pageCheckIn);
+    btnHistory_ = new QPushButton(tr("查看历史打卡"), pageCheckIn);
+    row->addWidget(lbDate); row->addWidget(leDate); row->addWidget(lbTime); row->addWidget(leTime); row->addWidget(btnDoCheckIn_); row->addWidget(btnHistory_);
         l->addLayout(row);
+    // 历史表格
+    tblAttendance_ = new QTableWidget(0, 3, pageCheckIn);
+    tblAttendance_->setHorizontalHeaderLabels({tr("日期"), tr("时间"), tr("创建时间")});
+    tblAttendance_->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    l->addWidget(tblAttendance_);
         l->addStretch();
 
         connect(btnDoCheckIn_, &QPushButton::clicked, this, [this, leDate, leTime]{
             QJsonObject req{{"action","doctor_checkin"}, {"doctor_username", doctorName_}, {"checkin_date", leDate->text()}, {"checkin_time", leTime->text()}};
             if (client_) client_->sendJson(req);
         });
+    connect(btnHistory_, &QPushButton::clicked, this, [this]{ historyUserTriggered_ = true; refreshAttendanceHistory(); });
     }
     auto* pageLeave = new QWidget(this);
     {
@@ -131,6 +139,11 @@ void AttendanceWidget::refreshActiveLeaves() {
     if (client_) client_->sendJson(req);
 }
 
+void AttendanceWidget::refreshAttendanceHistory() {
+    QJsonObject req{{"action","get_attendance_history"}, {"doctor_username", doctorName_}};
+    if (client_) client_->sendJson(req);
+}
+
 void AttendanceWidget::cancelSelectedLeave() {
     int row = tblLeaves_? tblLeaves_->currentRow() : -1;
     if (row < 0) return;
@@ -142,12 +155,21 @@ void AttendanceWidget::cancelSelectedLeave() {
 void AttendanceWidget::onConnected() {
     // 初始查询一次活跃请假
     refreshActiveLeaves();
+    // 同时拉取历史打卡
+    refreshAttendanceHistory();
 }
 
 void AttendanceWidget::onJsonReceived(const QJsonObject& obj) {
     const QString type = obj.value("type").toString();
     if (type == "doctor_checkin_response") {
-        // 可根据 success 做提示，这里简单忽略
+        const bool ok = obj.value("success").toBool();
+        if (ok) {
+            // 提示并刷新历史列表，确保新纪录可见
+            QMessageBox::information(this, tr("提示"), tr("打卡成功"));
+            refreshAttendanceHistory();
+        } else {
+            QMessageBox::warning(this, tr("失败"), tr("打卡失败"));
+        }
     } else if (type == "doctor_leave_response") {
         // 成功后切到销假页以便查看/撤销，同时直接在表格中附加一行，避免依赖刷新延迟
         const bool ok = obj.value("success").toBool();
@@ -176,6 +198,31 @@ void AttendanceWidget::onJsonReceived(const QJsonObject& obj) {
             tblLeaves_->setItem(i, 2, new QTableWidgetItem(o.value("reason").toString()));
             tblLeaves_->setItem(i, 3, new QTableWidgetItem(o.value("status").toString()));
         }
+    } else if (type == "attendance_history_response") {
+        if (!tblAttendance_) { historyUserTriggered_ = false; return; }
+        const bool ok = obj.value("success").toBool();
+        if (!ok) {
+            if (historyUserTriggered_) {
+                const QString msg = obj.value("message").toString();
+                QMessageBox::warning(this, tr("失败"), msg.isEmpty() ? tr("查询历史打卡失败") : msg);
+            }
+            historyUserTriggered_ = false;
+            return;
+        }
+        // 成功时再刷新表格
+        const QJsonArray arr = obj.value("data").toArray();
+        tblAttendance_->setRowCount(0);
+        tblAttendance_->setRowCount(arr.size());
+        for (int i=0;i<arr.size();++i) {
+            const auto o = arr[i].toObject();
+            tblAttendance_->setItem(i, 0, new QTableWidgetItem(o.value("checkin_date").toString()));
+            tblAttendance_->setItem(i, 1, new QTableWidgetItem(o.value("checkin_time").toString()));
+            tblAttendance_->setItem(i, 2, new QTableWidgetItem(o.value("created_at").toString()));
+        }
+        if (historyUserTriggered_) {
+            QMessageBox::information(this, tr("提示"), tr("查询历史打卡成功"));
+        }
+        historyUserTriggered_ = false;
     } else if (type == "cancel_leave_response") {
         refreshActiveLeaves();
     }

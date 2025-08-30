@@ -406,6 +406,29 @@ bool DBManager::createAttendanceRecord(const QJsonObject &data) {
     return true;
 }
 
+bool DBManager::getAttendanceByDoctor(const QString &doctorUsername, QJsonArray &records, int limit) {
+    QSqlQuery q(m_db);
+    q.prepare(QString(R"(
+        SELECT id, doctor_username, checkin_date, checkin_time, created_at
+        FROM attendance
+        WHERE doctor_username = :u
+        ORDER BY checkin_date DESC, checkin_time DESC, id DESC
+        LIMIT %1
+    )").arg(qMax(1, limit)));
+    q.bindValue(":u", doctorUsername);
+    if (!q.exec()) { qDebug() << "getAttendanceByDoctor error:" << q.lastError().text(); return false; }
+    while (q.next()) {
+        QJsonObject o;
+        o["id"] = q.value("id").toInt();
+        o["doctor_username"] = q.value("doctor_username").toString();
+        o["checkin_date"] = q.value("checkin_date").toString();
+        o["checkin_time"] = q.value("checkin_time").toString();
+        o["created_at"] = q.value("created_at").toString();
+        records.append(o);
+    }
+    return true;
+}
+
 bool DBManager::createLeaveRequest(const QJsonObject &data) {
     QSqlQuery q(m_db);
     q.prepare(R"(INSERT INTO leave_requests (doctor_username, leave_date, reason, status)

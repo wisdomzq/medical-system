@@ -26,6 +26,7 @@ private slots:
     void doCheckIn();
     void submitLeave();
     void refreshActiveLeaves();
+    void refreshAttendanceHistory();
     void cancelSelectedLeave();
     void onConnected();
     void onJsonReceived(const QJsonObject& obj);
@@ -50,9 +51,13 @@ private:
     QTableWidget* tblLeaves_ {nullptr};
     QPushButton* btnRefreshLeaves_ {nullptr};
     QPushButton* btnCancelLeave_ {nullptr};
+    // 历史考勤
+    QPushButton* btnHistory_ {nullptr};
+    QTableWidget* tblAttendance_ {nullptr};
 
     // 网络
     CommunicationClient* client_ {nullptr};
+    bool historyUserTriggered_ {false};
 };
 
 #endif // ATTENDANCEWIDGET_H

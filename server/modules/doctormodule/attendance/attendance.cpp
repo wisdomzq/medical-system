@@ -10,6 +10,16 @@ QJsonObject DoctorAttendanceModule::handle(const QJsonObject &request) {
 	if (action == "doctor_leave") return handleLeave(request);
 	if (action == "get_active_leaves") return handleGetActiveLeaves(request);
 	if (action == "cancel_leave") return handleCancelLeave(request);
+	if (action == "get_attendance_history") {
+		QJsonObject resp; resp["type"] = "attendance_history_response"; resp["success"] = false;
+		const QString username = request.value("doctor_username").toString(request.value("username").toString());
+		int limit = request.value("limit").toInt(100);
+		if (username.isEmpty()) { resp["message"] = "doctor_username required"; return resp; }
+		DBManager db(DatabaseConfig::getDatabasePath());
+		QJsonArray arr; bool ok = db.getAttendanceByDoctor(username, arr, limit);
+		resp["success"] = ok; if (ok) { resp["data"] = arr; } else { resp["message"] = QStringLiteral("query failed"); }
+		return resp;
+	}
 	QJsonObject resp; resp["type"] = "unknown_response"; resp["success"] = false; resp["error"] = QString("Unknown action: %1").arg(action); return resp;
 }
 
@@ -24,7 +34,15 @@ QJsonObject DoctorAttendanceModule::handleCheckin(const QJsonObject &request) {
 	DBManager db(DatabaseConfig::getDatabasePath());
 	QJsonObject data {{"doctor_username", username}, {"checkin_date", date}, {"checkin_time", time}};
 	bool ok = db.createAttendanceRecord(data);
-	resp["success"] = ok; if (ok) { resp["data"] = data; }
+	resp["success"] = ok;
+	if (ok) {
+		// 返回最新一条打卡记录（包含 created_at 等）
+		QJsonArray arr; if (db.getAttendanceByDoctor(username, arr, 1) && !arr.isEmpty()) {
+			resp["data"] = arr.first().toObject();
+		} else {
+			resp["data"] = data;
+		}
+	}
 	return resp;
 }
 

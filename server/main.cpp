@@ -54,7 +54,7 @@ int main(int argc, char *argv[]) {
             responsePayload = doctorProfileModule.handle(payload);
         } else if (action == "get_doctor_assignment" || action == "update_doctor_assignment") {
             responsePayload = doctorAssignmentModule.handle(payload);
-        } else if (action == "doctor_checkin" || action == "doctor_leave" || action == "get_active_leaves" || action == "cancel_leave") {
+    } else if (action == "doctor_checkin" || action == "doctor_leave" || action == "get_active_leaves" || action == "cancel_leave" || action == "get_attendance_history") {
             responsePayload = doctorAttendanceModule.handle(payload);
         } else if (action == "get_patient_info") {
             QString username = payload.value("username").toString();

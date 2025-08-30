@@ -93,6 +93,8 @@ public:
     bool getActiveLeavesByDoctor(const QString &doctorUsername, QJsonArray &leaves); // status='active'
     bool cancelLeaveById(int leaveId);                    // 将 status 置为 'cancelled'
     bool cancelActiveLeaveForDoctor(const QString &doctorUsername); // 取消最近一条 active
+    // 考勤查询
+    bool getAttendanceByDoctor(const QString &doctorUsername, QJsonArray &records, int limit = 100);
 
 private:
     QSqlDatabase m_db;
