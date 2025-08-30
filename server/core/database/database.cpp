@@ -45,8 +45,7 @@ void DBManager::initDatabase() {
     createAttendanceTable();
     createLeaveRequestsTable();
     
-    // 插入示例数据
-    insertSampleDoctors();
+    // 不插入示例数据，使用现有数据库中的数据
 }
 
 void DBManager::createUsersTable() {
@@ -1829,6 +1828,11 @@ void DBManager::insertSampleDoctors() {
     doctor1["title"] = "主任医师";
     doctor1["specialization"] = "心血管疾病";
     doctor1["consultation_fee"] = 50.0;
+    doctor1["work_number"] = "D001";
+    doctor1["phone"] = "13800138001";
+    doctor1["email"] = "zhangming@hospital.com";
+    doctor1["experience_years"] = 15;
+    doctor1["max_patients_per_day"] = 20;
     doctors.append(doctor1);
     
     QJsonObject doctor2;
@@ -1838,7 +1842,26 @@ void DBManager::insertSampleDoctors() {
     doctor2["title"] = "副主任医师";
     doctor2["specialization"] = "骨科手术";
     doctor2["consultation_fee"] = 60.0;
+    doctor2["work_number"] = "D002";
+    doctor2["phone"] = "13800138002";
+    doctor2["email"] = "lihua@hospital.com";
+    doctor2["experience_years"] = 12;
+    doctor2["max_patients_per_day"] = 15;
     doctors.append(doctor2);
+    
+    QJsonObject doctor3;
+    doctor3["username"] = "doctor3";
+    doctor3["name"] = "王芳";
+    doctor3["department"] = "儿科";
+    doctor3["title"] = "主治医师";
+    doctor3["specialization"] = "儿童呼吸科";
+    doctor3["consultation_fee"] = 45.0;
+    doctor3["work_number"] = "D003";
+    doctor3["phone"] = "13800138003";
+    doctor3["email"] = "wangfang@hospital.com";
+    doctor3["experience_years"] = 8;
+    doctor3["max_patients_per_day"] = 25;
+    doctors.append(doctor3);
     
     for (const auto& doctorValue : doctors) {
         QJsonObject doctor = doctorValue.toObject();
@@ -1860,8 +1883,9 @@ void DBManager::insertSampleDoctors() {
         QSqlQuery updateQuery(m_db);
         updateQuery.prepare(R"(
             INSERT OR REPLACE INTO doctors 
-            (username, name, department, title, specialization, consultation_fee) 
-            VALUES (?, ?, ?, ?, ?, ?)
+            (username, name, department, title, specialization, consultation_fee, 
+             work_number, phone, email, experience_years, max_patients_per_day) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         )");
         updateQuery.addBindValue(username);
         updateQuery.addBindValue(doctor["name"].toString());
@@ -1869,6 +1893,11 @@ void DBManager::insertSampleDoctors() {
         updateQuery.addBindValue(doctor["title"].toString());
         updateQuery.addBindValue(doctor["specialization"].toString());
         updateQuery.addBindValue(doctor["consultation_fee"].toDouble());
+        updateQuery.addBindValue(doctor["work_number"].toString());
+        updateQuery.addBindValue(doctor["phone"].toString());
+        updateQuery.addBindValue(doctor["email"].toString());
+        updateQuery.addBindValue(doctor["experience_years"].toInt());
+        updateQuery.addBindValue(doctor["max_patients_per_day"].toInt());
         
         if (!updateQuery.exec()) {
             qDebug() << "Insert sample doctor error:" << updateQuery.lastError().text();
@@ -1902,3 +1931,80 @@ void DBManager::insertSampleMedications() {
         }
     }
 }
+
+// 医生排班管理实现
+bool DBManager::getDoctorSchedules(const QString& doctorUsername, QJsonArray& schedules) {
+    QSqlQuery query(m_db);
+    query.prepare(R"(
+        SELECT day_of_week, start_time, end_time, max_appointments, is_active
+        FROM doctor_schedules 
+        WHERE doctor_username = :username
+        ORDER BY day_of_week
+    )");
+    query.bindValue(":username", doctorUsername);
+    
+    if (!query.exec()) {
+        qDebug() << "getDoctorSchedules error:" << query.lastError().text();
+        return false;
+    }
+    
+    while (query.next()) {
+        QJsonObject schedule;
+        int dayOfWeek = query.value("day_of_week").toInt();
+        
+        // 转换星期几
+        QString dayName;
+        switch (dayOfWeek) {
+            case 0: dayName = "周日"; break;
+            case 1: dayName = "周一"; break;
+            case 2: dayName = "周二"; break;
+            case 3: dayName = "周三"; break;
+            case 4: dayName = "周四"; break;
+            case 5: dayName = "周五"; break;
+            case 6: dayName = "周六"; break;
+            default: dayName = "未知"; break;
+        }
+        
+        schedule["day_of_week"] = dayOfWeek;
+        schedule["day_name"] = dayName;
+        schedule["start_time"] = query.value("start_time").toString();
+        schedule["end_time"] = query.value("end_time").toString();
+        schedule["max_appointments"] = query.value("max_appointments").toInt();
+        schedule["is_active"] = query.value("is_active").toBool();
+        
+        schedules.append(schedule);
+    }
+    return true;
+}
+
+// 插入示例医生排班数据
+void DBManager::insertSampleDoctorSchedules() {
+    // 检查是否已经有排班数据
+    QSqlQuery checkQuery(m_db);
+    if (checkQuery.exec("SELECT COUNT(*) FROM doctor_schedules") && checkQuery.next() && checkQuery.value(0).toInt() > 0) {
+        return; // 如果已有数据，不再插入
+    }
+    
+    // 为 doctor1 (张明) 添加排班
+    QStringList schedules = {
+        "INSERT INTO doctor_schedules (doctor_username, day_of_week, start_time, end_time, max_appointments, is_active) VALUES ('doctor1', 1, '08:00', '17:00', 20, 1)",
+        "INSERT INTO doctor_schedules (doctor_username, day_of_week, start_time, end_time, max_appointments, is_active) VALUES ('doctor1', 2, '08:00', '17:00', 20, 1)",
+        "INSERT INTO doctor_schedules (doctor_username, day_of_week, start_time, end_time, max_appointments, is_active) VALUES ('doctor1', 3, '08:00', '17:00', 20, 1)",
+        "INSERT INTO doctor_schedules (doctor_username, day_of_week, start_time, end_time, max_appointments, is_active) VALUES ('doctor1', 4, '08:00', '17:00', 20, 1)",
+        "INSERT INTO doctor_schedules (doctor_username, day_of_week, start_time, end_time, max_appointments, is_active) VALUES ('doctor1', 5, '08:00', '12:00', 15, 1)",
+        "INSERT INTO doctor_schedules (doctor_username, day_of_week, start_time, end_time, max_appointments, is_active) VALUES ('doctor2', 1, '09:00', '18:00', 15, 1)",
+        "INSERT INTO doctor_schedules (doctor_username, day_of_week, start_time, end_time, max_appointments, is_active) VALUES ('doctor2', 2, '09:00', '18:00', 15, 1)",
+        "INSERT INTO doctor_schedules (doctor_username, day_of_week, start_time, end_time, max_appointments, is_active) VALUES ('doctor2', 3, '09:00', '18:00', 15, 1)",
+        "INSERT INTO doctor_schedules (doctor_username, day_of_week, start_time, end_time, max_appointments, is_active) VALUES ('doctor2', 4, '09:00', '18:00', 15, 1)",
+        "INSERT INTO doctor_schedules (doctor_username, day_of_week, start_time, end_time, max_appointments, is_active) VALUES ('doctor2', 5, '09:00', '18:00', 15, 1)",
+        "INSERT INTO doctor_schedules (doctor_username, day_of_week, start_time, end_time, max_appointments, is_active) VALUES ('doctor2', 6, '09:00', '12:00', 10, 1)"
+    };
+    
+    for (const QString& sql : schedules) {
+        QSqlQuery query(m_db);
+        if (!query.exec(sql)) {
+            qDebug() << "Insert sample doctor schedule error:" << query.lastError().text();
+        }
+    }
+}
+

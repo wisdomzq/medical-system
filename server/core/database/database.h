@@ -78,6 +78,9 @@ public:
     // 获取医生列表（用于患者挂号）
     bool getAllDoctors(QJsonArray& doctors);
     bool getDoctorsByDepartment(const QString& department, QJsonArray& doctors);
+    
+    // 医生排班管理
+    bool getDoctorSchedules(const QString& doctorUsername, QJsonArray& schedules);
 
     // 新增重载方法
     QString getUserRole(const QString& username);
@@ -113,6 +116,7 @@ private:
     // 示例数据插入
     void insertSampleMedications();
     void insertSampleDoctors();
+    void insertSampleDoctorSchedules();
 };
 
 #endif // DATABASE_H

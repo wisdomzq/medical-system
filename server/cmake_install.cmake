@@ -1,4 +1,4 @@
-# Install script for directory: /home/xuwt/Qt/medical-system/server
+# Install script for directory: /home/zephyr/medical-system/server
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

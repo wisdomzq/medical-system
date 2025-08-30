@@ -9,6 +9,7 @@
 #include "evaluatepage.h"
 #include "prescriptionpage.h"
 #include "advicepage.h"
+#include "doctorlistpage.h"
 #include <QVBoxLayout>
 #include <QTabWidget>
 #include <QJsonObject>
@@ -27,7 +28,7 @@ PatientInfoWidget::PatientInfoWidget(const QString &patientName, QWidget *parent
     m_communicationPage = new CommunicationPage(m_communicationClient, m_patientName, this);
     m_profilePage = new ProfilePage(m_communicationClient, m_patientName, this);
     connect(m_profilePage, &ProfilePage::backToLogin, this, &PatientInfoWidget::forwardBackToLogin);
-    m_doctorInfoPage = new DoctorInfoPage(m_communicationClient, m_patientName, this);
+    m_doctorInfoPage = new DoctorListPage(m_communicationClient, m_patientName, this);
     m_advicePage = new AdvicePage(m_communicationClient, m_patientName, this);
     m_prescriptionPage = new PrescriptionPage(m_communicationClient, m_patientName, this);
     

@@ -11,7 +11,7 @@ class AppointmentPage;
 class ProfilePage;
 class CasePage;
 class CommunicationPage;
-class DoctorInfoPage;
+class DoctorListPage;
 class AdvicePage;
 class PrescriptionPage;
 class HealthAssessmentPage;
@@ -37,7 +37,7 @@ private:
     ProfilePage *m_profilePage = nullptr;
     CasePage *m_casePage = nullptr;
     CommunicationPage *m_communicationPage = nullptr;
-    DoctorInfoPage *m_doctorInfoPage = nullptr;
+    DoctorListPage *m_doctorInfoPage = nullptr;
     AdvicePage *m_advicePage = nullptr;
     PrescriptionPage *m_prescriptionPage = nullptr;
     HealthAssessmentPage *m_healthAssessmentPage = nullptr;

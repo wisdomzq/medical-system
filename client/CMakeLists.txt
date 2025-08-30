@@ -35,6 +35,10 @@ set(srcs
     ui/patientinfowidget/prescriptionpage.h
     ui/patientinfowidget/advicepage.cpp
     ui/patientinfowidget/advicepage.h
+    ui/patientinfowidget/doctorinfopage.cpp
+    ui/patientinfowidget/doctorinfopage.h
+    ui/patientinfowidget/doctorlistpage.cpp
+    ui/patientinfowidget/doctorlistpage.h
     core/network/src/client/communicationclient.cpp
     core/network/src/client/responsedispatcher.cpp
     core/network/src/client/streamparser.cpp

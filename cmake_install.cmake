@@ -1,4 +1,4 @@
-# Install script for directory: /home/xuwt/Qt/medical-system
+# Install script for directory: /home/zephyr/medical-system
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -44,8 +44,8 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/home/xuwt/Qt/medical-system/client/cmake_install.cmake")
-  include("/home/xuwt/Qt/medical-system/server/cmake_install.cmake")
+  include("/home/zephyr/medical-system/client/cmake_install.cmake")
+  include("/home/zephyr/medical-system/server/cmake_install.cmake")
 
 endif()
 
@@ -57,5 +57,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/xuwt/Qt/medical-system/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/zephyr/medical-system/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
