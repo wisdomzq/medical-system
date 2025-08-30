@@ -2,7 +2,10 @@
 #include "basepage.h"
 #include <QJsonObject>
 
-class QLineEdit; class QPushButton;
+class QLineEdit; 
+class QPushButton;
+class QSpinBox;
+class QComboBox;
 
 class ProfilePage : public BasePage {
     Q_OBJECT
@@ -18,5 +21,20 @@ private slots:
     void updateProfile();
 
 private:
-    QLineEdit *nameEdit=nullptr,*ageEdit=nullptr,*phoneEdit=nullptr,*addressEdit=nullptr;
+    // 基本信息
+    QLineEdit *nameEdit_ = nullptr;
+    QSpinBox *ageEdit_ = nullptr;
+    QComboBox *genderEdit_ = nullptr;
+    QLineEdit *phoneEdit_ = nullptr;
+    QLineEdit *emailEdit_ = nullptr;
+    QLineEdit *addressEdit_ = nullptr;
+    
+    // 身份证和紧急联系人信息
+    QLineEdit *idCardEdit_ = nullptr;
+    QLineEdit *emergencyContactEdit_ = nullptr;
+    QLineEdit *emergencyPhoneEdit_ = nullptr;
+    
+    // 按钮
+    QPushButton *refreshBtn_ = nullptr;
+    QPushButton *updateBtn_ = nullptr;
 };
