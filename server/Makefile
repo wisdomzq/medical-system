@@ -264,6 +264,78 @@ main.cpp.s:
 	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f server/CMakeFiles/server.dir/build.make server/CMakeFiles/server.dir/main.cpp.s
 .PHONY : main.cpp.s
 
+modules/doctormodule/assignment/assignment.o: modules/doctormodule/assignment/assignment.cpp.o
+.PHONY : modules/doctormodule/assignment/assignment.o
+
+# target to build an object file
+modules/doctormodule/assignment/assignment.cpp.o:
+	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f server/CMakeFiles/server.dir/build.make server/CMakeFiles/server.dir/modules/doctormodule/assignment/assignment.cpp.o
+.PHONY : modules/doctormodule/assignment/assignment.cpp.o
+
+modules/doctormodule/assignment/assignment.i: modules/doctormodule/assignment/assignment.cpp.i
+.PHONY : modules/doctormodule/assignment/assignment.i
+
+# target to preprocess a source file
+modules/doctormodule/assignment/assignment.cpp.i:
+	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f server/CMakeFiles/server.dir/build.make server/CMakeFiles/server.dir/modules/doctormodule/assignment/assignment.cpp.i
+.PHONY : modules/doctormodule/assignment/assignment.cpp.i
+
+modules/doctormodule/assignment/assignment.s: modules/doctormodule/assignment/assignment.cpp.s
+.PHONY : modules/doctormodule/assignment/assignment.s
+
+# target to generate assembly for a file
+modules/doctormodule/assignment/assignment.cpp.s:
+	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f server/CMakeFiles/server.dir/build.make server/CMakeFiles/server.dir/modules/doctormodule/assignment/assignment.cpp.s
+.PHONY : modules/doctormodule/assignment/assignment.cpp.s
+
+modules/doctormodule/attendance/attendance.o: modules/doctormodule/attendance/attendance.cpp.o
+.PHONY : modules/doctormodule/attendance/attendance.o
+
+# target to build an object file
+modules/doctormodule/attendance/attendance.cpp.o:
+	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f server/CMakeFiles/server.dir/build.make server/CMakeFiles/server.dir/modules/doctormodule/attendance/attendance.cpp.o
+.PHONY : modules/doctormodule/attendance/attendance.cpp.o
+
+modules/doctormodule/attendance/attendance.i: modules/doctormodule/attendance/attendance.cpp.i
+.PHONY : modules/doctormodule/attendance/attendance.i
+
+# target to preprocess a source file
+modules/doctormodule/attendance/attendance.cpp.i:
+	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f server/CMakeFiles/server.dir/build.make server/CMakeFiles/server.dir/modules/doctormodule/attendance/attendance.cpp.i
+.PHONY : modules/doctormodule/attendance/attendance.cpp.i
+
+modules/doctormodule/attendance/attendance.s: modules/doctormodule/attendance/attendance.cpp.s
+.PHONY : modules/doctormodule/attendance/attendance.s
+
+# target to generate assembly for a file
+modules/doctormodule/attendance/attendance.cpp.s:
+	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f server/CMakeFiles/server.dir/build.make server/CMakeFiles/server.dir/modules/doctormodule/attendance/attendance.cpp.s
+.PHONY : modules/doctormodule/attendance/attendance.cpp.s
+
+modules/doctormodule/profile/profile.o: modules/doctormodule/profile/profile.cpp.o
+.PHONY : modules/doctormodule/profile/profile.o
+
+# target to build an object file
+modules/doctormodule/profile/profile.cpp.o:
+	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f server/CMakeFiles/server.dir/build.make server/CMakeFiles/server.dir/modules/doctormodule/profile/profile.cpp.o
+.PHONY : modules/doctormodule/profile/profile.cpp.o
+
+modules/doctormodule/profile/profile.i: modules/doctormodule/profile/profile.cpp.i
+.PHONY : modules/doctormodule/profile/profile.i
+
+# target to preprocess a source file
+modules/doctormodule/profile/profile.cpp.i:
+	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f server/CMakeFiles/server.dir/build.make server/CMakeFiles/server.dir/modules/doctormodule/profile/profile.cpp.i
+.PHONY : modules/doctormodule/profile/profile.cpp.i
+
+modules/doctormodule/profile/profile.s: modules/doctormodule/profile/profile.cpp.s
+.PHONY : modules/doctormodule/profile/profile.s
+
+# target to generate assembly for a file
+modules/doctormodule/profile/profile.cpp.s:
+	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f server/CMakeFiles/server.dir/build.make server/CMakeFiles/server.dir/modules/doctormodule/profile/profile.cpp.s
+.PHONY : modules/doctormodule/profile/profile.cpp.s
+
 modules/loginmodule/loginmodule.o: modules/loginmodule/loginmodule.cpp.o
 .PHONY : modules/loginmodule/loginmodule.o
 
@@ -288,6 +360,54 @@ modules/loginmodule/loginmodule.cpp.s:
 	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f server/CMakeFiles/server.dir/build.make server/CMakeFiles/server.dir/modules/loginmodule/loginmodule.cpp.s
 .PHONY : modules/loginmodule/loginmodule.cpp.s
 
+modules/patientmodule/advice/advice.o: modules/patientmodule/advice/advice.cpp.o
+.PHONY : modules/patientmodule/advice/advice.o
+
+# target to build an object file
+modules/patientmodule/advice/advice.cpp.o:
+	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f server/CMakeFiles/server.dir/build.make server/CMakeFiles/server.dir/modules/patientmodule/advice/advice.cpp.o
+.PHONY : modules/patientmodule/advice/advice.cpp.o
+
+modules/patientmodule/advice/advice.i: modules/patientmodule/advice/advice.cpp.i
+.PHONY : modules/patientmodule/advice/advice.i
+
+# target to preprocess a source file
+modules/patientmodule/advice/advice.cpp.i:
+	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f server/CMakeFiles/server.dir/build.make server/CMakeFiles/server.dir/modules/patientmodule/advice/advice.cpp.i
+.PHONY : modules/patientmodule/advice/advice.cpp.i
+
+modules/patientmodule/advice/advice.s: modules/patientmodule/advice/advice.cpp.s
+.PHONY : modules/patientmodule/advice/advice.s
+
+# target to generate assembly for a file
+modules/patientmodule/advice/advice.cpp.s:
+	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f server/CMakeFiles/server.dir/build.make server/CMakeFiles/server.dir/modules/patientmodule/advice/advice.cpp.s
+.PHONY : modules/patientmodule/advice/advice.cpp.s
+
+modules/patientmodule/evaluate/evaluate.o: modules/patientmodule/evaluate/evaluate.cpp.o
+.PHONY : modules/patientmodule/evaluate/evaluate.o
+
+# target to build an object file
+modules/patientmodule/evaluate/evaluate.cpp.o:
+	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f server/CMakeFiles/server.dir/build.make server/CMakeFiles/server.dir/modules/patientmodule/evaluate/evaluate.cpp.o
+.PHONY : modules/patientmodule/evaluate/evaluate.cpp.o
+
+modules/patientmodule/evaluate/evaluate.i: modules/patientmodule/evaluate/evaluate.cpp.i
+.PHONY : modules/patientmodule/evaluate/evaluate.i
+
+# target to preprocess a source file
+modules/patientmodule/evaluate/evaluate.cpp.i:
+	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f server/CMakeFiles/server.dir/build.make server/CMakeFiles/server.dir/modules/patientmodule/evaluate/evaluate.cpp.i
+.PHONY : modules/patientmodule/evaluate/evaluate.cpp.i
+
+modules/patientmodule/evaluate/evaluate.s: modules/patientmodule/evaluate/evaluate.cpp.s
+.PHONY : modules/patientmodule/evaluate/evaluate.s
+
+# target to generate assembly for a file
+modules/patientmodule/evaluate/evaluate.cpp.s:
+	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f server/CMakeFiles/server.dir/build.make server/CMakeFiles/server.dir/modules/patientmodule/evaluate/evaluate.cpp.s
+.PHONY : modules/patientmodule/evaluate/evaluate.cpp.s
+
 modules/patientmodule/medicine/medicine.o: modules/patientmodule/medicine/medicine.cpp.o
 .PHONY : modules/patientmodule/medicine/medicine.o
 
@@ -311,6 +431,30 @@ modules/patientmodule/medicine/medicine.s: modules/patientmodule/medicine/medici
 modules/patientmodule/medicine/medicine.cpp.s:
 	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f server/CMakeFiles/server.dir/build.make server/CMakeFiles/server.dir/modules/patientmodule/medicine/medicine.cpp.s
 .PHONY : modules/patientmodule/medicine/medicine.cpp.s
+
+modules/patientmodule/prescription/prescription.o: modules/patientmodule/prescription/prescription.cpp.o
+.PHONY : modules/patientmodule/prescription/prescription.o
+
+# target to build an object file
+modules/patientmodule/prescription/prescription.cpp.o:
+	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f server/CMakeFiles/server.dir/build.make server/CMakeFiles/server.dir/modules/patientmodule/prescription/prescription.cpp.o
+.PHONY : modules/patientmodule/prescription/prescription.cpp.o
+
+modules/patientmodule/prescription/prescription.i: modules/patientmodule/prescription/prescription.cpp.i
+.PHONY : modules/patientmodule/prescription/prescription.i
+
+# target to preprocess a source file
+modules/patientmodule/prescription/prescription.cpp.i:
+	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f server/CMakeFiles/server.dir/build.make server/CMakeFiles/server.dir/modules/patientmodule/prescription/prescription.cpp.i
+.PHONY : modules/patientmodule/prescription/prescription.cpp.i
+
+modules/patientmodule/prescription/prescription.s: modules/patientmodule/prescription/prescription.cpp.s
+.PHONY : modules/patientmodule/prescription/prescription.s
+
+# target to generate assembly for a file
+modules/patientmodule/prescription/prescription.cpp.s:
+	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f server/CMakeFiles/server.dir/build.make server/CMakeFiles/server.dir/modules/patientmodule/prescription/prescription.cpp.s
+.PHONY : modules/patientmodule/prescription/prescription.cpp.s
 
 modules/patientmodule/register/register.o: modules/patientmodule/register/register.cpp.o
 .PHONY : modules/patientmodule/register/register.o
@@ -385,12 +529,30 @@ help:
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
+	@echo "... modules/doctormodule/assignment/assignment.o"
+	@echo "... modules/doctormodule/assignment/assignment.i"
+	@echo "... modules/doctormodule/assignment/assignment.s"
+	@echo "... modules/doctormodule/attendance/attendance.o"
+	@echo "... modules/doctormodule/attendance/attendance.i"
+	@echo "... modules/doctormodule/attendance/attendance.s"
+	@echo "... modules/doctormodule/profile/profile.o"
+	@echo "... modules/doctormodule/profile/profile.i"
+	@echo "... modules/doctormodule/profile/profile.s"
 	@echo "... modules/loginmodule/loginmodule.o"
 	@echo "... modules/loginmodule/loginmodule.i"
 	@echo "... modules/loginmodule/loginmodule.s"
+	@echo "... modules/patientmodule/advice/advice.o"
+	@echo "... modules/patientmodule/advice/advice.i"
+	@echo "... modules/patientmodule/advice/advice.s"
+	@echo "... modules/patientmodule/evaluate/evaluate.o"
+	@echo "... modules/patientmodule/evaluate/evaluate.i"
+	@echo "... modules/patientmodule/evaluate/evaluate.s"
 	@echo "... modules/patientmodule/medicine/medicine.o"
 	@echo "... modules/patientmodule/medicine/medicine.i"
 	@echo "... modules/patientmodule/medicine/medicine.s"
+	@echo "... modules/patientmodule/prescription/prescription.o"
+	@echo "... modules/patientmodule/prescription/prescription.i"
+	@echo "... modules/patientmodule/prescription/prescription.s"
 	@echo "... modules/patientmodule/register/register.o"
 	@echo "... modules/patientmodule/register/register.i"
 	@echo "... modules/patientmodule/register/register.s"

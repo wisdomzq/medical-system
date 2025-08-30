@@ -3,5 +3,8 @@
 #include "F5YCKCVFAJ/moc_communicationserver.cpp"
 #include "F5YCKCVFAJ/moc_messagerouter.cpp"
 #include "URL7VJ5BZG/moc_loginmodule.cpp"
+#include "6AJKXBJ7Q5/moc_advice.cpp"
+#include "USX2MJVSMR/moc_evaluate.cpp"
 #include "ZXZACPACKL/moc_medicine.cpp"
+#include "RUKXI7W3QC/moc_prescription.cpp"
 #include "3UNC5IPTOD/moc_register.cpp"

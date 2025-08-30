@@ -285,10 +285,27 @@ client/CMakeFiles/hello.dir/ui/doctorinfowidget/doctorinfowidget.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QString \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qstring.h \
  /home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/checkinwidget.h \
- /home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/leavewidget.h \
- /home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/cancelleavewidget.h \
  /home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/chatroomwidget.h \
  /home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/profilewidget.h \
  /home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/appointmentswidget.h \
- /home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/caseswidget.h \
- /home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/diagnosiswidget.h
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/QJsonObject \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/qjsonobject.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/qjsonvalue.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/qcborvalue.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/qdatetime.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/qcborcommon.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/qdebug.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/qmap.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/qtextstream.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/qlocale.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/qvariant.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/qset.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/qcontiguouscache.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/qregularexpression.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/qurl.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/quuid.h \
+ /home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/datachartwidget.h \
+ /home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/remotedatawidget.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/QTimer \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/qtimer.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/qbasictimer.h

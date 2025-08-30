@@ -541,6 +541,9 @@ server/CMakeFiles/server.dir/main.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtNetwork/qnetworkrequest.h \
  /usr/include/x86_64-linux-gnu/qt5/QtNetwork/QNetworkAccessManager \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QJsonArray \
+ /home/xuwt/Qt/medical-system/server/modules/patientmodule/evaluate/evaluate.h \
+ /home/xuwt/Qt/medical-system/server/modules/patientmodule/prescription/prescription.h \
+ /home/xuwt/Qt/medical-system/server/modules/patientmodule/advice/advice.h \
  /home/xuwt/Qt/medical-system/server/core/database/database.h \
  /usr/include/x86_64-linux-gnu/qt5/QtSql/QSqlDatabase \
  /usr/include/x86_64-linux-gnu/qt5/QtSql/qsqldatabase.h \
@@ -554,4 +557,7 @@ server/CMakeFiles/server.dir/main.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QString \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QDateTime \
  /home/xuwt/Qt/medical-system/server/core/database/database_config.h \
- /usr/include/x86_64-linux-gnu/qt5/QtCore/QDir
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/QDir \
+ /home/xuwt/Qt/medical-system/server/modules/doctormodule/profile/profile.h \
+ /home/xuwt/Qt/medical-system/server/modules/doctormodule/assignment/assignment.h \
+ /home/xuwt/Qt/medical-system/server/modules/doctormodule/attendance/attendance.h

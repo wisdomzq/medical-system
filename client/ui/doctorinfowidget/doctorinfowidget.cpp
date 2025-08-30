@@ -9,6 +9,8 @@
 #include "chatroomwidget.h"
 #include "profilewidget.h"
 #include "appointmentswidget.h"
+#include "datachartwidget.h"
+#include "remotedatawidget.h"
 // #include "caseswidget.h"
 // #include "diagnosiswidget.h"
 
@@ -25,6 +27,8 @@ DoctorInfoWidget::DoctorInfoWidget(const QString &doctorName, QWidget *parent)
     tabWidget->addTab(new ChatRoomWidget(m_doctorName, this), "聊天室");
     tabWidget->addTab(new ProfileWidget(m_doctorName, this), "个人信息");
     tabWidget->addTab(new AppointmentsWidget(m_doctorName, this), "预约信息");
+    tabWidget->addTab(new DataChartWidget(m_doctorName, this), "数据图表");
+    tabWidget->addTab(new RemoteDataWidget(m_doctorName, this), "远程数据采集");
     // 按需求合并到预约信息详情页中，移除独立的 病例详情 与 诊断/医嘱 标签
 
     auto mainLayout = new QVBoxLayout(this);

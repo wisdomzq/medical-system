@@ -599,6 +599,9 @@ client/CMakeFiles/hello.dir/ui/patientinfowidget/patientinfowidget.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtNetwork/qsslpresharedkeyauthenticator.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QMetaType \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QHash \
+ /home/xuwt/Qt/medical-system/client/ui/patientinfowidget/evaluatepage.h \
+ /home/xuwt/Qt/medical-system/client/ui/patientinfowidget/prescriptionpage.h \
+ /home/xuwt/Qt/medical-system/client/ui/patientinfowidget/advicepage.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QVBoxLayout \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qboxlayout.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qlayout.h \

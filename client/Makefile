@@ -288,6 +288,30 @@ main.cpp.s:
 	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f client/CMakeFiles/hello.dir/build.make client/CMakeFiles/hello.dir/main.cpp.s
 .PHONY : main.cpp.s
 
+ui/doctorinfowidget/appointmentdetailsdialog.o: ui/doctorinfowidget/appointmentdetailsdialog.cpp.o
+.PHONY : ui/doctorinfowidget/appointmentdetailsdialog.o
+
+# target to build an object file
+ui/doctorinfowidget/appointmentdetailsdialog.cpp.o:
+	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f client/CMakeFiles/hello.dir/build.make client/CMakeFiles/hello.dir/ui/doctorinfowidget/appointmentdetailsdialog.cpp.o
+.PHONY : ui/doctorinfowidget/appointmentdetailsdialog.cpp.o
+
+ui/doctorinfowidget/appointmentdetailsdialog.i: ui/doctorinfowidget/appointmentdetailsdialog.cpp.i
+.PHONY : ui/doctorinfowidget/appointmentdetailsdialog.i
+
+# target to preprocess a source file
+ui/doctorinfowidget/appointmentdetailsdialog.cpp.i:
+	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f client/CMakeFiles/hello.dir/build.make client/CMakeFiles/hello.dir/ui/doctorinfowidget/appointmentdetailsdialog.cpp.i
+.PHONY : ui/doctorinfowidget/appointmentdetailsdialog.cpp.i
+
+ui/doctorinfowidget/appointmentdetailsdialog.s: ui/doctorinfowidget/appointmentdetailsdialog.cpp.s
+.PHONY : ui/doctorinfowidget/appointmentdetailsdialog.s
+
+# target to generate assembly for a file
+ui/doctorinfowidget/appointmentdetailsdialog.cpp.s:
+	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f client/CMakeFiles/hello.dir/build.make client/CMakeFiles/hello.dir/ui/doctorinfowidget/appointmentdetailsdialog.cpp.s
+.PHONY : ui/doctorinfowidget/appointmentdetailsdialog.cpp.s
+
 ui/doctorinfowidget/appointmentswidget.o: ui/doctorinfowidget/appointmentswidget.cpp.o
 .PHONY : ui/doctorinfowidget/appointmentswidget.o
 
@@ -335,54 +359,6 @@ ui/doctorinfowidget/attendancewidget.s: ui/doctorinfowidget/attendancewidget.cpp
 ui/doctorinfowidget/attendancewidget.cpp.s:
 	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f client/CMakeFiles/hello.dir/build.make client/CMakeFiles/hello.dir/ui/doctorinfowidget/attendancewidget.cpp.s
 .PHONY : ui/doctorinfowidget/attendancewidget.cpp.s
-
-ui/doctorinfowidget/cancelleavewidget.o: ui/doctorinfowidget/cancelleavewidget.cpp.o
-.PHONY : ui/doctorinfowidget/cancelleavewidget.o
-
-# target to build an object file
-ui/doctorinfowidget/cancelleavewidget.cpp.o:
-	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f client/CMakeFiles/hello.dir/build.make client/CMakeFiles/hello.dir/ui/doctorinfowidget/cancelleavewidget.cpp.o
-.PHONY : ui/doctorinfowidget/cancelleavewidget.cpp.o
-
-ui/doctorinfowidget/cancelleavewidget.i: ui/doctorinfowidget/cancelleavewidget.cpp.i
-.PHONY : ui/doctorinfowidget/cancelleavewidget.i
-
-# target to preprocess a source file
-ui/doctorinfowidget/cancelleavewidget.cpp.i:
-	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f client/CMakeFiles/hello.dir/build.make client/CMakeFiles/hello.dir/ui/doctorinfowidget/cancelleavewidget.cpp.i
-.PHONY : ui/doctorinfowidget/cancelleavewidget.cpp.i
-
-ui/doctorinfowidget/cancelleavewidget.s: ui/doctorinfowidget/cancelleavewidget.cpp.s
-.PHONY : ui/doctorinfowidget/cancelleavewidget.s
-
-# target to generate assembly for a file
-ui/doctorinfowidget/cancelleavewidget.cpp.s:
-	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f client/CMakeFiles/hello.dir/build.make client/CMakeFiles/hello.dir/ui/doctorinfowidget/cancelleavewidget.cpp.s
-.PHONY : ui/doctorinfowidget/cancelleavewidget.cpp.s
-
-ui/doctorinfowidget/caseswidget.o: ui/doctorinfowidget/caseswidget.cpp.o
-.PHONY : ui/doctorinfowidget/caseswidget.o
-
-# target to build an object file
-ui/doctorinfowidget/caseswidget.cpp.o:
-	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f client/CMakeFiles/hello.dir/build.make client/CMakeFiles/hello.dir/ui/doctorinfowidget/caseswidget.cpp.o
-.PHONY : ui/doctorinfowidget/caseswidget.cpp.o
-
-ui/doctorinfowidget/caseswidget.i: ui/doctorinfowidget/caseswidget.cpp.i
-.PHONY : ui/doctorinfowidget/caseswidget.i
-
-# target to preprocess a source file
-ui/doctorinfowidget/caseswidget.cpp.i:
-	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f client/CMakeFiles/hello.dir/build.make client/CMakeFiles/hello.dir/ui/doctorinfowidget/caseswidget.cpp.i
-.PHONY : ui/doctorinfowidget/caseswidget.cpp.i
-
-ui/doctorinfowidget/caseswidget.s: ui/doctorinfowidget/caseswidget.cpp.s
-.PHONY : ui/doctorinfowidget/caseswidget.s
-
-# target to generate assembly for a file
-ui/doctorinfowidget/caseswidget.cpp.s:
-	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f client/CMakeFiles/hello.dir/build.make client/CMakeFiles/hello.dir/ui/doctorinfowidget/caseswidget.cpp.s
-.PHONY : ui/doctorinfowidget/caseswidget.cpp.s
 
 ui/doctorinfowidget/chatroomwidget.o: ui/doctorinfowidget/chatroomwidget.cpp.o
 .PHONY : ui/doctorinfowidget/chatroomwidget.o
@@ -432,29 +408,29 @@ ui/doctorinfowidget/checkinwidget.cpp.s:
 	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f client/CMakeFiles/hello.dir/build.make client/CMakeFiles/hello.dir/ui/doctorinfowidget/checkinwidget.cpp.s
 .PHONY : ui/doctorinfowidget/checkinwidget.cpp.s
 
-ui/doctorinfowidget/diagnosiswidget.o: ui/doctorinfowidget/diagnosiswidget.cpp.o
-.PHONY : ui/doctorinfowidget/diagnosiswidget.o
+ui/doctorinfowidget/datachartwidget.o: ui/doctorinfowidget/datachartwidget.cpp.o
+.PHONY : ui/doctorinfowidget/datachartwidget.o
 
 # target to build an object file
-ui/doctorinfowidget/diagnosiswidget.cpp.o:
-	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f client/CMakeFiles/hello.dir/build.make client/CMakeFiles/hello.dir/ui/doctorinfowidget/diagnosiswidget.cpp.o
-.PHONY : ui/doctorinfowidget/diagnosiswidget.cpp.o
+ui/doctorinfowidget/datachartwidget.cpp.o:
+	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f client/CMakeFiles/hello.dir/build.make client/CMakeFiles/hello.dir/ui/doctorinfowidget/datachartwidget.cpp.o
+.PHONY : ui/doctorinfowidget/datachartwidget.cpp.o
 
-ui/doctorinfowidget/diagnosiswidget.i: ui/doctorinfowidget/diagnosiswidget.cpp.i
-.PHONY : ui/doctorinfowidget/diagnosiswidget.i
+ui/doctorinfowidget/datachartwidget.i: ui/doctorinfowidget/datachartwidget.cpp.i
+.PHONY : ui/doctorinfowidget/datachartwidget.i
 
 # target to preprocess a source file
-ui/doctorinfowidget/diagnosiswidget.cpp.i:
-	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f client/CMakeFiles/hello.dir/build.make client/CMakeFiles/hello.dir/ui/doctorinfowidget/diagnosiswidget.cpp.i
-.PHONY : ui/doctorinfowidget/diagnosiswidget.cpp.i
+ui/doctorinfowidget/datachartwidget.cpp.i:
+	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f client/CMakeFiles/hello.dir/build.make client/CMakeFiles/hello.dir/ui/doctorinfowidget/datachartwidget.cpp.i
+.PHONY : ui/doctorinfowidget/datachartwidget.cpp.i
 
-ui/doctorinfowidget/diagnosiswidget.s: ui/doctorinfowidget/diagnosiswidget.cpp.s
-.PHONY : ui/doctorinfowidget/diagnosiswidget.s
+ui/doctorinfowidget/datachartwidget.s: ui/doctorinfowidget/datachartwidget.cpp.s
+.PHONY : ui/doctorinfowidget/datachartwidget.s
 
 # target to generate assembly for a file
-ui/doctorinfowidget/diagnosiswidget.cpp.s:
-	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f client/CMakeFiles/hello.dir/build.make client/CMakeFiles/hello.dir/ui/doctorinfowidget/diagnosiswidget.cpp.s
-.PHONY : ui/doctorinfowidget/diagnosiswidget.cpp.s
+ui/doctorinfowidget/datachartwidget.cpp.s:
+	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f client/CMakeFiles/hello.dir/build.make client/CMakeFiles/hello.dir/ui/doctorinfowidget/datachartwidget.cpp.s
+.PHONY : ui/doctorinfowidget/datachartwidget.cpp.s
 
 ui/doctorinfowidget/doctorinfowidget.o: ui/doctorinfowidget/doctorinfowidget.cpp.o
 .PHONY : ui/doctorinfowidget/doctorinfowidget.o
@@ -480,30 +456,6 @@ ui/doctorinfowidget/doctorinfowidget.cpp.s:
 	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f client/CMakeFiles/hello.dir/build.make client/CMakeFiles/hello.dir/ui/doctorinfowidget/doctorinfowidget.cpp.s
 .PHONY : ui/doctorinfowidget/doctorinfowidget.cpp.s
 
-ui/doctorinfowidget/leavewidget.o: ui/doctorinfowidget/leavewidget.cpp.o
-.PHONY : ui/doctorinfowidget/leavewidget.o
-
-# target to build an object file
-ui/doctorinfowidget/leavewidget.cpp.o:
-	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f client/CMakeFiles/hello.dir/build.make client/CMakeFiles/hello.dir/ui/doctorinfowidget/leavewidget.cpp.o
-.PHONY : ui/doctorinfowidget/leavewidget.cpp.o
-
-ui/doctorinfowidget/leavewidget.i: ui/doctorinfowidget/leavewidget.cpp.i
-.PHONY : ui/doctorinfowidget/leavewidget.i
-
-# target to preprocess a source file
-ui/doctorinfowidget/leavewidget.cpp.i:
-	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f client/CMakeFiles/hello.dir/build.make client/CMakeFiles/hello.dir/ui/doctorinfowidget/leavewidget.cpp.i
-.PHONY : ui/doctorinfowidget/leavewidget.cpp.i
-
-ui/doctorinfowidget/leavewidget.s: ui/doctorinfowidget/leavewidget.cpp.s
-.PHONY : ui/doctorinfowidget/leavewidget.s
-
-# target to generate assembly for a file
-ui/doctorinfowidget/leavewidget.cpp.s:
-	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f client/CMakeFiles/hello.dir/build.make client/CMakeFiles/hello.dir/ui/doctorinfowidget/leavewidget.cpp.s
-.PHONY : ui/doctorinfowidget/leavewidget.cpp.s
-
 ui/doctorinfowidget/profilewidget.o: ui/doctorinfowidget/profilewidget.cpp.o
 .PHONY : ui/doctorinfowidget/profilewidget.o
 
@@ -527,6 +479,30 @@ ui/doctorinfowidget/profilewidget.s: ui/doctorinfowidget/profilewidget.cpp.s
 ui/doctorinfowidget/profilewidget.cpp.s:
 	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f client/CMakeFiles/hello.dir/build.make client/CMakeFiles/hello.dir/ui/doctorinfowidget/profilewidget.cpp.s
 .PHONY : ui/doctorinfowidget/profilewidget.cpp.s
+
+ui/doctorinfowidget/remotedatawidget.o: ui/doctorinfowidget/remotedatawidget.cpp.o
+.PHONY : ui/doctorinfowidget/remotedatawidget.o
+
+# target to build an object file
+ui/doctorinfowidget/remotedatawidget.cpp.o:
+	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f client/CMakeFiles/hello.dir/build.make client/CMakeFiles/hello.dir/ui/doctorinfowidget/remotedatawidget.cpp.o
+.PHONY : ui/doctorinfowidget/remotedatawidget.cpp.o
+
+ui/doctorinfowidget/remotedatawidget.i: ui/doctorinfowidget/remotedatawidget.cpp.i
+.PHONY : ui/doctorinfowidget/remotedatawidget.i
+
+# target to preprocess a source file
+ui/doctorinfowidget/remotedatawidget.cpp.i:
+	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f client/CMakeFiles/hello.dir/build.make client/CMakeFiles/hello.dir/ui/doctorinfowidget/remotedatawidget.cpp.i
+.PHONY : ui/doctorinfowidget/remotedatawidget.cpp.i
+
+ui/doctorinfowidget/remotedatawidget.s: ui/doctorinfowidget/remotedatawidget.cpp.s
+.PHONY : ui/doctorinfowidget/remotedatawidget.s
+
+# target to generate assembly for a file
+ui/doctorinfowidget/remotedatawidget.cpp.s:
+	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f client/CMakeFiles/hello.dir/build.make client/CMakeFiles/hello.dir/ui/doctorinfowidget/remotedatawidget.cpp.s
+.PHONY : ui/doctorinfowidget/remotedatawidget.cpp.s
 
 ui/hello/hello.o: ui/hello/hello.cpp.o
 .PHONY : ui/hello/hello.o
@@ -576,6 +552,30 @@ ui/loginwidget/loginwidget.cpp.s:
 	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f client/CMakeFiles/hello.dir/build.make client/CMakeFiles/hello.dir/ui/loginwidget/loginwidget.cpp.s
 .PHONY : ui/loginwidget/loginwidget.cpp.s
 
+ui/patientinfowidget/advicepage.o: ui/patientinfowidget/advicepage.cpp.o
+.PHONY : ui/patientinfowidget/advicepage.o
+
+# target to build an object file
+ui/patientinfowidget/advicepage.cpp.o:
+	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f client/CMakeFiles/hello.dir/build.make client/CMakeFiles/hello.dir/ui/patientinfowidget/advicepage.cpp.o
+.PHONY : ui/patientinfowidget/advicepage.cpp.o
+
+ui/patientinfowidget/advicepage.i: ui/patientinfowidget/advicepage.cpp.i
+.PHONY : ui/patientinfowidget/advicepage.i
+
+# target to preprocess a source file
+ui/patientinfowidget/advicepage.cpp.i:
+	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f client/CMakeFiles/hello.dir/build.make client/CMakeFiles/hello.dir/ui/patientinfowidget/advicepage.cpp.i
+.PHONY : ui/patientinfowidget/advicepage.cpp.i
+
+ui/patientinfowidget/advicepage.s: ui/patientinfowidget/advicepage.cpp.s
+.PHONY : ui/patientinfowidget/advicepage.s
+
+# target to generate assembly for a file
+ui/patientinfowidget/advicepage.cpp.s:
+	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f client/CMakeFiles/hello.dir/build.make client/CMakeFiles/hello.dir/ui/patientinfowidget/advicepage.cpp.s
+.PHONY : ui/patientinfowidget/advicepage.cpp.s
+
 ui/patientinfowidget/appointmentpage.o: ui/patientinfowidget/appointmentpage.cpp.o
 .PHONY : ui/patientinfowidget/appointmentpage.o
 
@@ -599,6 +599,30 @@ ui/patientinfowidget/appointmentpage.s: ui/patientinfowidget/appointmentpage.cpp
 ui/patientinfowidget/appointmentpage.cpp.s:
 	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f client/CMakeFiles/hello.dir/build.make client/CMakeFiles/hello.dir/ui/patientinfowidget/appointmentpage.cpp.s
 .PHONY : ui/patientinfowidget/appointmentpage.cpp.s
+
+ui/patientinfowidget/evaluatepage.o: ui/patientinfowidget/evaluatepage.cpp.o
+.PHONY : ui/patientinfowidget/evaluatepage.o
+
+# target to build an object file
+ui/patientinfowidget/evaluatepage.cpp.o:
+	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f client/CMakeFiles/hello.dir/build.make client/CMakeFiles/hello.dir/ui/patientinfowidget/evaluatepage.cpp.o
+.PHONY : ui/patientinfowidget/evaluatepage.cpp.o
+
+ui/patientinfowidget/evaluatepage.i: ui/patientinfowidget/evaluatepage.cpp.i
+.PHONY : ui/patientinfowidget/evaluatepage.i
+
+# target to preprocess a source file
+ui/patientinfowidget/evaluatepage.cpp.i:
+	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f client/CMakeFiles/hello.dir/build.make client/CMakeFiles/hello.dir/ui/patientinfowidget/evaluatepage.cpp.i
+.PHONY : ui/patientinfowidget/evaluatepage.cpp.i
+
+ui/patientinfowidget/evaluatepage.s: ui/patientinfowidget/evaluatepage.cpp.s
+.PHONY : ui/patientinfowidget/evaluatepage.s
+
+# target to generate assembly for a file
+ui/patientinfowidget/evaluatepage.cpp.s:
+	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f client/CMakeFiles/hello.dir/build.make client/CMakeFiles/hello.dir/ui/patientinfowidget/evaluatepage.cpp.s
+.PHONY : ui/patientinfowidget/evaluatepage.cpp.s
 
 ui/patientinfowidget/hospitalpage.o: ui/patientinfowidget/hospitalpage.cpp.o
 .PHONY : ui/patientinfowidget/hospitalpage.o
@@ -696,6 +720,30 @@ ui/patientinfowidget/placeholderpages.cpp.s:
 	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f client/CMakeFiles/hello.dir/build.make client/CMakeFiles/hello.dir/ui/patientinfowidget/placeholderpages.cpp.s
 .PHONY : ui/patientinfowidget/placeholderpages.cpp.s
 
+ui/patientinfowidget/prescriptionpage.o: ui/patientinfowidget/prescriptionpage.cpp.o
+.PHONY : ui/patientinfowidget/prescriptionpage.o
+
+# target to build an object file
+ui/patientinfowidget/prescriptionpage.cpp.o:
+	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f client/CMakeFiles/hello.dir/build.make client/CMakeFiles/hello.dir/ui/patientinfowidget/prescriptionpage.cpp.o
+.PHONY : ui/patientinfowidget/prescriptionpage.cpp.o
+
+ui/patientinfowidget/prescriptionpage.i: ui/patientinfowidget/prescriptionpage.cpp.i
+.PHONY : ui/patientinfowidget/prescriptionpage.i
+
+# target to preprocess a source file
+ui/patientinfowidget/prescriptionpage.cpp.i:
+	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f client/CMakeFiles/hello.dir/build.make client/CMakeFiles/hello.dir/ui/patientinfowidget/prescriptionpage.cpp.i
+.PHONY : ui/patientinfowidget/prescriptionpage.cpp.i
+
+ui/patientinfowidget/prescriptionpage.s: ui/patientinfowidget/prescriptionpage.cpp.s
+.PHONY : ui/patientinfowidget/prescriptionpage.s
+
+# target to generate assembly for a file
+ui/patientinfowidget/prescriptionpage.cpp.s:
+	cd /home/xuwt/Qt/medical-system && $(MAKE) $(MAKESILENT) -f client/CMakeFiles/hello.dir/build.make client/CMakeFiles/hello.dir/ui/patientinfowidget/prescriptionpage.cpp.s
+.PHONY : ui/patientinfowidget/prescriptionpage.cpp.s
+
 ui/patientinfowidget/profilepage.o: ui/patientinfowidget/profilepage.cpp.o
 .PHONY : ui/patientinfowidget/profilepage.o
 
@@ -748,45 +796,48 @@ help:
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
+	@echo "... ui/doctorinfowidget/appointmentdetailsdialog.o"
+	@echo "... ui/doctorinfowidget/appointmentdetailsdialog.i"
+	@echo "... ui/doctorinfowidget/appointmentdetailsdialog.s"
 	@echo "... ui/doctorinfowidget/appointmentswidget.o"
 	@echo "... ui/doctorinfowidget/appointmentswidget.i"
 	@echo "... ui/doctorinfowidget/appointmentswidget.s"
 	@echo "... ui/doctorinfowidget/attendancewidget.o"
 	@echo "... ui/doctorinfowidget/attendancewidget.i"
 	@echo "... ui/doctorinfowidget/attendancewidget.s"
-	@echo "... ui/doctorinfowidget/cancelleavewidget.o"
-	@echo "... ui/doctorinfowidget/cancelleavewidget.i"
-	@echo "... ui/doctorinfowidget/cancelleavewidget.s"
-	@echo "... ui/doctorinfowidget/caseswidget.o"
-	@echo "... ui/doctorinfowidget/caseswidget.i"
-	@echo "... ui/doctorinfowidget/caseswidget.s"
 	@echo "... ui/doctorinfowidget/chatroomwidget.o"
 	@echo "... ui/doctorinfowidget/chatroomwidget.i"
 	@echo "... ui/doctorinfowidget/chatroomwidget.s"
 	@echo "... ui/doctorinfowidget/checkinwidget.o"
 	@echo "... ui/doctorinfowidget/checkinwidget.i"
 	@echo "... ui/doctorinfowidget/checkinwidget.s"
-	@echo "... ui/doctorinfowidget/diagnosiswidget.o"
-	@echo "... ui/doctorinfowidget/diagnosiswidget.i"
-	@echo "... ui/doctorinfowidget/diagnosiswidget.s"
+	@echo "... ui/doctorinfowidget/datachartwidget.o"
+	@echo "... ui/doctorinfowidget/datachartwidget.i"
+	@echo "... ui/doctorinfowidget/datachartwidget.s"
 	@echo "... ui/doctorinfowidget/doctorinfowidget.o"
 	@echo "... ui/doctorinfowidget/doctorinfowidget.i"
 	@echo "... ui/doctorinfowidget/doctorinfowidget.s"
-	@echo "... ui/doctorinfowidget/leavewidget.o"
-	@echo "... ui/doctorinfowidget/leavewidget.i"
-	@echo "... ui/doctorinfowidget/leavewidget.s"
 	@echo "... ui/doctorinfowidget/profilewidget.o"
 	@echo "... ui/doctorinfowidget/profilewidget.i"
 	@echo "... ui/doctorinfowidget/profilewidget.s"
+	@echo "... ui/doctorinfowidget/remotedatawidget.o"
+	@echo "... ui/doctorinfowidget/remotedatawidget.i"
+	@echo "... ui/doctorinfowidget/remotedatawidget.s"
 	@echo "... ui/hello/hello.o"
 	@echo "... ui/hello/hello.i"
 	@echo "... ui/hello/hello.s"
 	@echo "... ui/loginwidget/loginwidget.o"
 	@echo "... ui/loginwidget/loginwidget.i"
 	@echo "... ui/loginwidget/loginwidget.s"
+	@echo "... ui/patientinfowidget/advicepage.o"
+	@echo "... ui/patientinfowidget/advicepage.i"
+	@echo "... ui/patientinfowidget/advicepage.s"
 	@echo "... ui/patientinfowidget/appointmentpage.o"
 	@echo "... ui/patientinfowidget/appointmentpage.i"
 	@echo "... ui/patientinfowidget/appointmentpage.s"
+	@echo "... ui/patientinfowidget/evaluatepage.o"
+	@echo "... ui/patientinfowidget/evaluatepage.i"
+	@echo "... ui/patientinfowidget/evaluatepage.s"
 	@echo "... ui/patientinfowidget/hospitalpage.o"
 	@echo "... ui/patientinfowidget/hospitalpage.i"
 	@echo "... ui/patientinfowidget/hospitalpage.s"
@@ -799,6 +850,9 @@ help:
 	@echo "... ui/patientinfowidget/placeholderpages.o"
 	@echo "... ui/patientinfowidget/placeholderpages.i"
 	@echo "... ui/patientinfowidget/placeholderpages.s"
+	@echo "... ui/patientinfowidget/prescriptionpage.o"
+	@echo "... ui/patientinfowidget/prescriptionpage.i"
+	@echo "... ui/patientinfowidget/prescriptionpage.s"
 	@echo "... ui/patientinfowidget/profilepage.o"
 	@echo "... ui/patientinfowidget/profilepage.i"
 	@echo "... ui/patientinfowidget/profilepage.s"

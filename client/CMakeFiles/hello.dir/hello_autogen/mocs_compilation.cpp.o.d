@@ -512,14 +512,15 @@ client/CMakeFiles/hello.dir/hello_autogen/mocs_compilation.cpp.o: \
  /home/xuwt/Qt/medical-system/client/hello_autogen/XKFTU44BVS/../../core/network/src/client/streamparser.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QByteArray \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QDataStream \
- /home/xuwt/Qt/medical-system/client/hello_autogen/AKRC6WZMME/moc_appointmentswidget.cpp \
- /home/xuwt/Qt/medical-system/client/hello_autogen/AKRC6WZMME/../../ui/doctorinfowidget/appointmentswidget.h \
- /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QWidget \
- /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qwidget.h \
+ /home/xuwt/Qt/medical-system/client/hello_autogen/AKRC6WZMME/moc_appointmentdetailsdialog.cpp \
+ /home/xuwt/Qt/medical-system/client/hello_autogen/AKRC6WZMME/../../ui/doctorinfowidget/appointmentdetailsdialog.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QDialog \
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qdialog.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qtwidgetsglobal.h \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/qtguiglobal.h \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/qtgui-config.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qtwidgets-config.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qwidget.h \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/qwindowdefs.h \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/qpaintdevice.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qrect.h \
@@ -542,32 +543,33 @@ client/CMakeFiles/hello.dir/hello_autogen/mocs_compilation.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qsizepolicy.h \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/qcursor.h \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/qkeysequence.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QGroupBox \
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qgroupbox.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qframe.h \
+ /home/xuwt/Qt/medical-system/client/hello_autogen/AKRC6WZMME/moc_appointmentswidget.cpp \
+ /home/xuwt/Qt/medical-system/client/hello_autogen/AKRC6WZMME/../../ui/doctorinfowidget/appointmentswidget.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QWidget \
+ /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qwidget.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QString \
  /home/xuwt/Qt/medical-system/client/hello_autogen/AKRC6WZMME/moc_attendancewidget.cpp \
  /home/xuwt/Qt/medical-system/client/hello_autogen/AKRC6WZMME/../../ui/doctorinfowidget/attendancewidget.h \
- /home/xuwt/Qt/medical-system/client/hello_autogen/AKRC6WZMME/moc_cancelleavewidget.cpp \
- /home/xuwt/Qt/medical-system/client/hello_autogen/AKRC6WZMME/../../ui/doctorinfowidget/cancelleavewidget.h \
- /home/xuwt/Qt/medical-system/client/hello_autogen/AKRC6WZMME/moc_caseswidget.cpp \
- /home/xuwt/Qt/medical-system/client/hello_autogen/AKRC6WZMME/../../ui/doctorinfowidget/caseswidget.h \
  /home/xuwt/Qt/medical-system/client/hello_autogen/AKRC6WZMME/moc_chatroomwidget.cpp \
  /home/xuwt/Qt/medical-system/client/hello_autogen/AKRC6WZMME/../../ui/doctorinfowidget/chatroomwidget.h \
  /home/xuwt/Qt/medical-system/client/hello_autogen/AKRC6WZMME/moc_checkinwidget.cpp \
  /home/xuwt/Qt/medical-system/client/hello_autogen/AKRC6WZMME/../../ui/doctorinfowidget/checkinwidget.h \
- /home/xuwt/Qt/medical-system/client/hello_autogen/AKRC6WZMME/moc_diagnosiswidget.cpp \
- /home/xuwt/Qt/medical-system/client/hello_autogen/AKRC6WZMME/../../ui/doctorinfowidget/diagnosiswidget.h \
+ /home/xuwt/Qt/medical-system/client/hello_autogen/AKRC6WZMME/moc_datachartwidget.cpp \
+ /home/xuwt/Qt/medical-system/client/hello_autogen/AKRC6WZMME/../../ui/doctorinfowidget/datachartwidget.h \
  /home/xuwt/Qt/medical-system/client/hello_autogen/AKRC6WZMME/moc_doctorinfowidget.cpp \
  /home/xuwt/Qt/medical-system/client/hello_autogen/AKRC6WZMME/../../ui/doctorinfowidget/doctorinfowidget.h \
- /home/xuwt/Qt/medical-system/client/hello_autogen/AKRC6WZMME/moc_leavewidget.cpp \
- /home/xuwt/Qt/medical-system/client/hello_autogen/AKRC6WZMME/../../ui/doctorinfowidget/leavewidget.h \
  /home/xuwt/Qt/medical-system/client/hello_autogen/AKRC6WZMME/moc_profilewidget.cpp \
  /home/xuwt/Qt/medical-system/client/hello_autogen/AKRC6WZMME/../../ui/doctorinfowidget/profilewidget.h \
+ /home/xuwt/Qt/medical-system/client/hello_autogen/AKRC6WZMME/moc_remotedatawidget.cpp \
+ /home/xuwt/Qt/medical-system/client/hello_autogen/AKRC6WZMME/../../ui/doctorinfowidget/remotedatawidget.h \
  /home/xuwt/Qt/medical-system/client/hello_autogen/KUE7F3CO2C/moc_hello.cpp \
  /home/xuwt/Qt/medical-system/client/hello_autogen/KUE7F3CO2C/../../ui/hello/hello.h \
  /home/xuwt/Qt/medical-system/client/ui/loginwidget/loginwidget.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QLabel \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qlabel.h \
- /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qframe.h \
- /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qwidget.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QPushButton \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qpushbutton.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qabstractbutton.h \
@@ -597,15 +599,19 @@ client/CMakeFiles/hello.dir/hello_autogen/mocs_compilation.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qmainwindow.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qtabwidget.h \
  /home/xuwt/Qt/medical-system/client/hello_autogen/MJCUNQZLOZ/moc_loginwidget.cpp \
+ /home/xuwt/Qt/medical-system/client/hello_autogen/ZEUGGMGZAI/moc_advicepage.cpp \
+ /home/xuwt/Qt/medical-system/client/hello_autogen/ZEUGGMGZAI/../../ui/patientinfowidget/advicepage.h \
+ /home/xuwt/Qt/medical-system/client/hello_autogen/ZEUGGMGZAI/../../ui/patientinfowidget/basepage.h \
+ /usr/include/x86_64-linux-gnu/qt5/QtCore/QJsonArray \
  /home/xuwt/Qt/medical-system/client/hello_autogen/ZEUGGMGZAI/moc_appointmentpage.cpp \
  /home/xuwt/Qt/medical-system/client/hello_autogen/ZEUGGMGZAI/../../ui/patientinfowidget/appointmentpage.h \
- /home/xuwt/Qt/medical-system/client/hello_autogen/ZEUGGMGZAI/../../ui/patientinfowidget/basepage.h \
  /home/xuwt/Qt/medical-system/client/hello_autogen/ZEUGGMGZAI/moc_basepage.cpp \
+ /home/xuwt/Qt/medical-system/client/hello_autogen/ZEUGGMGZAI/moc_evaluatepage.cpp \
+ /home/xuwt/Qt/medical-system/client/hello_autogen/ZEUGGMGZAI/../../ui/patientinfowidget/evaluatepage.h \
  /home/xuwt/Qt/medical-system/client/hello_autogen/ZEUGGMGZAI/moc_hospitalpage.cpp \
  /home/xuwt/Qt/medical-system/client/hello_autogen/ZEUGGMGZAI/../../ui/patientinfowidget/hospitalpage.h \
  /home/xuwt/Qt/medical-system/client/hello_autogen/ZEUGGMGZAI/moc_medicationpage.cpp \
  /home/xuwt/Qt/medical-system/client/hello_autogen/ZEUGGMGZAI/../../ui/patientinfowidget/medicationpage.h \
- /usr/include/x86_64-linux-gnu/qt5/QtCore/QJsonArray \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QTableWidget \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qtablewidget.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qtableview.h \
@@ -648,5 +654,7 @@ client/CMakeFiles/hello.dir/hello_autogen/mocs_compilation.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QHash \
  /home/xuwt/Qt/medical-system/client/hello_autogen/ZEUGGMGZAI/moc_patientinfowidget.cpp \
  /home/xuwt/Qt/medical-system/client/hello_autogen/ZEUGGMGZAI/../../ui/patientinfowidget/patientinfowidget.h \
+ /home/xuwt/Qt/medical-system/client/hello_autogen/ZEUGGMGZAI/moc_prescriptionpage.cpp \
+ /home/xuwt/Qt/medical-system/client/hello_autogen/ZEUGGMGZAI/../../ui/patientinfowidget/prescriptionpage.h \
  /home/xuwt/Qt/medical-system/client/hello_autogen/ZEUGGMGZAI/moc_profilepage.cpp \
  /home/xuwt/Qt/medical-system/client/hello_autogen/ZEUGGMGZAI/../../ui/patientinfowidget/profilepage.h

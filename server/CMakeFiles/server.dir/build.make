@@ -195,6 +195,90 @@ server/CMakeFiles/server.dir/modules/patientmodule/medicine/medicine.cpp.s: cmak
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/server.dir/modules/patientmodule/medicine/medicine.cpp.s"
 	cd /home/xuwt/Qt/medical-system/server && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/xuwt/Qt/medical-system/server/modules/patientmodule/medicine/medicine.cpp -o CMakeFiles/server.dir/modules/patientmodule/medicine/medicine.cpp.s
 
+server/CMakeFiles/server.dir/modules/patientmodule/evaluate/evaluate.cpp.o: server/CMakeFiles/server.dir/flags.make
+server/CMakeFiles/server.dir/modules/patientmodule/evaluate/evaluate.cpp.o: server/modules/patientmodule/evaluate/evaluate.cpp
+server/CMakeFiles/server.dir/modules/patientmodule/evaluate/evaluate.cpp.o: server/CMakeFiles/server.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/xuwt/Qt/medical-system/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object server/CMakeFiles/server.dir/modules/patientmodule/evaluate/evaluate.cpp.o"
+	cd /home/xuwt/Qt/medical-system/server && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT server/CMakeFiles/server.dir/modules/patientmodule/evaluate/evaluate.cpp.o -MF CMakeFiles/server.dir/modules/patientmodule/evaluate/evaluate.cpp.o.d -o CMakeFiles/server.dir/modules/patientmodule/evaluate/evaluate.cpp.o -c /home/xuwt/Qt/medical-system/server/modules/patientmodule/evaluate/evaluate.cpp
+
+server/CMakeFiles/server.dir/modules/patientmodule/evaluate/evaluate.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/server.dir/modules/patientmodule/evaluate/evaluate.cpp.i"
+	cd /home/xuwt/Qt/medical-system/server && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/xuwt/Qt/medical-system/server/modules/patientmodule/evaluate/evaluate.cpp > CMakeFiles/server.dir/modules/patientmodule/evaluate/evaluate.cpp.i
+
+server/CMakeFiles/server.dir/modules/patientmodule/evaluate/evaluate.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/server.dir/modules/patientmodule/evaluate/evaluate.cpp.s"
+	cd /home/xuwt/Qt/medical-system/server && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/xuwt/Qt/medical-system/server/modules/patientmodule/evaluate/evaluate.cpp -o CMakeFiles/server.dir/modules/patientmodule/evaluate/evaluate.cpp.s
+
+server/CMakeFiles/server.dir/modules/patientmodule/prescription/prescription.cpp.o: server/CMakeFiles/server.dir/flags.make
+server/CMakeFiles/server.dir/modules/patientmodule/prescription/prescription.cpp.o: server/modules/patientmodule/prescription/prescription.cpp
+server/CMakeFiles/server.dir/modules/patientmodule/prescription/prescription.cpp.o: server/CMakeFiles/server.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/xuwt/Qt/medical-system/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object server/CMakeFiles/server.dir/modules/patientmodule/prescription/prescription.cpp.o"
+	cd /home/xuwt/Qt/medical-system/server && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT server/CMakeFiles/server.dir/modules/patientmodule/prescription/prescription.cpp.o -MF CMakeFiles/server.dir/modules/patientmodule/prescription/prescription.cpp.o.d -o CMakeFiles/server.dir/modules/patientmodule/prescription/prescription.cpp.o -c /home/xuwt/Qt/medical-system/server/modules/patientmodule/prescription/prescription.cpp
+
+server/CMakeFiles/server.dir/modules/patientmodule/prescription/prescription.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/server.dir/modules/patientmodule/prescription/prescription.cpp.i"
+	cd /home/xuwt/Qt/medical-system/server && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/xuwt/Qt/medical-system/server/modules/patientmodule/prescription/prescription.cpp > CMakeFiles/server.dir/modules/patientmodule/prescription/prescription.cpp.i
+
+server/CMakeFiles/server.dir/modules/patientmodule/prescription/prescription.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/server.dir/modules/patientmodule/prescription/prescription.cpp.s"
+	cd /home/xuwt/Qt/medical-system/server && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/xuwt/Qt/medical-system/server/modules/patientmodule/prescription/prescription.cpp -o CMakeFiles/server.dir/modules/patientmodule/prescription/prescription.cpp.s
+
+server/CMakeFiles/server.dir/modules/patientmodule/advice/advice.cpp.o: server/CMakeFiles/server.dir/flags.make
+server/CMakeFiles/server.dir/modules/patientmodule/advice/advice.cpp.o: server/modules/patientmodule/advice/advice.cpp
+server/CMakeFiles/server.dir/modules/patientmodule/advice/advice.cpp.o: server/CMakeFiles/server.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/xuwt/Qt/medical-system/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object server/CMakeFiles/server.dir/modules/patientmodule/advice/advice.cpp.o"
+	cd /home/xuwt/Qt/medical-system/server && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT server/CMakeFiles/server.dir/modules/patientmodule/advice/advice.cpp.o -MF CMakeFiles/server.dir/modules/patientmodule/advice/advice.cpp.o.d -o CMakeFiles/server.dir/modules/patientmodule/advice/advice.cpp.o -c /home/xuwt/Qt/medical-system/server/modules/patientmodule/advice/advice.cpp
+
+server/CMakeFiles/server.dir/modules/patientmodule/advice/advice.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/server.dir/modules/patientmodule/advice/advice.cpp.i"
+	cd /home/xuwt/Qt/medical-system/server && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/xuwt/Qt/medical-system/server/modules/patientmodule/advice/advice.cpp > CMakeFiles/server.dir/modules/patientmodule/advice/advice.cpp.i
+
+server/CMakeFiles/server.dir/modules/patientmodule/advice/advice.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/server.dir/modules/patientmodule/advice/advice.cpp.s"
+	cd /home/xuwt/Qt/medical-system/server && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/xuwt/Qt/medical-system/server/modules/patientmodule/advice/advice.cpp -o CMakeFiles/server.dir/modules/patientmodule/advice/advice.cpp.s
+
+server/CMakeFiles/server.dir/modules/doctormodule/profile/profile.cpp.o: server/CMakeFiles/server.dir/flags.make
+server/CMakeFiles/server.dir/modules/doctormodule/profile/profile.cpp.o: server/modules/doctormodule/profile/profile.cpp
+server/CMakeFiles/server.dir/modules/doctormodule/profile/profile.cpp.o: server/CMakeFiles/server.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/xuwt/Qt/medical-system/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object server/CMakeFiles/server.dir/modules/doctormodule/profile/profile.cpp.o"
+	cd /home/xuwt/Qt/medical-system/server && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT server/CMakeFiles/server.dir/modules/doctormodule/profile/profile.cpp.o -MF CMakeFiles/server.dir/modules/doctormodule/profile/profile.cpp.o.d -o CMakeFiles/server.dir/modules/doctormodule/profile/profile.cpp.o -c /home/xuwt/Qt/medical-system/server/modules/doctormodule/profile/profile.cpp
+
+server/CMakeFiles/server.dir/modules/doctormodule/profile/profile.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/server.dir/modules/doctormodule/profile/profile.cpp.i"
+	cd /home/xuwt/Qt/medical-system/server && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/xuwt/Qt/medical-system/server/modules/doctormodule/profile/profile.cpp > CMakeFiles/server.dir/modules/doctormodule/profile/profile.cpp.i
+
+server/CMakeFiles/server.dir/modules/doctormodule/profile/profile.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/server.dir/modules/doctormodule/profile/profile.cpp.s"
+	cd /home/xuwt/Qt/medical-system/server && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/xuwt/Qt/medical-system/server/modules/doctormodule/profile/profile.cpp -o CMakeFiles/server.dir/modules/doctormodule/profile/profile.cpp.s
+
+server/CMakeFiles/server.dir/modules/doctormodule/assignment/assignment.cpp.o: server/CMakeFiles/server.dir/flags.make
+server/CMakeFiles/server.dir/modules/doctormodule/assignment/assignment.cpp.o: server/modules/doctormodule/assignment/assignment.cpp
+server/CMakeFiles/server.dir/modules/doctormodule/assignment/assignment.cpp.o: server/CMakeFiles/server.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/xuwt/Qt/medical-system/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object server/CMakeFiles/server.dir/modules/doctormodule/assignment/assignment.cpp.o"
+	cd /home/xuwt/Qt/medical-system/server && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT server/CMakeFiles/server.dir/modules/doctormodule/assignment/assignment.cpp.o -MF CMakeFiles/server.dir/modules/doctormodule/assignment/assignment.cpp.o.d -o CMakeFiles/server.dir/modules/doctormodule/assignment/assignment.cpp.o -c /home/xuwt/Qt/medical-system/server/modules/doctormodule/assignment/assignment.cpp
+
+server/CMakeFiles/server.dir/modules/doctormodule/assignment/assignment.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/server.dir/modules/doctormodule/assignment/assignment.cpp.i"
+	cd /home/xuwt/Qt/medical-system/server && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/xuwt/Qt/medical-system/server/modules/doctormodule/assignment/assignment.cpp > CMakeFiles/server.dir/modules/doctormodule/assignment/assignment.cpp.i
+
+server/CMakeFiles/server.dir/modules/doctormodule/assignment/assignment.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/server.dir/modules/doctormodule/assignment/assignment.cpp.s"
+	cd /home/xuwt/Qt/medical-system/server && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/xuwt/Qt/medical-system/server/modules/doctormodule/assignment/assignment.cpp -o CMakeFiles/server.dir/modules/doctormodule/assignment/assignment.cpp.s
+
+server/CMakeFiles/server.dir/modules/doctormodule/attendance/attendance.cpp.o: server/CMakeFiles/server.dir/flags.make
+server/CMakeFiles/server.dir/modules/doctormodule/attendance/attendance.cpp.o: server/modules/doctormodule/attendance/attendance.cpp
+server/CMakeFiles/server.dir/modules/doctormodule/attendance/attendance.cpp.o: server/CMakeFiles/server.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/xuwt/Qt/medical-system/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object server/CMakeFiles/server.dir/modules/doctormodule/attendance/attendance.cpp.o"
+	cd /home/xuwt/Qt/medical-system/server && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT server/CMakeFiles/server.dir/modules/doctormodule/attendance/attendance.cpp.o -MF CMakeFiles/server.dir/modules/doctormodule/attendance/attendance.cpp.o.d -o CMakeFiles/server.dir/modules/doctormodule/attendance/attendance.cpp.o -c /home/xuwt/Qt/medical-system/server/modules/doctormodule/attendance/attendance.cpp
+
+server/CMakeFiles/server.dir/modules/doctormodule/attendance/attendance.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/server.dir/modules/doctormodule/attendance/attendance.cpp.i"
+	cd /home/xuwt/Qt/medical-system/server && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/xuwt/Qt/medical-system/server/modules/doctormodule/attendance/attendance.cpp > CMakeFiles/server.dir/modules/doctormodule/attendance/attendance.cpp.i
+
+server/CMakeFiles/server.dir/modules/doctormodule/attendance/attendance.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/server.dir/modules/doctormodule/attendance/attendance.cpp.s"
+	cd /home/xuwt/Qt/medical-system/server && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/xuwt/Qt/medical-system/server/modules/doctormodule/attendance/attendance.cpp -o CMakeFiles/server.dir/modules/doctormodule/attendance/attendance.cpp.s
+
 # Object files for target server
 server_OBJECTS = \
 "CMakeFiles/server.dir/server_autogen/mocs_compilation.cpp.o" \
@@ -205,7 +289,13 @@ server_OBJECTS = \
 "CMakeFiles/server.dir/core/network/src/server/messagerouter.cpp.o" \
 "CMakeFiles/server.dir/modules/loginmodule/loginmodule.cpp.o" \
 "CMakeFiles/server.dir/modules/patientmodule/register/register.cpp.o" \
-"CMakeFiles/server.dir/modules/patientmodule/medicine/medicine.cpp.o"
+"CMakeFiles/server.dir/modules/patientmodule/medicine/medicine.cpp.o" \
+"CMakeFiles/server.dir/modules/patientmodule/evaluate/evaluate.cpp.o" \
+"CMakeFiles/server.dir/modules/patientmodule/prescription/prescription.cpp.o" \
+"CMakeFiles/server.dir/modules/patientmodule/advice/advice.cpp.o" \
+"CMakeFiles/server.dir/modules/doctormodule/profile/profile.cpp.o" \
+"CMakeFiles/server.dir/modules/doctormodule/assignment/assignment.cpp.o" \
+"CMakeFiles/server.dir/modules/doctormodule/attendance/attendance.cpp.o"
 
 # External object files for target server
 server_EXTERNAL_OBJECTS =
@@ -219,12 +309,18 @@ server/server: server/CMakeFiles/server.dir/core/network/src/server/messageroute
 server/server: server/CMakeFiles/server.dir/modules/loginmodule/loginmodule.cpp.o
 server/server: server/CMakeFiles/server.dir/modules/patientmodule/register/register.cpp.o
 server/server: server/CMakeFiles/server.dir/modules/patientmodule/medicine/medicine.cpp.o
+server/server: server/CMakeFiles/server.dir/modules/patientmodule/evaluate/evaluate.cpp.o
+server/server: server/CMakeFiles/server.dir/modules/patientmodule/prescription/prescription.cpp.o
+server/server: server/CMakeFiles/server.dir/modules/patientmodule/advice/advice.cpp.o
+server/server: server/CMakeFiles/server.dir/modules/doctormodule/profile/profile.cpp.o
+server/server: server/CMakeFiles/server.dir/modules/doctormodule/assignment/assignment.cpp.o
+server/server: server/CMakeFiles/server.dir/modules/doctormodule/attendance/attendance.cpp.o
 server/server: server/CMakeFiles/server.dir/build.make
 server/server: /usr/lib/x86_64-linux-gnu/libQt5Network.so.5.15.3
 server/server: /usr/lib/x86_64-linux-gnu/libQt5Sql.so.5.15.3
 server/server: /usr/lib/x86_64-linux-gnu/libQt5Core.so.5.15.3
 server/server: server/CMakeFiles/server.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/xuwt/Qt/medical-system/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Linking CXX executable server"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/xuwt/Qt/medical-system/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Linking CXX executable server"
 	cd /home/xuwt/Qt/medical-system/server && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/server.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

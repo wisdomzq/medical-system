@@ -516,6 +516,10 @@ server/CMakeFiles/server.dir/server_autogen/mocs_compilation.cpp.o: \
  /home/xuwt/Qt/medical-system/server/server_autogen/URL7VJ5BZG/moc_loginmodule.cpp \
  /home/xuwt/Qt/medical-system/server/server_autogen/URL7VJ5BZG/../../modules/loginmodule/loginmodule.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QJsonObject \
+ /home/xuwt/Qt/medical-system/server/server_autogen/6AJKXBJ7Q5/moc_advice.cpp \
+ /home/xuwt/Qt/medical-system/server/server_autogen/6AJKXBJ7Q5/../../modules/patientmodule/advice/advice.h \
+ /home/xuwt/Qt/medical-system/server/server_autogen/USX2MJVSMR/moc_evaluate.cpp \
+ /home/xuwt/Qt/medical-system/server/server_autogen/USX2MJVSMR/../../modules/patientmodule/evaluate/evaluate.h \
  /home/xuwt/Qt/medical-system/server/server_autogen/ZXZACPACKL/moc_medicine.cpp \
  /home/xuwt/Qt/medical-system/server/server_autogen/ZXZACPACKL/../../modules/patientmodule/medicine/medicine.h \
  /usr/include/x86_64-linux-gnu/qt5/QtNetwork/QNetworkAccessManager \
@@ -544,6 +548,8 @@ server/CMakeFiles/server.dir/server_autogen/mocs_compilation.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtNetwork/qnetworkrequest.h \
  /usr/include/x86_64-linux-gnu/qt5/QtNetwork/QNetworkAccessManager \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QJsonArray \
+ /home/xuwt/Qt/medical-system/server/server_autogen/RUKXI7W3QC/moc_prescription.cpp \
+ /home/xuwt/Qt/medical-system/server/server_autogen/RUKXI7W3QC/../../modules/patientmodule/prescription/prescription.h \
  /home/xuwt/Qt/medical-system/server/server_autogen/3UNC5IPTOD/moc_register.cpp \
  /home/xuwt/Qt/medical-system/server/server_autogen/3UNC5IPTOD/../../modules/patientmodule/register/register.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QString \

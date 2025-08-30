@@ -81,6 +81,12 @@
 			null
 		],
 		[
+			"/home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/appointmentdetailsdialog.h",
+			"MU",
+			"AKRC6WZMME/moc_appointmentdetailsdialog.cpp",
+			null
+		],
+		[
 			"/home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/appointmentswidget.h",
 			"MU",
 			"AKRC6WZMME/moc_appointmentswidget.cpp",
@@ -90,18 +96,6 @@
 			"/home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/attendancewidget.h",
 			"MU",
 			"AKRC6WZMME/moc_attendancewidget.cpp",
-			null
-		],
-		[
-			"/home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/cancelleavewidget.h",
-			"MU",
-			"AKRC6WZMME/moc_cancelleavewidget.cpp",
-			null
-		],
-		[
-			"/home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/caseswidget.h",
-			"MU",
-			"AKRC6WZMME/moc_caseswidget.cpp",
 			null
 		],
 		[
@@ -117,9 +111,9 @@
 			null
 		],
 		[
-			"/home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/diagnosiswidget.h",
+			"/home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/datachartwidget.h",
 			"MU",
-			"AKRC6WZMME/moc_diagnosiswidget.cpp",
+			"AKRC6WZMME/moc_datachartwidget.cpp",
 			null
 		],
 		[
@@ -129,15 +123,15 @@
 			null
 		],
 		[
-			"/home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/leavewidget.h",
-			"MU",
-			"AKRC6WZMME/moc_leavewidget.cpp",
-			null
-		],
-		[
 			"/home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/profilewidget.h",
 			"MU",
 			"AKRC6WZMME/moc_profilewidget.cpp",
+			null
+		],
+		[
+			"/home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/remotedatawidget.h",
+			"MU",
+			"AKRC6WZMME/moc_remotedatawidget.cpp",
 			null
 		],
 		[
@@ -153,6 +147,12 @@
 			null
 		],
 		[
+			"/home/xuwt/Qt/medical-system/client/ui/patientinfowidget/advicepage.h",
+			"MU",
+			"ZEUGGMGZAI/moc_advicepage.cpp",
+			null
+		],
+		[
 			"/home/xuwt/Qt/medical-system/client/ui/patientinfowidget/appointmentpage.h",
 			"MU",
 			"ZEUGGMGZAI/moc_appointmentpage.cpp",
@@ -162,6 +162,12 @@
 			"/home/xuwt/Qt/medical-system/client/ui/patientinfowidget/basepage.h",
 			"MU",
 			"ZEUGGMGZAI/moc_basepage.cpp",
+			null
+		],
+		[
+			"/home/xuwt/Qt/medical-system/client/ui/patientinfowidget/evaluatepage.h",
+			"MU",
+			"ZEUGGMGZAI/moc_evaluatepage.cpp",
 			null
 		],
 		[
@@ -186,6 +192,12 @@
 			"/home/xuwt/Qt/medical-system/client/ui/patientinfowidget/placeholderpages.h",
 			"MU",
 			"ZEUGGMGZAI/moc_placeholderpages.cpp",
+			null
+		],
+		[
+			"/home/xuwt/Qt/medical-system/client/ui/patientinfowidget/prescriptionpage.h",
+			"MU",
+			"ZEUGGMGZAI/moc_prescriptionpage.cpp",
 			null
 		],
 		[
@@ -280,22 +292,17 @@
 		],
 		[ "/home/xuwt/Qt/medical-system/client/main.cpp", "MU", null ],
 		[
+			"/home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/appointmentdetailsdialog.cpp",
+			"MU",
+			null
+		],
+		[
 			"/home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/appointmentswidget.cpp",
 			"MU",
 			null
 		],
 		[
 			"/home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/attendancewidget.cpp",
-			"MU",
-			null
-		],
-		[
-			"/home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/cancelleavewidget.cpp",
-			"MU",
-			null
-		],
-		[
-			"/home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/caseswidget.cpp",
 			"MU",
 			null
 		],
@@ -310,7 +317,7 @@
 			null
 		],
 		[
-			"/home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/diagnosiswidget.cpp",
+			"/home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/datachartwidget.cpp",
 			"MU",
 			null
 		],
@@ -320,12 +327,12 @@
 			null
 		],
 		[
-			"/home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/leavewidget.cpp",
+			"/home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/profilewidget.cpp",
 			"MU",
 			null
 		],
 		[
-			"/home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/profilewidget.cpp",
+			"/home/xuwt/Qt/medical-system/client/ui/doctorinfowidget/remotedatawidget.cpp",
 			"MU",
 			null
 		],
@@ -336,7 +343,17 @@
 			null
 		],
 		[
+			"/home/xuwt/Qt/medical-system/client/ui/patientinfowidget/advicepage.cpp",
+			"MU",
+			null
+		],
+		[
 			"/home/xuwt/Qt/medical-system/client/ui/patientinfowidget/appointmentpage.cpp",
+			"MU",
+			null
+		],
+		[
+			"/home/xuwt/Qt/medical-system/client/ui/patientinfowidget/evaluatepage.cpp",
 			"MU",
 			null
 		],
@@ -357,6 +374,11 @@
 		],
 		[
 			"/home/xuwt/Qt/medical-system/client/ui/patientinfowidget/placeholderpages.cpp",
+			"MU",
+			null
+		],
+		[
+			"/home/xuwt/Qt/medical-system/client/ui/patientinfowidget/prescriptionpage.cpp",
 			"MU",
 			null
 		],

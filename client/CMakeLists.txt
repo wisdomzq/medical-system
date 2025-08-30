@@ -15,6 +15,8 @@ set(srcs
     ui/doctorinfowidget/profilewidget.cpp
     ui/doctorinfowidget/appointmentswidget.cpp
     ui/doctorinfowidget/appointmentdetailsdialog.cpp
+    ui/doctorinfowidget/datachartwidget.cpp
+    ui/doctorinfowidget/remotedatawidget.cpp
     ui/patientinfowidget/patientinfowidget.cpp
     ui/patientinfowidget/basepage.h
     ui/patientinfowidget/appointmentpage.cpp
