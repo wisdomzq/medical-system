@@ -19,10 +19,14 @@
 
 DoctorInfoModule::DoctorInfoModule(QObject* parent) : QObject(parent) {
     // 连接消息路由器
-    connect(&MessageRouter::instance(), &MessageRouter::requestReceived,
-            this, &DoctorInfoModule::onRequestReceived);
-    connect(this, &DoctorInfoModule::businessResponse,
-            &MessageRouter::instance(), &MessageRouter::onBusinessResponse);
+    if (!connect(&MessageRouter::instance(), &MessageRouter::requestReceived,
+            this, &DoctorInfoModule::onRequestReceived)) {
+        Log::error("DoctorInfoModule", "Failed to connect MessageRouter::requestReceived to DoctorInfoModule::onRequestReceived");
+    }
+    if (!connect(this, &DoctorInfoModule::businessResponse,
+            &MessageRouter::instance(), &MessageRouter::onBusinessResponse)) {
+        Log::error("DoctorInfoModule", "Failed to connect DoctorInfoModule::businessResponse to MessageRouter::onBusinessResponse");
+    }
 }
 
 QJsonObject DoctorInfoModule::handleDoctorInfoRequest(const QJsonObject& request) {

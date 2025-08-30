@@ -7,10 +7,14 @@
 #include "core/logging/logging.h"
 
 DoctorRouterModule::DoctorRouterModule(QObject *parent):QObject(parent) {
-    connect(&MessageRouter::instance(), &MessageRouter::requestReceived,
-            this, &DoctorRouterModule::onRequest);
-    connect(this, &DoctorRouterModule::businessResponse,
-            &MessageRouter::instance(), &MessageRouter::onBusinessResponse);
+    if (!connect(&MessageRouter::instance(), &MessageRouter::requestReceived,
+            this, &DoctorRouterModule::onRequest)) {
+        Log::error("DoctorRouterModule", "Failed to connect MessageRouter::requestReceived to DoctorRouterModule::onRequest");
+    }
+    if (!connect(this, &DoctorRouterModule::businessResponse,
+            &MessageRouter::instance(), &MessageRouter::onBusinessResponse)) {
+        Log::error("DoctorRouterModule", "Failed to connect DoctorRouterModule::businessResponse to MessageRouter::onBusinessResponse");
+    }
 }
 
 void DoctorRouterModule::onRequest(const QJsonObject &payload) {

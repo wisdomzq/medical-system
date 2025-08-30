@@ -6,11 +6,15 @@
 #include <QDebug>
 
 LoginRouter::LoginRouter(QObject *parent):QObject(parent) {
-    connect(&MessageRouter::instance(), &MessageRouter::requestReceived,
-        this, &LoginRouter::onRequest);
+    if (!connect(&MessageRouter::instance(), &MessageRouter::requestReceived,
+        this, &LoginRouter::onRequest)) {
+        Log::error("LoginRouter", "Failed to connect MessageRouter::requestReceived to LoginRouter::onRequest");
+    }
     // 将业务模块的响应信号连到路由器
-    connect(this, &LoginRouter::businessResponse,
-        &MessageRouter::instance(), &MessageRouter::onBusinessResponse);
+    if (!connect(this, &LoginRouter::businessResponse,
+        &MessageRouter::instance(), &MessageRouter::onBusinessResponse)) {
+        Log::error("LoginRouter", "Failed to connect LoginRouter::businessResponse to MessageRouter::onBusinessResponse");
+    }
 }
 
 void LoginRouter::onRequest(const QJsonObject &payload) {

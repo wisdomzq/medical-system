@@ -9,10 +9,14 @@
 #include <QDebug>
 
 MedicalCrudModule::MedicalCrudModule(QObject *parent):QObject(parent) {
-    connect(&MessageRouter::instance(), &MessageRouter::requestReceived,
-            this, &MedicalCrudModule::onRequest);
-    connect(this, &MedicalCrudModule::businessResponse,
-            &MessageRouter::instance(), &MessageRouter::onBusinessResponse);
+    if (!connect(&MessageRouter::instance(), &MessageRouter::requestReceived,
+            this, &MedicalCrudModule::onRequest)) {
+        Log::error("MedicalCrudModule", "Failed to connect MessageRouter::requestReceived to MedicalCrudModule::onRequest");
+    }
+    if (!connect(this, &MedicalCrudModule::businessResponse,
+            &MessageRouter::instance(), &MessageRouter::onBusinessResponse)) {
+        Log::error("MedicalCrudModule", "Failed to connect MedicalCrudModule::businessResponse to MessageRouter::onBusinessResponse");
+    }
 }
 
 void MedicalCrudModule::onRequest(const QJsonObject &payload) {

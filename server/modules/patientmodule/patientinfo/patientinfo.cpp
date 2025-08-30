@@ -8,10 +8,14 @@
 #include <QSqlQuery>
 
 PatientInfoModule::PatientInfoModule(QObject *parent):QObject(parent) {
-    connect(&MessageRouter::instance(), &MessageRouter::requestReceived,
-            this, &PatientInfoModule::onRequest);
-    connect(this, &PatientInfoModule::businessResponse,
-            &MessageRouter::instance(), &MessageRouter::onBusinessResponse);
+    if (!connect(&MessageRouter::instance(), &MessageRouter::requestReceived,
+            this, &PatientInfoModule::onRequest)) {
+        Log::error("PatientInfoModule", "Failed to connect MessageRouter::requestReceived to PatientInfoModule::onRequest");
+    }
+    if (!connect(this, &PatientInfoModule::businessResponse,
+            &MessageRouter::instance(), &MessageRouter::onBusinessResponse)) {
+        Log::error("PatientInfoModule", "Failed to connect PatientInfoModule::businessResponse to MessageRouter::onBusinessResponse");
+    }
 }
 
 void PatientInfoModule::onRequest(const QJsonObject &payload) {

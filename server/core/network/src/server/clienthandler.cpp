@@ -1,4 +1,5 @@
-#include <server/clienthandler.h>
+#include "server/clienthandler.h"
+#include "core/logging/logging.h"
 
 using namespace Protocol;
 
@@ -20,8 +21,12 @@ void ClientHandler::initialize(qintptr socketDescriptor)
     m_socket = new QTcpSocket(this);
     m_socket->setSocketDescriptor(socketDescriptor);
     qInfo() << "[Handler] 初始化完成，descriptor=" << socketDescriptor << ", 线程=" << QThread::currentThread();
-    connect(m_socket, &QTcpSocket::readyRead, this, &ClientHandler::onReadyRead);
-    connect(m_socket, &QTcpSocket::disconnected, this, &ClientHandler::onDisconnected);
+    if (!connect(m_socket, &QTcpSocket::readyRead, this, &ClientHandler::onReadyRead)) {
+        Log::error("ClientHandler", "Failed to connect QTcpSocket::readyRead to ClientHandler::onReadyRead");
+    }
+    if (!connect(m_socket, &QTcpSocket::disconnected, this, &ClientHandler::onDisconnected)) {
+        Log::error("ClientHandler", "Failed to connect QTcpSocket::disconnected to ClientHandler::onDisconnected");
+    }
 }
 
 void ClientHandler::sendMessage(MessageType type, const QJsonObject& obj)

@@ -8,10 +8,14 @@
 #include <QDebug>
 
 PrescriptionModule::PrescriptionModule(QObject *parent):QObject(parent) {
-    connect(&MessageRouter::instance(), &MessageRouter::requestReceived,
-            this, &PrescriptionModule::onRequest);
-    connect(this, &PrescriptionModule::businessResponse,
-            &MessageRouter::instance(), &MessageRouter::onBusinessResponse);
+    if (!connect(&MessageRouter::instance(), &MessageRouter::requestReceived,
+            this, &PrescriptionModule::onRequest)) {
+        Log::error("PrescriptionModule", "Failed to connect MessageRouter::requestReceived to PrescriptionModule::onRequest");
+    }
+    if (!connect(this, &PrescriptionModule::businessResponse,
+            &MessageRouter::instance(), &MessageRouter::onBusinessResponse)) {
+        Log::error("PrescriptionModule", "Failed to connect PrescriptionModule::businessResponse to MessageRouter::onBusinessResponse");
+    }
 }
 
 void PrescriptionModule::onRequest(const QJsonObject &payload) {

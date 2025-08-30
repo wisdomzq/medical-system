@@ -1,5 +1,5 @@
-#include <server/clienthandler.h>
-#include <server/messagerouter.h>
+#include "server/clienthandler.h"
+#include "server/messagerouter.h"
 #include <QDateTime>
 #include <QUuid>
 

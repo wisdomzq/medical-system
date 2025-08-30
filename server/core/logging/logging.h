@@ -47,4 +47,10 @@ inline void result(const char* tag, bool success, const char* what = "result")
     qInfo().noquote() << '[' << tag << ']' << what << "success=" << success;
 }
 
+// 统一的错误日志
+inline void error(const char* tag, const QString& message)
+{
+    qWarning().noquote() << '[' << tag << ']' << "error:" << message;
+}
+
 }

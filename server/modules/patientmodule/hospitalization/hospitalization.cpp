@@ -7,10 +7,14 @@
 #include <QJsonArray>
 
 HospitalizationModule::HospitalizationModule(QObject *parent):QObject(parent) {
-    connect(&MessageRouter::instance(), &MessageRouter::requestReceived,
-            this, &HospitalizationModule::onRequest);
-    connect(this, &HospitalizationModule::businessResponse,
-            &MessageRouter::instance(), &MessageRouter::onBusinessResponse);
+    if (!connect(&MessageRouter::instance(), &MessageRouter::requestReceived,
+            this, &HospitalizationModule::onRequest)) {
+        Log::error("HospitalizationModule", "Failed to connect MessageRouter::requestReceived to HospitalizationModule::onRequest");
+    }
+    if (!connect(this, &HospitalizationModule::businessResponse,
+            &MessageRouter::instance(), &MessageRouter::onBusinessResponse)) {
+        Log::error("HospitalizationModule", "Failed to connect HospitalizationModule::businessResponse to MessageRouter::onBusinessResponse");
+    }
 }
 
 void HospitalizationModule::onRequest(const QJsonObject &payload) {

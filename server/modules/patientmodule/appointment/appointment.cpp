@@ -10,10 +10,14 @@
 #include <QSqlQuery>
 
 AppointmentModule::AppointmentModule(QObject *parent):QObject(parent) {
-    connect(&MessageRouter::instance(), &MessageRouter::requestReceived,
-            this, &AppointmentModule::onRequest);
-    connect(this, &AppointmentModule::businessResponse,
-            &MessageRouter::instance(), &MessageRouter::onBusinessResponse);
+    if (!connect(&MessageRouter::instance(), &MessageRouter::requestReceived,
+            this, &AppointmentModule::onRequest)) {
+        Log::error("AppointmentModule", "Failed to connect MessageRouter::requestReceived to AppointmentModule::onRequest");
+    }
+    if (!connect(this, &AppointmentModule::businessResponse,
+            &MessageRouter::instance(), &MessageRouter::onBusinessResponse)) {
+        Log::error("AppointmentModule", "Failed to connect AppointmentModule::businessResponse to MessageRouter::onBusinessResponse");
+    }
 }
 
 void AppointmentModule::onRequest(const QJsonObject &payload) {

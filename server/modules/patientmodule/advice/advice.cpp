@@ -9,10 +9,14 @@
 
 AdviceModule::AdviceModule(QObject* parent) : QObject(parent) {
     // 连接消息路由器
-    connect(&MessageRouter::instance(), &MessageRouter::requestReceived,
-            this, &AdviceModule::onRequestReceived);
-    connect(this, &AdviceModule::businessResponse,
-            &MessageRouter::instance(), &MessageRouter::onBusinessResponse);
+    if (!connect(&MessageRouter::instance(), &MessageRouter::requestReceived,
+            this, &AdviceModule::onRequestReceived)) {
+        Log::error("AdviceModule", "Failed to connect MessageRouter::requestReceived to AdviceModule::onRequestReceived");
+    }
+    if (!connect(this, &AdviceModule::businessResponse,
+            &MessageRouter::instance(), &MessageRouter::onBusinessResponse)) {
+        Log::error("AdviceModule", "Failed to connect AdviceModule::businessResponse to MessageRouter::onBusinessResponse");
+    }
 }
 
 QJsonObject AdviceModule::handleAdviceRequest(const QJsonObject& request) {

@@ -9,10 +9,14 @@
 
 MedicalRecordModule::MedicalRecordModule(QObject *parent) : QObject(parent)
 {
-    connect(&MessageRouter::instance(), &MessageRouter::requestReceived,
-            this, &MedicalRecordModule::onRequest);
-    connect(this, &MedicalRecordModule::businessResponse,
-            &MessageRouter::instance(), &MessageRouter::onBusinessResponse);
+    if (!connect(&MessageRouter::instance(), &MessageRouter::requestReceived,
+            this, &MedicalRecordModule::onRequest)) {
+        Log::error("MedicalRecordModule", "Failed to connect MessageRouter::requestReceived to MedicalRecordModule::onRequest");
+    }
+    if (!connect(this, &MedicalRecordModule::businessResponse,
+            &MessageRouter::instance(), &MessageRouter::onBusinessResponse)) {
+        Log::error("MedicalRecordModule", "Failed to connect MedicalRecordModule::businessResponse to MessageRouter::onBusinessResponse");
+    }
 }
 
 void MedicalRecordModule::onRequest(const QJsonObject &payload)

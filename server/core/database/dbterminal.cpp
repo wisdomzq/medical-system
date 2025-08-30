@@ -1,5 +1,6 @@
 #include "dbterminal.h"
 #include "database.h"
+#include "core/logging/logging.h"
 #include <QDebug>
 #include <QSqlQuery>
 #include <QSqlError>
@@ -11,7 +12,9 @@ DBTerminal::DBTerminal(DBManager* dbManager, QObject *parent)
     : QObject(parent), m_dbManager(dbManager)
 {
     m_displayTimer = new QTimer(this);
-    connect(m_displayTimer, &QTimer::timeout, this, &DBTerminal::updateDisplay);
+    if (!connect(m_displayTimer, &QTimer::timeout, this, &DBTerminal::updateDisplay)) {
+        Log::error("DBTerminal", "Failed to connect QTimer::timeout to DBTerminal::updateDisplay");
+    }
 }
 
 void DBTerminal::startMonitoring(int intervalMs) {

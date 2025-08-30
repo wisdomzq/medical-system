@@ -5,8 +5,9 @@
 #include <QDateTime>
 
 #include <protocol.h>
-#include <server/communicationserver.h>
-#include <server/messagerouter.h>
+#include "server/communicationserver.h"
+#include "server/messagerouter.h"
+#include "core/logging/logging.h"
 
 int main(int argc, char* argv[])
 {
@@ -14,12 +15,14 @@ int main(int argc, char* argv[])
     qRegisterMetaType<Protocol::Header>("Protocol::Header");
 
     CommunicationServer server;
-    QObject::connect(&server, &QTcpServer::acceptError, [](QAbstractSocket::SocketError err) {
+    if (!QObject::connect(&server, &QTcpServer::acceptError, [](QAbstractSocket::SocketError err) {
         qWarning() << "Accept error:" << err;
-    });
+    })) {
+        Log::error("ServerMain", "Failed to connect QTcpServer::acceptError");
+    }
 
     // 示例业务：处理 echo
-    QObject::connect(&MessageRouter::instance(), &MessageRouter::requestReceived,
+    if (!QObject::connect(&MessageRouter::instance(), &MessageRouter::requestReceived,
                      [](QJsonObject payload) {
                          const QString uuid = payload.value("uuid").toString();
                          const QString action = payload.value("action").toString();
@@ -34,7 +37,9 @@ int main(int argc, char* argv[])
                              err.insert("request_uuid", uuid);
                              MessageRouter::instance().onBusinessResponse(Protocol::MessageType::ErrorResponse, err);
                          }
-                     });
+                     })) {
+        Log::error("ServerMain", "Failed to connect MessageRouter::requestReceived to echo handler");
+    }
 
     if (!server.listen(QHostAddress::Any, Protocol::SERVER_PORT)) {
         qCritical() << "Failed to listen on port" << Protocol::SERVER_PORT << ":" << server.errorString();
