@@ -62,4 +62,4 @@ target_include_directories(hello PRIVATE
     core/network/src/client
 )
 
-target_link_libraries(hello PRIVATE Qt5::Widgets Qt5::Network sqlite3)
+target_link_libraries(hello PRIVATE Qt5::Widgets Qt5::Network Qt5::Sql)

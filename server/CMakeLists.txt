@@ -30,4 +30,4 @@ add_executable(server
 )
 
 target_include_directories(server PRIVATE . core core/database core/network/src modules)
-target_link_libraries(server PRIVATE Qt5::Core Qt5::Network Qt5::Sql sqlite3)
+target_link_libraries(server PRIVATE Qt5::Core Qt5::Network Qt5::Sql)
