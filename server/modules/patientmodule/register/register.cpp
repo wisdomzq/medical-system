@@ -16,12 +16,9 @@ RegisterManager::RegisterManager(QObject* parent): QObject(parent) {
     connect(&MessageRouter::instance(), &MessageRouter::requestReceived,
             this, &RegisterManager::onRequest, Qt::DirectConnection);
     qDebug() << "[RegisterManager] 信号槽连接完成";
-    connect(this, &RegisterManager::businessResponseReady, this, [](QJsonObject payload){
-        qDebug() << "[RegisterManager] 准备发送响应:" << payload;
-        if (!payload.contains("request_uuid") && payload.contains("uuid"))
-            payload.insert("request_uuid", payload.value("uuid").toString());
-        MessageRouter::instance().onBusinessResponse(Protocol::MessageType::JsonResponse, payload);
-    }, Qt::DirectConnection);
+    connect(this, &RegisterManager::businessResponse,
+            &MessageRouter::instance(), &MessageRouter::onBusinessResponse,
+            Qt::DirectConnection);
     qDebug() << "[RegisterManager] RegisterManager初始化完成";
 }
 
@@ -155,7 +152,7 @@ void RegisterManager::onRequest(const QJsonObject& payload) {
         QJsonObject resp; resp["type"] = "doctor_schedule_response"; resp["success"] = true; resp["data"] = arr;
     if (payload.contains("uuid")) resp["request_uuid"] = payload.value("uuid").toString();
     qDebug() << "[RegisterManager] 回传 doctor_schedule_response request_uuid=" << resp.value("request_uuid").toString();
-        emit businessResponseReady(resp);
+    emit businessResponse(Protocol::MessageType::JsonResponse, resp);
     } else if (action == "register_doctor") {
         qDebug() << "[RegisterManager] 处理挂号请求...";
         QString patientName = payload.value("patientName").toString();
@@ -219,6 +216,6 @@ void RegisterManager::onRequest(const QJsonObject& payload) {
     qDebug() << "[RegisterManager] 回传 register_doctor_response success=" << ok
          << ", request_uuid=" << resp.value("request_uuid").toString();
         
-        emit businessResponseReady(resp);
+    emit businessResponse(Protocol::MessageType::JsonResponse, resp);
     }
 }

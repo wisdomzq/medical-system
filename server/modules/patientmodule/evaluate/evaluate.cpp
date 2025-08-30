@@ -18,6 +18,8 @@ static const char* WALLET_TABLE_SQL = "CREATE TABLE IF NOT EXISTS patient_wallet
 EvaluateModule::EvaluateModule(QObject *parent):QObject(parent) {
     connect(&MessageRouter::instance(), &MessageRouter::requestReceived,
             this, &EvaluateModule::onRequest);
+    connect(this, &EvaluateModule::businessResponse,
+            &MessageRouter::instance(), &MessageRouter::onBusinessResponse);
 }
 
 void EvaluateModule::onRequest(const QJsonObject &payload) {
@@ -127,5 +129,5 @@ bool EvaluateModule::updateBalance(const QString &patientUsername, double delta,
 void EvaluateModule::sendResponse(QJsonObject resp, const QJsonObject &orig) {
     if(orig.contains("uuid")) resp["request_uuid"] = orig.value("uuid").toString();
     Log::response("Evaluate", resp);
-    MessageRouter::instance().onBusinessResponse(Protocol::MessageType::JsonResponse, resp);
+    emit businessResponse(Protocol::MessageType::JsonResponse, resp);
 }

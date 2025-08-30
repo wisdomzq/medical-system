@@ -21,6 +21,8 @@ DoctorInfoModule::DoctorInfoModule(QObject* parent) : QObject(parent) {
     // 连接消息路由器
     connect(&MessageRouter::instance(), &MessageRouter::requestReceived,
             this, &DoctorInfoModule::onRequestReceived);
+    connect(this, &DoctorInfoModule::businessResponse,
+            &MessageRouter::instance(), &MessageRouter::onBusinessResponse);
 }
 
 QJsonObject DoctorInfoModule::handleDoctorInfoRequest(const QJsonObject& request) {
@@ -123,9 +125,6 @@ void DoctorInfoModule::onRequestReceived(const QJsonObject& payload) {
         response["request_uuid"] = payload.value("uuid").toString();
     }
     Log::response("DoctorInfo", response);
-    // 通过消息路由器回复
-    MessageRouter::instance().onBusinessResponse(
-        Protocol::MessageType::JsonResponse,
-        response
-    );
+    // 通过发射信号回复
+    emit businessResponse(Protocol::MessageType::JsonResponse, response);
 }

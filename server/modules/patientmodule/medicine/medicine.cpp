@@ -33,6 +33,8 @@ MedicineModule::MedicineModule(QObject* parent)
 {
     connect(&MessageRouter::instance(), &MessageRouter::requestReceived,
         this, &MedicineModule::onRequest);
+    connect(this, &MedicineModule::businessResponse,
+            &MessageRouter::instance(), &MessageRouter::onBusinessResponse);
     loadLocalMeta();
 }
 
@@ -280,5 +282,5 @@ void MedicineModule::sendResponse(QJsonObject resp, const QJsonObject& orig)
     if (orig.contains("uuid"))
         resp["request_uuid"] = orig.value("uuid").toString();
     Log::response("Medicine", resp);
-    MessageRouter::instance().onBusinessResponse(Protocol::MessageType::JsonResponse, resp);
+    emit businessResponse(Protocol::MessageType::JsonResponse, resp);
 }

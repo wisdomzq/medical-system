@@ -1,6 +1,7 @@
 #pragma once
 #include <QObject>
 #include <QJsonObject>
+#include "core/network/src/protocol.h"
 
 // EvaluateModule: 提供健康评估相关接口
 // 动作:
@@ -10,6 +11,8 @@ class EvaluateModule : public QObject {
     Q_OBJECT
 public:
     explicit EvaluateModule(QObject *parent=nullptr);
+signals:
+    void businessResponse(Protocol::MessageType type, QJsonObject payload);
 private slots:
     void onRequest(const QJsonObject &payload);
 private:

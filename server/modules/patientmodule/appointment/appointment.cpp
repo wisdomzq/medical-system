@@ -12,6 +12,8 @@
 AppointmentModule::AppointmentModule(QObject *parent):QObject(parent) {
     connect(&MessageRouter::instance(), &MessageRouter::requestReceived,
             this, &AppointmentModule::onRequest);
+    connect(this, &AppointmentModule::businessResponse,
+            &MessageRouter::instance(), &MessageRouter::onBusinessResponse);
 }
 
 void AppointmentModule::onRequest(const QJsonObject &payload) {
@@ -81,5 +83,5 @@ void AppointmentModule::handleStats(const QJsonObject &payload) {
 void AppointmentModule::reply(QJsonObject resp, const QJsonObject &orig) {
     if (orig.contains("uuid")) resp["request_uuid"] = orig.value("uuid").toString();
     Log::response("Appointment", resp);
-    MessageRouter::instance().onBusinessResponse(Protocol::MessageType::JsonResponse, resp);
+    emit businessResponse(Protocol::MessageType::JsonResponse, resp);
 }

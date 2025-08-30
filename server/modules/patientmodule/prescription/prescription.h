@@ -1,6 +1,7 @@
 #pragma once
 #include <QObject>
 #include <QJsonObject>
+#include "core/network/src/protocol.h"
 
 // PrescriptionModule: 处方模块
 // 动作:
@@ -10,6 +11,8 @@ class PrescriptionModule : public QObject {
     Q_OBJECT
 public:
     explicit PrescriptionModule(QObject *parent=nullptr);
+signals:
+    void businessResponse(Protocol::MessageType type, QJsonObject payload);
 private slots:
     void onRequest(const QJsonObject &payload);
 private:

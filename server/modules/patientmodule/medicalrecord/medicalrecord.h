@@ -3,6 +3,7 @@
 #include <QObject>
 #include <QJsonObject>
 #include <QJsonArray>
+#include "core/network/src/protocol.h"
 
 class MedicalRecordModule : public QObject
 {
@@ -10,6 +11,8 @@ class MedicalRecordModule : public QObject
 
 public:
     explicit MedicalRecordModule(QObject *parent = nullptr);
+signals:
+    void businessResponse(Protocol::MessageType type, QJsonObject payload);
 
 private slots:
     void onRequest(const QJsonObject &payload);

@@ -11,6 +11,8 @@ MedicalRecordModule::MedicalRecordModule(QObject *parent) : QObject(parent)
 {
     connect(&MessageRouter::instance(), &MessageRouter::requestReceived,
             this, &MedicalRecordModule::onRequest);
+    connect(this, &MedicalRecordModule::businessResponse,
+            &MessageRouter::instance(), &MessageRouter::onBusinessResponse);
 }
 
 void MedicalRecordModule::onRequest(const QJsonObject &payload)
@@ -110,5 +112,5 @@ void MedicalRecordModule::sendResponse(QJsonObject resp, const QJsonObject &orig
         resp["request_uuid"] = orig.value("uuid").toString();
     }
     Log::response("MedicalRecord", resp);
-    MessageRouter::instance().onBusinessResponse(Protocol::MessageType::JsonResponse, resp);
+    emit businessResponse(Protocol::MessageType::JsonResponse, resp);
 }

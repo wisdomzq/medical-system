@@ -10,6 +10,8 @@
 PatientInfoModule::PatientInfoModule(QObject *parent):QObject(parent) {
     connect(&MessageRouter::instance(), &MessageRouter::requestReceived,
             this, &PatientInfoModule::onRequest);
+    connect(this, &PatientInfoModule::businessResponse,
+            &MessageRouter::instance(), &MessageRouter::onBusinessResponse);
 }
 
 void PatientInfoModule::onRequest(const QJsonObject &payload) {
@@ -41,5 +43,5 @@ void PatientInfoModule::handleUpdate(const QJsonObject &payload) {
 void PatientInfoModule::reply(QJsonObject resp, const QJsonObject &orig) {
     if (orig.contains("uuid")) resp["request_uuid"] = orig.value("uuid").toString();
     Log::response("PatientInfo", resp);
-    MessageRouter::instance().onBusinessResponse(Protocol::MessageType::JsonResponse, resp);
+    emit businessResponse(Protocol::MessageType::JsonResponse, resp);
 }

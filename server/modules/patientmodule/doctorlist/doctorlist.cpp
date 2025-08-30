@@ -9,6 +9,8 @@
 DoctorListModule::DoctorListModule(QObject *parent):QObject(parent) {
     connect(&MessageRouter::instance(), &MessageRouter::requestReceived,
             this, &DoctorListModule::onRequest);
+    connect(this, &DoctorListModule::businessResponse,
+            &MessageRouter::instance(), &MessageRouter::onBusinessResponse);
 }
 
 void DoctorListModule::onRequest(const QJsonObject &payload) {
@@ -38,5 +40,5 @@ void DoctorListModule::handleByDepartment(const QJsonObject &payload) {
 void DoctorListModule::reply(QJsonObject resp, const QJsonObject &orig) {
     if (orig.contains("uuid")) resp["request_uuid"] = orig.value("uuid").toString();
     Log::response("DoctorList", resp);
-    MessageRouter::instance().onBusinessResponse(Protocol::MessageType::JsonResponse, resp);
+    emit businessResponse(Protocol::MessageType::JsonResponse, resp);
 }

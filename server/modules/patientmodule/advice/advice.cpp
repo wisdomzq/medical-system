@@ -11,6 +11,8 @@ AdviceModule::AdviceModule(QObject* parent) : QObject(parent) {
     // 连接消息路由器
     connect(&MessageRouter::instance(), &MessageRouter::requestReceived,
             this, &AdviceModule::onRequestReceived);
+    connect(this, &AdviceModule::businessResponse,
+            &MessageRouter::instance(), &MessageRouter::onBusinessResponse);
 }
 
 QJsonObject AdviceModule::handleAdviceRequest(const QJsonObject& request) {
@@ -156,6 +158,6 @@ void AdviceModule::onRequestReceived(const QJsonObject& payload) {
         }
     Log::response("Advice", response);
         // 发送响应
-        MessageRouter::instance().onBusinessResponse(Protocol::MessageType::JsonResponse, response);
+        emit businessResponse(Protocol::MessageType::JsonResponse, response);
     }
 }

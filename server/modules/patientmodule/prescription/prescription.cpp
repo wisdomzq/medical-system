@@ -10,6 +10,8 @@
 PrescriptionModule::PrescriptionModule(QObject *parent):QObject(parent) {
     connect(&MessageRouter::instance(), &MessageRouter::requestReceived,
             this, &PrescriptionModule::onRequest);
+    connect(this, &PrescriptionModule::businessResponse,
+            &MessageRouter::instance(), &MessageRouter::onBusinessResponse);
 }
 
 void PrescriptionModule::onRequest(const QJsonObject &payload) {
@@ -111,5 +113,5 @@ void PrescriptionModule::handleGetDetails(const QJsonObject &payload) {
 void PrescriptionModule::sendResponse(QJsonObject resp, const QJsonObject &orig) {
     if (orig.contains("uuid")) resp["request_uuid"] = orig.value("uuid").toString();
     Log::response("Prescription", resp);
-    MessageRouter::instance().onBusinessResponse(Protocol::MessageType::JsonResponse, resp);
+    emit businessResponse(Protocol::MessageType::JsonResponse, resp);
 }

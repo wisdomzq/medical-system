@@ -7,7 +7,10 @@
 
 LoginRouter::LoginRouter(QObject *parent):QObject(parent) {
     connect(&MessageRouter::instance(), &MessageRouter::requestReceived,
-            this, &LoginRouter::onRequest);
+        this, &LoginRouter::onRequest);
+    // 将业务模块的响应信号连到路由器
+    connect(this, &LoginRouter::businessResponse,
+        &MessageRouter::instance(), &MessageRouter::onBusinessResponse);
 }
 
 void LoginRouter::onRequest(const QJsonObject &payload) {
@@ -27,5 +30,5 @@ void LoginRouter::onRequest(const QJsonObject &payload) {
 void LoginRouter::reply(QJsonObject resp, const QJsonObject &orig) {
     if (orig.contains("uuid")) resp["request_uuid"] = orig.value("uuid").toString();
     Log::response("LoginRouter", resp);
-    MessageRouter::instance().onBusinessResponse(Protocol::MessageType::JsonResponse, resp);
+    emit businessResponse(Protocol::MessageType::JsonResponse, resp);
 }

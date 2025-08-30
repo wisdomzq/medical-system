@@ -11,6 +11,8 @@
 MedicalCrudModule::MedicalCrudModule(QObject *parent):QObject(parent) {
     connect(&MessageRouter::instance(), &MessageRouter::requestReceived,
             this, &MedicalCrudModule::onRequest);
+    connect(this, &MedicalCrudModule::businessResponse,
+            &MessageRouter::instance(), &MessageRouter::onBusinessResponse);
 }
 
 void MedicalCrudModule::onRequest(const QJsonObject &payload) {
@@ -76,5 +78,5 @@ void MedicalCrudModule::handleGetPrescriptionsByPatient(const QJsonObject &paylo
 void MedicalCrudModule::reply(QJsonObject resp, const QJsonObject &orig) {
     if (orig.contains("uuid")) resp["request_uuid"] = orig.value("uuid").toString();
     Log::response("MedicalCrud", resp);
-    MessageRouter::instance().onBusinessResponse(Protocol::MessageType::JsonResponse, resp);
+    emit businessResponse(Protocol::MessageType::JsonResponse, resp);
 }
