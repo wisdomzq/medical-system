@@ -9,12 +9,18 @@
 #include <QCoreApplication>
 
 DBManager::DBManager(const QString& path) {
+    // 检查可用的SQL驱动
+    qDebug() << "可用的SQL驱动:" << QSqlDatabase::drivers();
+    
     // 使用唯一的连接名称，避免与TcpServer冲突
     static int connectionId = 0;
     QString connectionName = QString("main_db_connection_%1").arg(++connectionId);
     
     m_db = QSqlDatabase::addDatabase("QSQLITE", connectionName);
     m_db.setDatabaseName(path);
+    
+    qDebug() << "数据库驱动名称:" << m_db.driverName();
+    qDebug() << "数据库文件路径:" << path;
 
     if (!m_db.open()) {
         qDebug() << "Error: connection with database fail" << m_db.lastError().text();
@@ -54,7 +60,6 @@ void DBManager::initDatabase() {
     createPrescriptionsTable();
     createPrescriptionItemsTable();
     createMedicationsTable();
-    createDoctorSchedulesTable();
     createHospitalizationsTable(); // 添加住院表
     createAttendanceTable();
     createLeaveRequestsTable();
@@ -309,27 +314,6 @@ void DBManager::createMedicationsTable() {
         
         // 插入一些示例药品数据
         insertSampleMedications();
-    }
-}
-
-void DBManager::createDoctorSchedulesTable() {
-    if (!m_db.tables().contains(QStringLiteral("doctor_schedules"))) {
-        QSqlQuery query(m_db);
-        QString sql = R"(
-            CREATE TABLE doctor_schedules (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                doctor_username TEXT NOT NULL,
-                day_of_week INTEGER NOT NULL CHECK(day_of_week BETWEEN 0 AND 6),
-                start_time TIME NOT NULL,
-                end_time TIME NOT NULL,
-                max_appointments INTEGER DEFAULT 10,
-                is_active BOOLEAN DEFAULT 1,
-                FOREIGN KEY (doctor_username) REFERENCES users(username)
-            )
-        )";
-        if (!query.exec(sql)) {
-            qDebug() << "创建doctor_schedules表失败:" << query.lastError().text();
-        }
     }
 }
 
@@ -985,32 +969,55 @@ bool DBManager::getAppointmentsByPatient(const QString& patientUsername, QJsonAr
 }
 
 bool DBManager::getAppointmentsByDoctor(const QString& doctorUsername, QJsonArray& appointments) {
+    qDebug() << "[DBManager] 查询医生预约，用户名:" << doctorUsername;
+    
+    // 添加文件日志
+    QFile logFile("/tmp/db_debug.log");
+    if (logFile.open(QIODevice::WriteOnly | QIODevice::Append)) {
+        QTextStream stream(&logFile);
+        stream << "=== getAppointmentsByDoctor ===" << Qt::endl;
+        stream << "医生用户名: " << doctorUsername << Qt::endl;
+        stream << "数据库是否打开: " << m_db.isOpen() << Qt::endl;
+        stream << "数据库文件: " << m_db.databaseName() << Qt::endl;
+    }
+    
     QSqlQuery query(m_db);
-    query.prepare(R"(
+    QString sql = QString(R"(
         SELECT a.id, a.patient_username, a.appointment_date, a.appointment_time,
                a.status, a.department, a.chief_complaint, a.fee,
                p.name as patient_name, p.age as patient_age, p.phone as patient_phone,
-               p.gender as patient_gender, p.birth_date as patient_birth_date,
-               d.name as doctor_name, d.title as doctor_title, d.specialization,
-               ds.start_time as schedule_start_time, ds.end_time as schedule_end_time,
-               ds.max_appointments as schedule_max_appointments
+               p.gender as patient_gender,
+               d.name as doctor_name, d.title as doctor_title, d.specialization
         FROM appointments a
         LEFT JOIN patients p ON a.patient_username = p.username
         LEFT JOIN doctors d ON a.doctor_username = d.username
-        LEFT JOIN doctor_schedules ds ON (a.doctor_username = ds.doctor_username 
-            AND ds.day_of_week = CAST(strftime('%w', a.appointment_date) AS INTEGER)
-            AND ds.is_active = 1)
-        WHERE a.doctor_username = :doctor_username
+        WHERE a.doctor_username = '%1'
         ORDER BY a.appointment_date DESC, a.appointment_time DESC
-    )");
-    query.bindValue(":doctor_username", doctorUsername);
+    )").arg(doctorUsername);
+    
+    // 添加文件日志
+    QFile logFileSQL("/tmp/db_debug.log");
+    if (logFileSQL.open(QIODevice::WriteOnly | QIODevice::Append)) {
+        QTextStream stream(&logFileSQL);
+        stream << "执行SQL: " << sql << Qt::endl;
+    }
 
-    if (!query.exec()) {
+    if (!query.exec(sql)) {
         qDebug() << "getAppointmentsByDoctor error:" << query.lastError().text();
+        
+        // 添加文件日志
+        QFile logFile2("/tmp/db_debug.log");
+        if (logFile2.open(QIODevice::WriteOnly | QIODevice::Append)) {
+            QTextStream stream(&logFile2);
+            stream << "SQL执行失败: " << query.lastError().text() << Qt::endl;
+        }
+        
         return false;
     }
 
+    int count = 0;
     while (query.next()) {
+        count++;
         QJsonObject appointment;
         appointment["id"] = query.value("id").toInt();
         appointment["patient_username"] = query.value("patient_username").toString();
@@ -1024,15 +1031,25 @@ bool DBManager::getAppointmentsByDoctor(const QString& doctorUsername, QJsonArra
         appointment["patient_age"] = query.value("patient_age").toInt();
         appointment["patient_phone"] = query.value("patient_phone").toString();
         appointment["patient_gender"] = query.value("patient_gender").toString();
-        appointment["patient_birth_date"] = query.value("patient_birth_date").toString();
         appointment["doctor_name"] = query.value("doctor_name").toString();
         appointment["doctor_title"] = query.value("doctor_title").toString();
         appointment["doctor_specialization"] = query.value("specialization").toString();
-        appointment["schedule_start_time"] = query.value("schedule_start_time").toString();
-        appointment["schedule_end_time"] = query.value("schedule_end_time").toString();
-        appointment["schedule_max_appointments"] = query.value("schedule_max_appointments").toInt();
+        // 设置默认排班信息，因为可能没有排班数据
+        appointment["schedule_start_time"] = "09:00";
+        appointment["schedule_end_time"] = "17:00";
+        appointment["schedule_max_appointments"] = 10;
         appointments.append(appointment);
     }
+    qDebug() << "[DBManager] 查询完成，找到" << count << "条预约记录";
+    
+    // 添加文件日志
+    QFile logFile3("/tmp/db_debug.log");
+    if (logFile3.open(QIODevice::WriteOnly | QIODevice::Append)) {
+        QTextStream stream(&logFile3);
+        stream << "查询完成，找到 " << count << " 条记录" << Qt::endl;
+        stream << "========================" << Qt::endl;
+    }
+    
     return true;
 }
 
@@ -1064,31 +1081,27 @@ bool DBManager::deleteAppointment(int appointmentId) {
 // 病例管理实现 - 提供基础实现
 bool DBManager::createMedicalRecord(const QJsonObject& recordData) {
     QSqlQuery query(m_db);
-    query.prepare(R"(
+    QString sql = QString(R"(
         INSERT INTO medical_records (
             appointment_id, patient_username, doctor_username, visit_date,
             chief_complaint, present_illness, past_history, physical_examination,
             diagnosis, treatment_plan, notes
         ) VALUES (
-            :appointment_id, :patient_username, :doctor_username, :visit_date,
-            :chief_complaint, :present_illness, :past_history, :physical_examination,
-            :diagnosis, :treatment_plan, :notes
+            %1, '%2', '%3', '%4', '%5', '%6', '%7', '%8', '%9', '%10', '%11'
         )
-    )");
+    )").arg(recordData["appointment_id"].toInt())
+       .arg(recordData["patient_username"].toString())
+       .arg(recordData["doctor_username"].toString())
+       .arg(recordData["visit_date"].toString())
+       .arg(recordData["chief_complaint"].toString())
+       .arg(recordData["present_illness"].toString())
+       .arg(recordData["past_history"].toString())
+       .arg(recordData["physical_examination"].toString())
+       .arg(recordData["diagnosis"].toString())
+       .arg(recordData["treatment_plan"].toString())
+       .arg(recordData["notes"].toString());
     
-    query.bindValue(":appointment_id", recordData["appointment_id"].toInt());
-    query.bindValue(":patient_username", recordData["patient_username"].toString());
-    query.bindValue(":doctor_username", recordData["doctor_username"].toString());
-    query.bindValue(":visit_date", recordData["visit_date"].toString());
-    query.bindValue(":chief_complaint", recordData["chief_complaint"].toString());
-    query.bindValue(":present_illness", recordData["present_illness"].toString());
-    query.bindValue(":past_history", recordData["past_history"].toString());
-    query.bindValue(":physical_examination", recordData["physical_examination"].toString());
-    query.bindValue(":diagnosis", recordData["diagnosis"].toString());
-    query.bindValue(":treatment_plan", recordData["treatment_plan"].toString());
-    query.bindValue(":notes", recordData["notes"].toString());
-    
-    if (!query.exec()) {
+    if (!query.exec(sql)) {
         qDebug() << "createMedicalRecord error:" << query.lastError().text();
         return false;
     }
@@ -1208,38 +1221,43 @@ bool DBManager::updateMedicalRecord(int recordId, const QJsonObject& recordData)
 
 // 医嘱管理实现 - 提供基础实现
 bool DBManager::createMedicalAdvice(const QJsonObject& adviceData) {
+    qDebug() << "createMedicalAdvice called with data:" << adviceData;
+    
     QSqlQuery query(m_db);
-    query.prepare(R"(
+    QString sql = QString(R"(
         INSERT INTO medical_advices (
             record_id, advice_type, content, priority
         ) VALUES (
-            :record_id, :advice_type, :content, :priority
+            %1, '%2', '%3', '%4'
         )
-    )");
+    )").arg(adviceData["record_id"].toInt())
+       .arg(adviceData["advice_type"].toString())
+       .arg(adviceData["content"].toString())
+       .arg(adviceData["priority"].toString());
     
-    query.bindValue(":record_id", adviceData["record_id"].toInt());
-    query.bindValue(":advice_type", adviceData["advice_type"].toString());
-    query.bindValue(":content", adviceData["content"].toString());
-    query.bindValue(":priority", adviceData["priority"].toString());
+    qDebug() << "createMedicalAdvice SQL:" << sql;
     
-    if (!query.exec()) {
+    if (!query.exec(sql)) {
         qDebug() << "createMedicalAdvice error:" << query.lastError().text();
+        qDebug() << "createMedicalAdvice error type:" << query.lastError().type();
+        qDebug() << "createMedicalAdvice error number:" << query.lastError().nativeErrorCode();
         return false;
     }
+    
+    qDebug() << "createMedicalAdvice success, inserted ID:" << query.lastInsertId().toInt();
     return true;
 }
 
 bool DBManager::getMedicalAdviceByRecord(int recordId, QJsonArray& advices) {
     QSqlQuery query(m_db);
-    query.prepare(R"(
+    QString sql = QString(R"(
         SELECT id, advice_type, content, priority, created_at
         FROM medical_advices
-        WHERE record_id = :record_id
+        WHERE record_id = %1
         ORDER BY created_at DESC
-    )");
-    query.bindValue(":record_id", recordId);
+    )").arg(recordId);
     
-    if (!query.exec()) {
+    if (!query.exec(sql)) {
         qDebug() << "getMedicalAdviceByRecord error:" << query.lastError().text();
         return false;
     }
@@ -1281,25 +1299,22 @@ bool DBManager::updateMedicalAdvice(int adviceId, const QJsonObject& adviceData)
 // 处方管理实现 - 提供基础实现
 bool DBManager::createPrescription(const QJsonObject& prescriptionData) {
     QSqlQuery query(m_db);
-    query.prepare(R"(
+    QString sql = QString(R"(
         INSERT INTO prescriptions (
             record_id, patient_username, doctor_username, prescription_date,
             total_amount, status, notes
         ) VALUES (
-            :record_id, :patient_username, :doctor_username, :prescription_date,
-            :total_amount, :status, :notes
+            %1, '%2', '%3', '%4', %5, '%6', '%7'
         )
-    )");
+    )").arg(prescriptionData["record_id"].toInt())
+       .arg(prescriptionData["patient_username"].toString())
+       .arg(prescriptionData["doctor_username"].toString())
+       .arg(prescriptionData["prescription_date"].toString())
+       .arg(prescriptionData["total_amount"].toDouble())
+       .arg(prescriptionData["status"].toString())
+       .arg(prescriptionData["notes"].toString());
     
-    query.bindValue(":record_id", prescriptionData["record_id"].toInt());
-    query.bindValue(":patient_username", prescriptionData["patient_username"].toString());
-    query.bindValue(":doctor_username", prescriptionData["doctor_username"].toString());
-    query.bindValue(":prescription_date", prescriptionData["prescription_date"].toString());
-    query.bindValue(":total_amount", prescriptionData["total_amount"].toDouble());
-    query.bindValue(":status", prescriptionData["status"].toString());
-    query.bindValue(":notes", prescriptionData["notes"].toString());
-    
-    if (!query.exec()) {
+    if (!query.exec(sql)) {
         qDebug() << "createPrescription error:" << query.lastError().text();
         return false;
     }
@@ -1308,27 +1323,24 @@ bool DBManager::createPrescription(const QJsonObject& prescriptionData) {
 
 bool DBManager::addPrescriptionItem(const QJsonObject& itemData) {
     QSqlQuery query(m_db);
-    query.prepare(R"(
+    QString sql = QString(R"(
         INSERT INTO prescription_items (
             prescription_id, medication_id, quantity, dosage,
             frequency, duration, instructions, unit_price, total_price
         ) VALUES (
-            :prescription_id, :medication_id, :quantity, :dosage,
-            :frequency, :duration, :instructions, :unit_price, :total_price
+            %1, %2, %3, '%4', '%5', '%6', '%7', %8, %9
         )
-    )");
+    )").arg(itemData["prescription_id"].toInt())
+       .arg(itemData["medication_id"].toInt())
+       .arg(itemData["quantity"].toInt())
+       .arg(itemData["dosage"].toString())
+       .arg(itemData["frequency"].toString())
+       .arg(itemData["duration"].toString())
+       .arg(itemData["instructions"].toString())
+       .arg(itemData["unit_price"].toDouble())
+       .arg(itemData["total_price"].toDouble());
     
-    query.bindValue(":prescription_id", itemData["prescription_id"].toInt());
-    query.bindValue(":medication_id", itemData["medication_id"].toInt());
-    query.bindValue(":quantity", itemData["quantity"].toInt());
-    query.bindValue(":dosage", itemData["dosage"].toString());
-    query.bindValue(":frequency", itemData["frequency"].toString());
-    query.bindValue(":duration", itemData["duration"].toString());
-    query.bindValue(":instructions", itemData["instructions"].toString());
-    query.bindValue(":unit_price", itemData["unit_price"].toDouble());
-    query.bindValue(":total_price", itemData["total_price"].toDouble());
-    
-    if (!query.exec()) {
+    if (!query.exec(sql)) {
         qDebug() << "addPrescriptionItem error:" << query.lastError().text();
         return false;
     }
@@ -1337,18 +1349,17 @@ bool DBManager::addPrescriptionItem(const QJsonObject& itemData) {
 
 bool DBManager::getPrescriptionsByPatient(const QString& patientUsername, QJsonArray& prescriptions) {
     QSqlQuery query(m_db);
-    query.prepare(R"(
+    QString sql = QString(R"(
         SELECT p.id, p.record_id, p.doctor_username, p.prescription_date,
                p.total_amount, p.status, p.notes,
                d.name as doctor_name, d.title as doctor_title
         FROM prescriptions p
         LEFT JOIN doctors d ON p.doctor_username = d.username
-        WHERE p.patient_username = :patient_username
+        WHERE p.patient_username = '%1'
         ORDER BY p.prescription_date DESC
-    )");
-    query.bindValue(":patient_username", patientUsername);
+    )").arg(patientUsername);
     
-    if (!query.exec()) {
+    if (!query.exec(sql)) {
         qDebug() << "getPrescriptionsByPatient error:" << query.lastError().text();
         return false;
     }

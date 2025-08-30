@@ -21,10 +21,12 @@ private slots:
     void onJsonReceived(const QJsonObject& obj);
     void onSaveRecord();
     void onAddAdvice();
+    void onAddPrescription();
 
 private:
     void requestExistingRecord();
     void requestAdvices();
+    void requestPrescriptions();
     void populateFromRecord(const QJsonObject& record);
 
     QString doctorUsername_;
@@ -43,6 +45,11 @@ private:
     QTextEdit* adviceContentEdit_ {nullptr};
     QPushButton* adviceAddBtn_ {nullptr};
     QListWidget* advicesList_ {nullptr};
+    
+    // prescriptions
+    QLineEdit* prescriptionNotesEdit_ {nullptr};
+    QPushButton* prescriptionAddBtn_ {nullptr};
+    QListWidget* prescriptionsList_ {nullptr};
 
     CommunicationClient* client_ {nullptr};
 };

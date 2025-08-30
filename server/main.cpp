@@ -45,6 +45,7 @@ int main(int argc, char *argv[]) {
         qDebug() << "[MainServer] 收到请求，action:" << action;
 
         DBManager db(DatabaseConfig::getDatabasePath()); // 使用统一的数据库路径配置
+        qDebug() << "[MainServer] 数据库路径:" << DatabaseConfig::getDatabasePath();
 
         // 这些动作由特定模块处理，这里直接返回避免产生 unknown_response 干扰
         if(action == "get_medications" || action == "search_medications" || action == "search_medications_remote"||
@@ -106,12 +107,17 @@ int main(int argc, char *argv[]) {
             }
         } else if (action == "get_appointments_by_doctor") {
             QString username = payload.value("username").toString();
+            qDebug() << "[Server] ===== 最新版本：查询医生预约 ===== 用户名:" << username;
             QJsonArray appointments;
             bool ok = db.getAppointmentsByDoctor(username, appointments);
             responsePayload["type"] = "appointments_response";
             responsePayload["success"] = ok;
             if (ok) {
                 responsePayload["data"] = appointments;
+                qDebug() << "[Server] 查询成功，预约数量:" << appointments.size();
+            } else {
+                responsePayload["error"] = QString("查询医生 %1 的预约失败").arg(username);
+                qDebug() << "[Server] 查询失败，医生用户名:" << username;
             }
         } else if (action == "get_all_doctors") {
             QJsonArray doctors;
@@ -245,9 +251,31 @@ int main(int argc, char *argv[]) {
             QJsonArray advices; bool ok = db.getMedicalAdviceByRecord(payload.value("record_id").toInt(), advices);
             responsePayload["type"] = "medical_advices_response"; responsePayload["success"] = ok; if (ok) responsePayload["data"] = advices;
         } else if (action == "create_medical_advice") {
+            qDebug() << "Received create_medical_advice request with payload:" << payload;
             bool ok = db.createMedicalAdvice(payload.value("data").toObject());
+            qDebug() << "create_medical_advice result:" << ok;
             responsePayload["type"] = "create_medical_advice_response";
             responsePayload["success"] = ok;
+            if (!ok) {
+                responsePayload["message"] = "Failed to create medical advice";
+            }
+        } else if (action == "create_prescription") {
+            qDebug() << "Received create_prescription request with payload:" << payload;
+            bool ok = db.createPrescription(payload.value("data").toObject());
+            qDebug() << "create_prescription result:" << ok;
+            responsePayload["type"] = "create_prescription_response";
+            responsePayload["success"] = ok;
+            if (!ok) {
+                responsePayload["message"] = "Failed to create prescription";
+            }
+        } else if (action == "get_prescriptions_by_patient") {
+            QJsonArray prescriptions;
+            bool ok = db.getPrescriptionsByPatient(payload.value("patient_username").toString(), prescriptions);
+            responsePayload["type"] = "prescriptions_response";
+            responsePayload["success"] = ok;
+            if (ok) {
+                responsePayload["data"] = prescriptions;
+            }
         } else if (action == "get_medications") {
             QJsonArray medications;
             bool ok = db.getMedications(medications);

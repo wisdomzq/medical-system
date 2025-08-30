@@ -9,6 +9,8 @@
 #include <QLabel>
 #include <QJsonArray>
 #include <QGroupBox>
+#include <QMessageBox>
+#include <QDateTime>
 
 #include "core/network/src/client/communicationclient.h"
 #include "core/network/src/protocol.h"
@@ -61,17 +63,33 @@ AppointmentDetailsDialog::AppointmentDetailsDialog(const QString& doctorUsername
     adviceLay->addLayout(adviceForm);
     root->addWidget(adviceBox);
 
+    // prescriptions panel
+    auto* prescriptionBox = new QGroupBox(tr("处方"), this);
+    auto* prescriptionLay = new QVBoxLayout(prescriptionBox);
+    prescriptionsList_ = new QListWidget(prescriptionBox);
+    prescriptionLay->addWidget(prescriptionsList_);
+    auto* prescriptionForm = new QHBoxLayout();
+    prescriptionNotesEdit_ = new QLineEdit(prescriptionBox); 
+    prescriptionNotesEdit_->setPlaceholderText(tr("处方备注"));
+    prescriptionAddBtn_ = new QPushButton(tr("开具处方"), prescriptionBox);
+    prescriptionForm->addWidget(prescriptionNotesEdit_);
+    prescriptionForm->addWidget(prescriptionAddBtn_);
+    prescriptionLay->addLayout(prescriptionForm);
+    root->addWidget(prescriptionBox);
+
     client_ = new CommunicationClient(this);
     connect(client_, &CommunicationClient::connected, this, &AppointmentDetailsDialog::onConnected);
     connect(client_, &CommunicationClient::jsonReceived, this, &AppointmentDetailsDialog::onJsonReceived);
     connect(saveBtn_, &QPushButton::clicked, this, &AppointmentDetailsDialog::onSaveRecord);
     connect(adviceAddBtn_, &QPushButton::clicked, this, &AppointmentDetailsDialog::onAddAdvice);
+    connect(prescriptionAddBtn_, &QPushButton::clicked, this, &AppointmentDetailsDialog::onAddPrescription);
     client_->connectToServer("127.0.0.1", Protocol::SERVER_PORT);
 }
 
 void AppointmentDetailsDialog::onConnected() {
     requestExistingRecord();
     requestAdvices();
+    requestPrescriptions();
 }
 
 void AppointmentDetailsDialog::requestExistingRecord() {
@@ -109,6 +127,7 @@ void AppointmentDetailsDialog::onJsonReceived(const QJsonObject& obj) {
         requestAdvices();
     } else if (type == "create_medical_record_response") {
         if (obj.value("success").toBool()) {
+            QMessageBox::information(this, "保存成功", "病例记录已成功创建！");
             if (obj.contains("record_id") && obj.value("record_id").toInt() > 0) {
                 recordId_ = obj.value("record_id").toInt();
                 requestAdvices();
@@ -116,9 +135,15 @@ void AppointmentDetailsDialog::onJsonReceived(const QJsonObject& obj) {
                 // 无返回ID，则重新拉取以定位新建的记录
                 requestExistingRecord();
             }
+        } else {
+            QMessageBox::warning(this, "保存失败", "病例记录创建失败：" + obj.value("message").toString());
         }
     } else if (type == "update_medical_record_response") {
-        // 可提示成功
+        if (obj.value("success").toBool()) {
+            QMessageBox::information(this, "保存成功", "病例记录已成功更新！");
+        } else {
+            QMessageBox::warning(this, "保存失败", "病例记录更新失败：" + obj.value("message").toString());
+        }
     } else if (type == "medical_advices_response") {
         advicesList_->clear();
         for (const auto& v : obj.value("data").toArray()) {
@@ -126,7 +151,37 @@ void AppointmentDetailsDialog::onJsonReceived(const QJsonObject& obj) {
             advicesList_->addItem(QString("[%1|%2] %3").arg(a.value("advice_type").toString(), a.value("priority").toString(), a.value("content").toString()));
         }
     } else if (type == "create_medical_advice_response") {
-        if (obj.value("success").toBool()) requestAdvices();
+        qDebug() << "Received create_medical_advice_response:" << obj;
+        if (obj.value("success").toBool()) {
+            QMessageBox::information(this, "保存成功", "医嘱已成功添加！");
+            requestAdvices();
+            // 清空医嘱输入框
+            adviceTypeEdit_->clear();
+            adviceContentEdit_->clear();
+            advicePriorityEdit_->clear();
+        } else {
+            QMessageBox::warning(this, "保存失败", "医嘱添加失败：" + obj.value("message").toString());
+        }
+    } else if (type == "prescriptions_response") {
+        prescriptionsList_->clear();
+        for (const auto& v : obj.value("data").toArray()) {
+            const auto p = v.toObject();
+            prescriptionsList_->addItem(QString("[%1] %2 - %3").arg(
+                p.value("prescription_date").toString(),
+                p.value("status").toString(),
+                p.value("notes").toString()
+            ));
+        }
+    } else if (type == "create_prescription_response") {
+        qDebug() << "Received create_prescription_response:" << obj;
+        if (obj.value("success").toBool()) {
+            QMessageBox::information(this, "保存成功", "处方已成功开具！");
+            requestPrescriptions();
+            // 清空处方输入框
+            prescriptionNotesEdit_->clear();
+        } else {
+            QMessageBox::warning(this, "保存失败", "处方开具失败：" + obj.value("message").toString());
+        }
     }
 }
 
@@ -154,11 +209,45 @@ void AppointmentDetailsDialog::onSaveRecord() {
 }
 
 void AppointmentDetailsDialog::onAddAdvice() {
-    if (recordId_ < 0) return; // 需先保存病历
+    qDebug() << "onAddAdvice called, recordId_:" << recordId_;
+    if (recordId_ < 0) {
+        qDebug() << "recordId_ < 0, showing warning message";
+        QMessageBox::warning(this, "提示", "请先保存病历记录后再添加医嘱！");
+        return; // 需先保存病历
+    }
     QJsonObject data{{"record_id", recordId_},
                     {"advice_type", adviceTypeEdit_->text()},
                     {"content", adviceContentEdit_->toPlainText()},
                     {"priority", advicePriorityEdit_->text()}};
+    qDebug() << "Sending create_medical_advice with data:" << data;
     QJsonObject req{{"action", "create_medical_advice"}, {"data", data}};
+    client_->sendJson(req);
+}
+
+void AppointmentDetailsDialog::requestPrescriptions() {
+    if (recordId_ < 0) return; // 无记录则跳过
+    QJsonObject req{{"action", "get_prescriptions_by_patient"}, {"patient_username", appt_.value("patient_username").toString()}};
+    client_->sendJson(req);
+}
+
+void AppointmentDetailsDialog::onAddPrescription() {
+    qDebug() << "onAddPrescription called, recordId_:" << recordId_;
+    if (recordId_ < 0) {
+        QMessageBox::warning(this, "提示", "请先保存病历记录后再开具处方！");
+        return;
+    }
+    
+    QJsonObject data{
+        {"record_id", recordId_},
+        {"patient_username", appt_.value("patient_username").toString()},
+        {"doctor_username", doctorUsername_},
+        {"prescription_date", QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss")},
+        {"total_amount", 0.0},
+        {"status", "pending"},
+        {"notes", prescriptionNotesEdit_->text()}
+    };
+    
+    qDebug() << "Sending create_prescription with data:" << data;
+    QJsonObject req{{"action", "create_prescription"}, {"data", data}};
     client_->sendJson(req);
 }
