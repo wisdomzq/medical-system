@@ -3,6 +3,7 @@
 #include "core/database/database_config.h"
 #include "core/network/src/server/messagerouter.h"
 #include "core/network/src/protocol.h"
+#include "core/logging/logging.h"
 #include <QJsonArray>
 #include <QDebug>
 #include <QSqlQuery>
@@ -118,10 +119,10 @@ void DoctorInfoModule::onRequestReceived(const QJsonObject& payload) {
     QJsonObject response = handleDoctorInfoRequest(payload);
     
     // 添加 request_uuid 用于回复路由
-    if (payload.contains("request_uuid")) {
-        response["request_uuid"] = payload["request_uuid"];
+    if (payload.contains("uuid")) {
+        response["request_uuid"] = payload.value("uuid").toString();
     }
-    
+    Log::response("DoctorInfo", response);
     // 通过消息路由器回复
     MessageRouter::instance().onBusinessResponse(
         Protocol::MessageType::JsonResponse,

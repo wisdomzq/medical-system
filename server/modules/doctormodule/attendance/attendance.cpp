@@ -5,6 +5,8 @@
 #include <QTime>
 
 QJsonObject DoctorAttendanceModule::handle(const QJsonObject &request) {
+	qDebug() << "[DoctorAttendanceModule] Let's handle request!";
+
 	const QString action = request.value("action").toString();
 	if (action == "doctor_checkin") return handleCheckin(request);
 	if (action == "doctor_leave") return handleLeave(request);

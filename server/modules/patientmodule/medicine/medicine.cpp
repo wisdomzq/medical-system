@@ -3,6 +3,7 @@
 #include "core/database/database_config.h"
 #include "core/network/src/protocol.h"
 #include "core/network/src/server/messagerouter.h"
+#include "core/logging/logging.h"
 #include <QDateTime>
 #include <QDir>
 #include <QFile>
@@ -278,5 +279,6 @@ void MedicineModule::sendResponse(QJsonObject resp, const QJsonObject& orig)
 {
     if (orig.contains("uuid"))
         resp["request_uuid"] = orig.value("uuid").toString();
+    Log::response("Medicine", resp);
     MessageRouter::instance().onBusinessResponse(Protocol::MessageType::JsonResponse, resp);
 }

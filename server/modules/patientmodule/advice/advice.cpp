@@ -3,6 +3,7 @@
 #include "core/database/database_config.h"
 #include "core/network/src/server/messagerouter.h"
 #include "core/network/src/protocol.h"
+#include "core/logging/logging.h"
 #include <QJsonArray>
 #include <QDebug>
 
@@ -153,7 +154,7 @@ void AdviceModule::onRequestReceived(const QJsonObject& payload) {
         if (payload.contains("uuid")) {
             response["request_uuid"] = payload.value("uuid").toString();
         }
-        
+    Log::response("Advice", response);
         // 发送响应
         MessageRouter::instance().onBusinessResponse(Protocol::MessageType::JsonResponse, response);
     }

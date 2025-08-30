@@ -30,7 +30,7 @@ void ClientHandler::sendMessage(MessageType type, const QJsonObject& obj)
         return;
     QByteArray payload = toJsonPayload(obj);
     QByteArray data = pack(type, payload);
-    qInfo() << "[Handler] 发送消息 type=" << (quint16)type << ", 总字节=" << data.size();
+    // qInfo() << "[Handler] 发送消息 type=" << (quint16)type << ", 总字节=" << data.size();
     m_socket->write(data);
 }
 
@@ -76,7 +76,7 @@ void ClientHandler::onReadyRead()
     if (!m_socket)
         return;
     QByteArray chunk = m_socket->readAll();
-    qInfo() << "[Handler] 收到数据块 长度=" << chunk.size();
+    // qInfo() << "[Handler] 收到数据块 长度=" << chunk.size();
     m_buffer.append(chunk);
 
     while (true) {
@@ -88,8 +88,8 @@ void ClientHandler::onReadyRead()
                 break;
             m_buffer.remove(0, consumed);
             m_state = ParseState::WAITING_FOR_PAYLOAD;
-            qInfo() << "[Handler] 已解析头部 type=" << (quint16)m_currentHeader.type
-                    << ", payloadSize=" << m_currentHeader.payloadSize;
+            // qInfo() << "[Handler] 已解析头部 type=" << (quint16)m_currentHeader.type
+            //         << ", payloadSize=" << m_currentHeader.payloadSize;
         }
 
         if (m_state == ParseState::WAITING_FOR_PAYLOAD) {
@@ -103,7 +103,7 @@ void ClientHandler::onReadyRead()
 
             // reset state
             m_state = ParseState::WAITING_FOR_HEADER;
-            qInfo() << "[Handler] 一条完整报文处理完成";
+            // qInfo() << "[Handler] 一条完整报文处理完成";
         }
     }
 }

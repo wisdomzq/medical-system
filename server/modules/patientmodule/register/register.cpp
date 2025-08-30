@@ -137,6 +137,10 @@ QJsonObject RegisterManager::doctorScheduleToJson(const DoctorSchedule& ds) {
 void RegisterManager::onRequest(const QJsonObject& payload) {
     const QString action = payload.value("action").toString(payload.value("type").toString());
     qDebug() << "[RegisterManager] 收到请求，action:" << action;
+    qDebug() << "[RegisterManager] uuid=" << payload.value("uuid").toString()
+             << ", doctor_name=" << payload.value("doctor_name").toString()
+             << ", doctorId=" << payload.value("doctorId").toInt()
+             << ", patientName=" << payload.value("patientName").toString();
     
     // 只处理挂号相关的动作
     if (action != "get_doctor_schedule" && action != "register_doctor") {
@@ -149,7 +153,8 @@ void RegisterManager::onRequest(const QJsonObject& payload) {
         auto list = getAllDoctorSchedules();
         QJsonArray arr; for (auto &ds : list) arr.append(doctorScheduleToJson(ds));
         QJsonObject resp; resp["type"] = "doctor_schedule_response"; resp["success"] = true; resp["data"] = arr;
-        if (payload.contains("uuid")) resp["request_uuid"] = payload.value("uuid").toString();
+    if (payload.contains("uuid")) resp["request_uuid"] = payload.value("uuid").toString();
+    qDebug() << "[RegisterManager] 回传 doctor_schedule_response request_uuid=" << resp.value("request_uuid").toString();
         emit businessResponseReady(resp);
     } else if (action == "register_doctor") {
         qDebug() << "[RegisterManager] 处理挂号请求...";
@@ -210,9 +215,9 @@ void RegisterManager::onRequest(const QJsonObject& payload) {
             resp["patient_name"] = patientName;
         }
         
-        if (payload.contains("uuid")) {
-            resp["request_uuid"] = payload.value("uuid").toString();
-        }
+    if (payload.contains("uuid")) { resp["request_uuid"] = payload.value("uuid").toString(); }
+    qDebug() << "[RegisterManager] 回传 register_doctor_response success=" << ok
+         << ", request_uuid=" << resp.value("request_uuid").toString();
         
         emit businessResponseReady(resp);
     }

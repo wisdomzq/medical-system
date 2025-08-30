@@ -3,6 +3,7 @@
 #include "core/network/src/protocol.h"
 #include "core/database/database.h"
 #include "core/database/database_config.h"
+#include "core/logging/logging.h"
 #include <QJsonArray>
 #include <QDebug>
 
@@ -17,11 +18,19 @@ void MedicalRecordModule::onRequest(const QJsonObject &payload)
     const QString action = payload.value("action").toString();
     qInfo() << "[MedicalRecordModule] 收到动作" << action;
     
-    if (action == "get_medical_records") {
+    if (action == "get_medical_records" || action == "get_medical_records_by_patient") {
         return handleGetMedicalRecords(payload);
     }
     if (action == "get_medical_record_details") {
         return handleGetMedicalRecordDetails(payload);
+    }
+    if (action == "get_medical_records_by_doctor") {
+        // 兼容旧接口名称，直接透传到 DBManager 的医生查询
+        QJsonObject resp; resp["type"] = "medical_records_response";
+        DBManager db(DatabaseConfig::getDatabasePath());
+        QJsonArray records; bool ok = db.getMedicalRecordsByDoctor(payload.value("doctor_username").toString(), records);
+        resp["success"] = ok; if (ok) resp["data"] = records; else resp["error"] = "获取医生病例记录失败";
+        return sendResponse(resp, payload);
     }
 }
 
@@ -100,6 +109,6 @@ void MedicalRecordModule::sendResponse(QJsonObject resp, const QJsonObject &orig
     if (orig.contains("uuid")) {
         resp["request_uuid"] = orig.value("uuid").toString();
     }
-    
+    Log::response("MedicalRecord", resp);
     MessageRouter::instance().onBusinessResponse(Protocol::MessageType::JsonResponse, resp);
 }

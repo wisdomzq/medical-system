@@ -3,6 +3,7 @@
 #include "core/network/src/protocol.h"
 #include "core/database/database.h"
 #include "core/database/database_config.h"
+#include "core/logging/logging.h"
 #include <QJsonArray>
 #include <QDebug>
 
@@ -109,5 +110,6 @@ void PrescriptionModule::handleGetDetails(const QJsonObject &payload) {
 
 void PrescriptionModule::sendResponse(QJsonObject resp, const QJsonObject &orig) {
     if (orig.contains("uuid")) resp["request_uuid"] = orig.value("uuid").toString();
+    Log::response("Prescription", resp);
     MessageRouter::instance().onBusinessResponse(Protocol::MessageType::JsonResponse, resp);
 }

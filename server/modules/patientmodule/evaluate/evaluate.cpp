@@ -2,6 +2,7 @@
 #include "core/network/src/server/messagerouter.h"
 #include "core/network/src/protocol.h"
 #include "core/database/database_config.h"
+#include "core/logging/logging.h"
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QJsonDocument>
@@ -116,5 +117,6 @@ bool EvaluateModule::updateBalance(const QString &patientUsername, double delta,
 
 void EvaluateModule::sendResponse(QJsonObject resp, const QJsonObject &orig) {
     if(orig.contains("uuid")) resp["request_uuid"] = orig.value("uuid").toString();
+    Log::response("Evaluate", resp);
     MessageRouter::instance().onBusinessResponse(Protocol::MessageType::JsonResponse, resp);
 }

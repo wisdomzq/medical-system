@@ -21,8 +21,8 @@ MessageRouter::MessageRouter(QObject* parent)
 
 void MessageRouter::onRequestReady(ClientHandler* sender, Header header, QJsonObject payload)
 {
-    qInfo() << "[Dispatcher] 收到请求，type=" << (quint16)header.type
-            << ", keys=" << payload.keys().size();
+    // qInfo() << "[Dispatcher] 收到请求，type=" << (quint16)header.type
+    //         << ", keys=" << payload.keys().size();
     switch (header.type) {
     case MessageType::JsonRequest:
         qInfo() << "[Router] 广播JSON请求给业务层";
@@ -31,7 +31,7 @@ void MessageRouter::onRequestReady(ClientHandler* sender, Header header, QJsonOb
     case MessageType::HeartbeatPing: {
         // 心跳无需 JSON 载荷
         emit responseReady(sender, MessageType::HeartbeatPong, QJsonObject());
-        qInfo() << "[Router] 已回复心跳PONG";
+        // qInfo() << "[Router] 已回复心跳PONG";
         break;
     }
     default: {

@@ -14,6 +14,7 @@ set(srcs
     core/network/src/server/clienthandler.cpp
     core/network/src/server/messagerouter.cpp
     modules/loginmodule/loginmodule.cpp
+    modules/loginmodule/loginrouter.cpp
     modules/patientmodule/register/register.cpp
     modules/patientmodule/medicine/medicine.cpp
     modules/patientmodule/evaluate/evaluate.cpp
@@ -21,9 +22,15 @@ set(srcs
     modules/patientmodule/advice/advice.cpp
     modules/patientmodule/doctorinfo/doctorinfo.cpp
     modules/patientmodule/medicalrecord/medicalrecord.cpp
+    modules/patientmodule/doctorlist/doctorlist.cpp
+    modules/patientmodule/patientinfo/patientinfo.cpp
+    modules/patientmodule/appointment/appointment.cpp
+    modules/patientmodule/hospitalization/hospitalization.cpp
+    modules/medicalcrud/medicalcrud.cpp
     modules/doctormodule/profile/profile.cpp
     modules/doctormodule/assignment/assignment.cpp
     modules/doctormodule/attendance/attendance.cpp
+    modules/doctormodule/router/router.cpp
 )
 
 add_executable(server
