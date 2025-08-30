@@ -60,5 +60,3 @@ link.txt
 DependInfo.cmake
 AutogenInfo.json
 ParseCache.txt
-
-CMakeLists.txt
