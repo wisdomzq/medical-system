@@ -22,11 +22,9 @@ AttendanceWidget::AttendanceWidget(const QString& doctorName, QWidget* parent)
 
     // 顶部导航按钮
     auto* nav = new QHBoxLayout();
-    btnBack_ = new QPushButton(tr("返回"), this);
     btnCheckIn_ = new QPushButton(tr("日常打卡"), this);
     btnLeave_ = new QPushButton(tr("请假"), this);
     btnCancel_ = new QPushButton(tr("销假"), this);
-    nav->addWidget(btnBack_);
     nav->addStretch();
     nav->addWidget(btnCheckIn_);
     nav->addWidget(btnLeave_);
@@ -105,7 +103,6 @@ AttendanceWidget::AttendanceWidget(const QString& doctorName, QWidget* parent)
     root->addWidget(stack_);
 
     // 连接信号
-    connect(btnBack_, &QPushButton::clicked, this, &AttendanceWidget::backRequested);
     connect(btnCheckIn_, &QPushButton::clicked, this, &AttendanceWidget::showCheckIn);
     connect(btnLeave_, &QPushButton::clicked, this, &AttendanceWidget::showLeave);
     connect(btnCancel_, &QPushButton::clicked, this, &AttendanceWidget::showCancelLeave);

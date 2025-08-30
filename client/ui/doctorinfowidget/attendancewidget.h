@@ -16,9 +16,6 @@ class AttendanceWidget : public QWidget {
 public:
     explicit AttendanceWidget(const QString& doctorName, QWidget* parent=nullptr);
 
-signals:
-    void backRequested();
-
 private slots:
     void showCheckIn();
     void showLeave();
@@ -37,7 +34,6 @@ private:
     QPushButton* btnCheckIn_ {nullptr};
     QPushButton* btnLeave_ {nullptr};
     QPushButton* btnCancel_ {nullptr};
-    QPushButton* btnBack_ {nullptr};
 
     // 打卡页
     QPushButton* btnDoCheckIn_ {nullptr};

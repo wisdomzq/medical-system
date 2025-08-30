@@ -1,0 +1,53 @@
+/* 登录界面专属样式（仅 LoginWidget 加载） */
+
+QWidget#LoginRoot { /* 可用于外层容器（可选）*/
+	background: #f7f9fc;
+}
+
+/* 大气标题 */
+QLabel#LoginTitle {
+	color: #0d47a1;
+	font-size: 36px;    /* 更大字号 */
+	font-weight: 800;   /* 更强字重 */
+	letter-spacing: 6px;
+	padding: 28px 0;
+}
+
+/* 按钮与输入 */
+QPushButton {
+	background: #1976d2;
+	color: #fff;
+	border: none;
+	border-radius: 6px;
+	padding: 8px 16px;
+}
+QPushButton:hover { background: #1565c0; }
+QPushButton:pressed { background: #0d47a1; }
+
+QLineEdit {
+	background: #fff;
+	border: 1px solid #d0d7de;
+	border-radius: 6px;
+	padding: 6px 10px;
+}
+
+/* 表单行标题 */
+QLabel { color: #374151; }
+
+/* 身份选择按钮（图标在上文字在下） */
+QToolButton#RoleButton {
+	background: #ffffff;
+	border: 1px solid #d0d7de;
+	border-radius: 12px;
+	padding: 16px 18px;
+	min-width: 160px;
+	color: #374151;
+	font-size: 16px;
+}
+QToolButton#RoleButton:hover { border-color: #1976d2; background: #f6faff; }
+QToolButton#RoleButton:checked {
+	border: 2px solid #1976d2;
+	background: #eef5ff;
+	color: #0d47a1;
+	font-weight: 600;
+}

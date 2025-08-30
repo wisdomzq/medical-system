@@ -7,10 +7,18 @@
 #include <QMessageBox>
 #include <QJsonObject>
 #include <QJsonDocument>
+#include <QToolButton>
+#include <QButtonGroup>
 
 LoginWidget::LoginWidget(QWidget* parent)
     : QWidget(parent)
 {
+    // 仅登录界面应用本地样式
+    setObjectName("LoginRoot");
+    QFile qss(":/login.qss");
+    if (qss.open(QIODevice::ReadOnly)) {
+        setStyleSheet(QString::fromUtf8(qss.readAll()));
+    }
     m_communicationClient = new CommunicationClient(this);
     connect(m_communicationClient, &CommunicationClient::connected, this, [this](){
         QMessageBox::information(this, "连接成功", "已成功连接到服务器。");
@@ -37,16 +45,27 @@ LoginWidget::LoginWidget(QWidget* parent)
     userTypeLabel->setFont(userTypeFont);
     userTypeLabel->setAlignment(Qt::AlignCenter);
 
-    QPushButton* selectDoctorBtn = new QPushButton("医生", this);
-    QPushButton* selectPatientBtn = new QPushButton("病人", this);
-    selectDoctorBtn->setFixedSize(120, 40);
-    selectPatientBtn->setFixedSize(120, 40);
+    // 身份卡片使用 QToolButton：图标在上、文字在下，可选中高亮
+    auto makeRoleBtn = [&](const QString &title, const QString &icon){
+        QToolButton *btn = new QToolButton(this);
+        btn->setObjectName("RoleButton");
+        btn->setText(title);
+        btn->setIcon(QIcon(icon));
+        btn->setIconSize(QSize(96,96));
+        btn->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+        btn->setCheckable(true);
+        btn->setAutoExclusive(true); // 在同一父容器下实现互斥
+        return btn;
+    };
+
+    QToolButton *doctorBtn = makeRoleBtn("医生", ":/icons/医生.svg");
+    QToolButton *patientBtn = makeRoleBtn("病人", ":/icons/病人.svg");
 
     QHBoxLayout* btnLayout = new QHBoxLayout();
     btnLayout->addStretch();
-    btnLayout->addWidget(selectDoctorBtn);
+    btnLayout->addWidget(doctorBtn);
     btnLayout->addSpacing(40);
-    btnLayout->addWidget(selectPatientBtn);
+    btnLayout->addWidget(patientBtn);
     btnLayout->addStretch();
 
     selectionLayout->addStretch();
@@ -168,8 +187,9 @@ LoginWidget::LoginWidget(QWidget* parent)
 
     // --- Connect signals and slots ---
     // Navigation
-    connect(selectDoctorBtn, &QPushButton::clicked, this, &LoginWidget::showDoctorLogin);
-    connect(selectPatientBtn, &QPushButton::clicked, this, &LoginWidget::showPatientLogin);
+    // 选择后进入对应登录页
+    connect(doctorBtn, &QToolButton::clicked, this, [this]{ showDoctorLogin(); });
+    connect(patientBtn, &QToolButton::clicked, this, [this]{ showPatientLogin(); });
     connect(goToDoctorRegisterButton, &QPushButton::clicked, this, &LoginWidget::showDoctorRegister);
     connect(goToPatientRegisterButton, &QPushButton::clicked, this, &LoginWidget::showPatientRegister);
     connect(backToDoctorLoginButton, &QPushButton::clicked, this, &LoginWidget::showDoctorLogin);
@@ -188,12 +208,10 @@ LoginWidget::~LoginWidget() {}
 
 QLabel* LoginWidget::createTitleLabel() {
     QLabel* titleLabel = new QLabel("智慧医疗系统");
-    QFont titleFont;
-    titleFont.setPointSize(32);
-    titleFont.setBold(true);
-    titleLabel->setFont(titleFont);
+    titleLabel->setObjectName("LoginTitle");
+    // 最小兜底：若 QSS 未加载，也有较大字号
+    QFont f; f.setPointSize(34); f.setBold(true); titleLabel->setFont(f);
     titleLabel->setAlignment(Qt::AlignCenter);
-    titleLabel->setStyleSheet("color: #1976d2; letter-spacing: 4px; padding: 24px 0; background: transparent;");
     return titleLabel;
 }
 

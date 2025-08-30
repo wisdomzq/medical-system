@@ -10,7 +10,6 @@ set(srcs
     ui/loginwidget/loginwidget.cpp
     ui/doctorinfowidget/doctorinfowidget.cpp
     ui/doctorinfowidget/attendancewidget.cpp
-    ui/doctorinfowidget/checkinwidget.cpp
     ui/doctorinfowidget/chatroomwidget.cpp
     ui/doctorinfowidget/profilewidget.cpp
     ui/doctorinfowidget/appointmentswidget.cpp

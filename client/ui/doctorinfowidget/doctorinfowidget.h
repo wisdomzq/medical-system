@@ -3,7 +3,8 @@
 
 #include <QWidget>
 
-class QTabWidget;
+class QListWidget;
+class QStackedWidget;
 
 // 医生端主界面容器：聚合多个业务模块为 Tab
 class DoctorInfoWidget : public QWidget
@@ -18,7 +19,8 @@ signals:
     void backToLogin();
 
 private:
-    QTabWidget *tabWidget {nullptr};
+    QListWidget *navList {nullptr};
+    QStackedWidget *pages {nullptr};
     QString m_doctorName;
 };
 
