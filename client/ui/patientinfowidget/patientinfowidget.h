@@ -15,6 +15,7 @@ class DoctorInfoPage;
 class AdvicePage;
 class PrescriptionPage;
 class HealthAssessmentPage;
+class EvaluatePage;
 class MedicationSearchPage;
 class HospitalPage;
 
@@ -40,6 +41,7 @@ private:
     AdvicePage *m_advicePage = nullptr;
     PrescriptionPage *m_prescriptionPage = nullptr;
     HealthAssessmentPage *m_healthAssessmentPage = nullptr;
+    EvaluatePage *m_evaluatePage = nullptr;
     MedicationSearchPage *m_medicationSearchPage = nullptr;
     HospitalPage *m_hospitalPage = nullptr; // 新住院页面
 

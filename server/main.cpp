@@ -6,6 +6,7 @@
 #include "core/network/src/server/messagerouter.h"
 #include "modules/loginmodule/loginmodule.h"
 #include "modules/patientmodule/medicine/medicine.h"
+#include "modules/patientmodule/evaluate/evaluate.h"
 #include "core/database/database.h"
 #include "core/database/database_config.h"
 
@@ -16,6 +17,8 @@ int main(int argc, char *argv[]) {
     CommunicationServer server;
     LoginModule loginModule;
     MedicineModule medicineModule; // 负责药品相关请求
+    EvaluateModule evaluateModule; // 负责评价相关请求
+    
 
     QObject::connect(&MessageRouter::instance(), &MessageRouter::requestReceived,
                      [&](const QJsonObject &payload) {
@@ -25,7 +28,7 @@ int main(int argc, char *argv[]) {
         DBManager db(DatabaseConfig::getDatabasePath()); // 使用统一的数据库路径配置
 
         // 这些动作由 MedicineModule 处理，这里直接返回避免产生 unknown_response 干扰
-        if(action == "get_medications" || action == "search_medications" || action == "search_medications_remote") {
+        if(action == "get_medications" || action == "search_medications" || action == "search_medications_remote"||action.startsWith("evaluate_")) {
             return; // 不发送重复响应
         }
 

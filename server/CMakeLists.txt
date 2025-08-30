@@ -16,6 +16,7 @@ set(srcs
     modules/loginmodule/loginmodule.cpp
     modules/patientmodule/register/register.cpp
     modules/patientmodule/medicine/medicine.cpp
+    modules/patientmodule/evaluate/evaluate.cpp
 )
 
 add_executable(server

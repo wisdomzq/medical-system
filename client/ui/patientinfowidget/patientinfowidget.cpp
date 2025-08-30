@@ -6,6 +6,7 @@
 #include "placeholderpages.h"
 #include "hospitalpage.h"
 #include "medicationpage.h"
+#include "evaluatepage.h"
 #include <QVBoxLayout>
 #include <QTabWidget>
 #include <QJsonObject>
@@ -27,7 +28,7 @@ PatientInfoWidget::PatientInfoWidget(const QString &patientName, QWidget *parent
     m_doctorInfoPage = new DoctorInfoPage(m_communicationClient, m_patientName, this);
     m_advicePage = new AdvicePage(m_communicationClient, m_patientName, this);
     m_prescriptionPage = new PrescriptionPage(m_communicationClient, m_patientName, this);
-    m_healthAssessmentPage = new HealthAssessmentPage(m_communicationClient, m_patientName, this);
+    m_evaluatePage = new EvaluatePage(m_communicationClient, m_patientName, this);
     m_medicationSearchPage = new MedicationSearchPage(m_communicationClient, m_patientName, this);
     m_hospitalPage = new HospitalPage(m_communicationClient, m_patientName, this); // 新实际页面
 
@@ -38,7 +39,7 @@ PatientInfoWidget::PatientInfoWidget(const QString &patientName, QWidget *parent
     tabWidget->addTab(m_doctorInfoPage, "查看医生信息");
     tabWidget->addTab(m_advicePage, "医嘱");
     tabWidget->addTab(m_prescriptionPage, "处方");
-    tabWidget->addTab(m_healthAssessmentPage, "健康评估");
+    tabWidget->addTab(m_evaluatePage, "评估与充值");
     tabWidget->addTab(m_medicationSearchPage, "药品搜索");
     tabWidget->addTab(m_hospitalPage, "住院信息");
 
@@ -56,6 +57,8 @@ PatientInfoWidget::PatientInfoWidget(const QString &patientName, QWidget *parent
             m_hospitalPage->handleResponse(obj);
         if (type == "medications_response")
             m_medicationSearchPage->handleResponse(obj);
+        if (type.startsWith("evaluate_"))
+            m_evaluatePage->handleResponse(obj);
     });
 }
 
