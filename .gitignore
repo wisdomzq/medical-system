@@ -3,8 +3,8 @@ build/
 
 # Executables
 hello
-server
-client
+./server
+./client
 medical-system
 
 # CMake generated files

@@ -82,13 +82,7 @@ public:
     // 新增重载方法
     QString getUserRole(const QString& username);
 
-<<<<<<< HEAD:server/core/database/database.h
-=======
-    // 住院信息
-    bool createHospitalization(const QJsonObject &data); // {patient_username, doctor_username, ward_number, bed_number, admission_date}
-    bool getHospitalizationsByPatient(const QString &patientUsername, QJsonArray &list); // 查看本人住院记录
-    bool getAllHospitalizations(QJsonArray &list); // 管理/医生端汇总
-    bool getHospitalizationsByDoctor(const QString &doctorUsername, QJsonArray &list);
+    // 住院信息（统一采用上方“住院管理”的新接口）
 
     // 考勤与请假
     bool createAttendanceRecord(const QJsonObject &data); // {doctor_username, checkin_date, checkin_time}
@@ -97,7 +91,6 @@ public:
     bool cancelLeaveById(int leaveId);                    // 将 status 置为 'cancelled'
     bool cancelActiveLeaveForDoctor(const QString &doctorUsername); // 取消最近一条 active
 
->>>>>>> f054b07 (WIP: attendance/leave/cancel feature + DB tables + routing + UI wiring):server/core/database/database1.h
 private:
     QSqlDatabase m_db;
     void initDatabase();

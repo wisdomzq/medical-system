@@ -41,13 +41,9 @@ void DBManager::initDatabase() {
     createPrescriptionItemsTable();
     createMedicationsTable();
     createDoctorSchedulesTable();
-<<<<<<< HEAD:server/core/database/database.cpp
     createHospitalizationsTable(); // 添加住院表
-=======
-    createHospitalizationsTable();
     createAttendanceTable();
     createLeaveRequestsTable();
->>>>>>> f054b07 (WIP: attendance/leave/cancel feature + DB tables + routing + UI wiring):server/core/database/database1.cpp
     
     // 插入示例数据
     insertSampleDoctors();
@@ -335,8 +331,6 @@ void DBManager::createHospitalizationsTable() {
     }
 }
 
-<<<<<<< HEAD:server/core/database/database.cpp
-=======
 void DBManager::createAttendanceTable() {
     if (!m_db.tables().contains(QStringLiteral("attendance"))) {
         QSqlQuery query(m_db);
@@ -440,41 +434,8 @@ bool DBManager::cancelActiveLeaveForDoctor(const QString &doctorUsername) {
     return q.numRowsAffected() > 0;
 }
 
-bool DBManager::createHospitalization(const QJsonObject &data) {
-    QSqlQuery q(m_db);
-    q.prepare(R"(INSERT INTO hospitalizations (patient_username, doctor_username, ward_number, bed_number, admission_date, discharge_date, status)
-                VALUES (:p, :d, :w, :b, :ad, :dd, :st))");
-    q.bindValue(":p", data.value("patient_username").toString());
-    q.bindValue(":d", data.value("doctor_username").toString());
-    q.bindValue(":w", data.value("ward_number").toString());
-    q.bindValue(":b", data.value("bed_number").toString());
-    q.bindValue(":ad", data.value("admission_date").toString());
-    q.bindValue(":dd", data.value("discharge_date").toString());
-    q.bindValue(":st", data.value("status").toString().isEmpty()? QString("active") : data.value("status").toString());
-    if(!q.exec()) { qDebug() << "createHospitalization error:" << q.lastError().text(); return false; }
-    return true;
-}
+// 移除旧版住院接口的重复实现，统一使用下方新版实现
 
-static bool fetchHospitalizations(QSqlDatabase &db, QSqlQuery &q, QJsonArray &list) {
-    if(!q.exec()) { qDebug() << "fetchHospitalizations query exec error:" << q.lastError().text(); return false; }
-    while(q.next()) {
-        QJsonObject o; o["id"]=q.value("id").toInt(); o["patient_username"]=q.value("patient_username").toString(); o["doctor_username"]=q.value("doctor_username").toString(); o["ward_number"]=q.value("ward_number").toString(); o["bed_number"]=q.value("bed_number").toString(); o["admission_date"]=q.value("admission_date").toString(); o["discharge_date"]=q.value("discharge_date").toString(); o["status"]=q.value("status").toString(); list.append(o); }
-    return true;
-}
-
-bool DBManager::getHospitalizationsByPatient(const QString &patientUsername, QJsonArray &list) {
-    QSqlQuery q(m_db); q.prepare("SELECT * FROM hospitalizations WHERE patient_username=:p ORDER BY admission_date DESC"); q.bindValue(":p", patientUsername); return fetchHospitalizations(m_db,q,list);
-}
-
-bool DBManager::getAllHospitalizations(QJsonArray &list) {
-    QSqlQuery q(m_db); q.prepare("SELECT * FROM hospitalizations ORDER BY admission_date DESC"); return fetchHospitalizations(m_db,q,list);
-}
-
-bool DBManager::getHospitalizationsByDoctor(const QString &doctorUsername, QJsonArray &list) {
-    QSqlQuery q(m_db); q.prepare("SELECT * FROM hospitalizations WHERE doctor_username=:d ORDER BY admission_date DESC"); q.bindValue(":d", doctorUsername); return fetchHospitalizations(m_db,q,list);
-}
-
->>>>>>> f054b07 (WIP: attendance/leave/cancel feature + DB tables + routing + UI wiring):server/core/database/database1.cpp
 bool DBManager::authenticateUser(const QString& username, const QString& password) {
     QSqlQuery query(m_db);
     query.prepare("SELECT username FROM users WHERE username = :username AND password = :password");
@@ -1628,7 +1589,13 @@ bool DBManager::createHospitalization(const QJsonObject& hospitalizationData) {
     query.bindValue(":patient_username", hospitalizationData["patient_username"].toString());
     query.bindValue(":doctor_username", hospitalizationData["doctor_username"].toString());
     query.bindValue(":admission_date", hospitalizationData["admission_date"].toString());
-    query.bindValue(":ward", hospitalizationData["ward"].toString());
+    // 兼容旧字段 ward_number
+    {
+        QString wardStr = hospitalizationData.contains("ward")
+                               ? hospitalizationData.value("ward").toString()
+                               : hospitalizationData.value("ward_number").toString();
+        query.bindValue(":ward", wardStr);
+    }
     query.bindValue(":bed_number", hospitalizationData["bed_number"].toString());
     query.bindValue(":diagnosis", hospitalizationData["diagnosis"].toString());
     query.bindValue(":treatment_plan", hospitalizationData["treatment_plan"].toString());
@@ -1675,7 +1642,8 @@ bool DBManager::getHospitalizationsByPatient(const QString& patientUsername, QJs
         hospitalization["department"] = query.value("department").toString();
         hospitalization["admission_date"] = query.value("admission_date").toString();
         hospitalization["discharge_date"] = query.value("discharge_date").toString();
-        hospitalization["ward"] = query.value("ward").toString();
+    hospitalization["ward"] = query.value("ward").toString();
+    hospitalization["ward_number"] = hospitalization["ward"]; // 兼容旧字段
         hospitalization["bed_number"] = query.value("bed_number").toString();
         hospitalization["diagnosis"] = query.value("diagnosis").toString();
         hospitalization["treatment_plan"] = query.value("treatment_plan").toString();
@@ -1717,7 +1685,8 @@ bool DBManager::getHospitalizationsByDoctor(const QString& doctorUsername, QJson
         hospitalization["patient_gender"] = query.value("gender").toString();
         hospitalization["admission_date"] = query.value("admission_date").toString();
         hospitalization["discharge_date"] = query.value("discharge_date").toString();
-        hospitalization["ward"] = query.value("ward").toString();
+    hospitalization["ward"] = query.value("ward").toString();
+    hospitalization["ward_number"] = hospitalization["ward"]; // 兼容旧字段
         hospitalization["bed_number"] = query.value("bed_number").toString();
         hospitalization["diagnosis"] = query.value("diagnosis").toString();
         hospitalization["treatment_plan"] = query.value("treatment_plan").toString();
@@ -1763,7 +1732,8 @@ bool DBManager::getAllHospitalizations(QJsonArray& hospitalizations) {
         hospitalization["department"] = query.value("department").toString();
         hospitalization["admission_date"] = query.value("admission_date").toString();
         hospitalization["discharge_date"] = query.value("discharge_date").toString();
-        hospitalization["ward"] = query.value("ward").toString();
+    hospitalization["ward"] = query.value("ward").toString();
+    hospitalization["ward_number"] = hospitalization["ward"]; // 兼容旧字段
         hospitalization["bed_number"] = query.value("bed_number").toString();
         hospitalization["diagnosis"] = query.value("diagnosis").toString();
         hospitalization["treatment_plan"] = query.value("treatment_plan").toString();

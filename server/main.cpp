@@ -19,18 +19,14 @@ int main(int argc, char *argv[]) {
 
     CommunicationServer server;
     LoginModule loginModule;
-<<<<<<< HEAD:server/main.cpp
+
     MedicineModule medicineModule; // 负责药品相关请求
-<<<<<<< HEAD:server/main.cpp
     EvaluateModule evaluateModule; // 负责评价相关请求
     
-=======
-=======
     DoctorProfileModule doctorProfileModule;
     DoctorAssignmentModule doctorAssignmentModule;
     DoctorAttendanceModule doctorAttendanceModule;
->>>>>>> f054b07 (WIP: attendance/leave/cancel feature + DB tables + routing + UI wiring):server/main1.cpp
->>>>>>> ec31eeb (WIP: attendance/leave/cancel feature + DB tables + routing + UI wiring):server/main1.cpp
+
 
     QObject::connect(&MessageRouter::instance(), &MessageRouter::requestReceived,
                      [&](const QJsonObject &payload) {
@@ -99,8 +95,6 @@ int main(int argc, char *argv[]) {
             if (ok) {
                 responsePayload["data"] = doctors;
             }
-<<<<<<< HEAD:server/main.cpp
-=======
         } else if (action == "get_medical_records_by_patient") {
             QJsonArray records;
             bool ok = db.getMedicalRecordsByPatient(payload.value("patient_username").toString(), records);
@@ -141,7 +135,6 @@ int main(int argc, char *argv[]) {
             if (ok) {
                 responsePayload["data"] = medications;
             }
->>>>>>> f054b07 (WIP: attendance/leave/cancel feature + DB tables + routing + UI wiring):server/main1.cpp
         } else if (action == "create_hospitalization") {
             bool ok = db.createHospitalization(payload.value("data").toObject());
             responsePayload["type"] = "create_hospitalization_response";
