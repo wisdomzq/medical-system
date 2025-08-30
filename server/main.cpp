@@ -1,9 +1,9 @@
 #include <QtGlobal>
 #include <QCoreApplication>
 #include <QDebug>
-#include "core/network/src/protocol.h"
-#include "core/network/src/server/communicationserver.h"
-#include "core/network/src/server/messagerouter.h"
+#include "core/network/protocol.h"
+#include "core/network/communicationserver.h"
+#include "core/network/messagerouter.h"
 // 已有的模块（自身在构造时会连接 MessageRouter::requestReceived）
 #include "modules/patientmodule/medicine/medicine.h"
 #include "modules/patientmodule/evaluate/evaluate.h"

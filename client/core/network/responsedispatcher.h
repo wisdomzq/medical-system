@@ -2,7 +2,7 @@
 
 #include <QObject>
 #include <QJsonObject>
-#include <protocol.h>
+#include "core/network/protocol.h"
 
 // 客户端响应调度器：根据响应的 Header.type 分派到对应的信号
 class ResponseDispatcher : public QObject {

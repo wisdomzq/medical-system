@@ -17,8 +17,8 @@
 #include <QTimer>
 #include <QDebug>
 #include "appointmentdetailsdialog.h"
-#include "core/network/src/client/communicationclient.h"
-#include "core/network/src/protocol.h"
+#include "core/network/communicationclient.h"
+#include "core/network/protocol.h"
 
 AppointmentsWidget::AppointmentsWidget(const QString& doctorName, QWidget* parent)
     : QWidget(parent), doctorName_(doctorName), ownsClient_(true) {

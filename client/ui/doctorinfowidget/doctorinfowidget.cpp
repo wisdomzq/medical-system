@@ -15,8 +15,8 @@
 #include "appointmentswidget.h"
 #include "datachartwidget.h"
 #include "remotedatawidget.h"
-#include "core/network/src/client/communicationclient.h"
-#include "core/network/src/protocol.h"
+#include "core/network/communicationclient.h"
+#include "core/network/protocol.h"
 // #include "caseswidget.h"
 // #include "diagnosiswidget.h"
 

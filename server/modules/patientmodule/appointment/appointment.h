@@ -1,7 +1,7 @@
 #pragma once
 #include <QObject>
 #include <QJsonObject>
-#include "core/network/src/protocol.h"
+#include "core/network/protocol.h"
 
 class AppointmentModule : public QObject {
     Q_OBJECT

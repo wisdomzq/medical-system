@@ -1,6 +1,6 @@
-#include "communicationclient.h"
-#include <client/streamparser.h>
-#include <client/responsedispatcher.h>
+#include "core/network/communicationclient.h"
+#include "core/network/streamparser.h"
+#include "core/network/responsedispatcher.h"
 
 using namespace Protocol;
 

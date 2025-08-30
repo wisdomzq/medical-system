@@ -1,7 +1,7 @@
 #pragma once
 #include <QObject>
 #include <QJsonObject>
-#include "core/network/src/protocol.h"
+#include "core/network/protocol.h"
 
 // 将登录/注册改为通过信号槽接入 MessageRouter
 class LoginRouter : public QObject {

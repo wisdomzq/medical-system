@@ -4,7 +4,7 @@
  #include <QNetworkAccessManager>
  #include <QNetworkReply>
  #include <QJsonArray>
- #include "core/network/src/protocol.h"
+ #include "core/network/protocol.h"
 
  class MedicineModule : public QObject {
 	 Q_OBJECT

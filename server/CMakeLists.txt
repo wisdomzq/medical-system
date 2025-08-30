@@ -10,9 +10,9 @@ set(srcs
     core/database/database.cpp
     # 如果你的数据库终端功能也想保留，可以添加：
     # core/database/dbterminal.cpp  # 文件不存在，暂时注释掉
-    core/network/src/server/communicationserver.cpp
-    core/network/src/server/clienthandler.cpp
-    core/network/src/server/messagerouter.cpp
+    core/network/communicationserver.cpp
+    core/network/clienthandler.cpp
+    core/network/messagerouter.cpp
     modules/loginmodule/loginmodule.cpp
     modules/loginmodule/loginrouter.cpp
     modules/patientmodule/register/register.cpp

@@ -1,4 +1,4 @@
-#include "streamparser.h"
+#include "core/network/streamparser.h"
 
 using namespace Protocol;
 

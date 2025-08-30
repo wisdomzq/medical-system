@@ -1,6 +1,6 @@
 #include "patientinfowidget.h"
-#include "core/network/src/protocol.h"
-#include "core/network/src/client/communicationclient.h"
+#include "core/network/protocol.h"
+#include "core/network/communicationclient.h"
 #include "appointmentpage.h"
 #include "profilepage.h"
 #include "casepage.h"

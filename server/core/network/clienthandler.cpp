@@ -1,4 +1,4 @@
-#include "server/clienthandler.h"
+#include "core/network/clienthandler.h"
 #include "core/logging/logging.h"
 
 using namespace Protocol;

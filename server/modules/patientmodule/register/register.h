@@ -5,7 +5,7 @@
 #include <QList>
 #include <QJsonObject>
 // 移除旧 QTcpSocket 依赖，改用 MessageRouter 广播机制
-#include "core/network/src/protocol.h"
+#include "core/network/protocol.h"
 
 // 医生排班信息结构体
 struct DoctorSchedule {

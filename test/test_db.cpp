@@ -1,4 +1,4 @@
-#include "server/core/database/database.h"
+#include "core/network/core/database/database.h"
 #include <QCoreApplication>
 #include <QJsonArray>
 #include <QDebug>

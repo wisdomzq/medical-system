@@ -1,5 +1,5 @@
 #include "casepage.h"
-#include "core/network/src/client/communicationclient.h"
+#include "core/network/communicationclient.h"
 #include <QMessageBox>
 #include <QHeaderView>
 #include <QUuid>

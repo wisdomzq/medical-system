@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QPointer>
 #include <QHash>
-#include <protocol.h>
+#include "core/network/protocol.h"
 
 class ClientHandler;
 

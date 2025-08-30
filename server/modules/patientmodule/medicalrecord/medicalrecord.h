@@ -3,7 +3,7 @@
 #include <QObject>
 #include <QJsonObject>
 #include <QJsonArray>
-#include "core/network/src/protocol.h"
+#include "core/network/protocol.h"
 
 class MedicalRecordModule : public QObject
 {

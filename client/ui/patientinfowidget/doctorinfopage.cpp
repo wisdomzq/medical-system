@@ -1,5 +1,5 @@
 #include "doctorinfopage.h"
-#include "core/network/src/client/communicationclient.h"
+#include "core/network/communicationclient.h"
 #include <QApplication>
 #include <QScreen>
 #include <QJsonDocument>

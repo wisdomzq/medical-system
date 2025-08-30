@@ -1,7 +1,7 @@
 #pragma once
 #include <QObject>
 #include <QJsonObject>
-#include "core/network/src/protocol.h"
+#include "core/network/protocol.h"
 
 // PrescriptionModule: 处方模块
 // 动作:

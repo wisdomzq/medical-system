@@ -1,7 +1,7 @@
 #pragma once
 #include <QObject>
 #include <QJsonObject>
-#include "core/network/src/protocol.h"
+#include "core/network/protocol.h"
 
 // EvaluateModule: 提供健康评估相关接口
 // 动作:

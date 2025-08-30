@@ -1,6 +1,6 @@
-#include "server/clienthandler.h"
-#include "server/communicationserver.h"
-#include "server/messagerouter.h"
+#include "core/network/clienthandler.h"
+#include "core/network/communicationserver.h"
+#include "core/network/messagerouter.h"
 
 #include <QThread>
 #include "core/logging/logging.h"

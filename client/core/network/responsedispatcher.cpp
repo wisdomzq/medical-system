@@ -1,4 +1,4 @@
-#include "responsedispatcher.h"
+#include "core/network/responsedispatcher.h"
 
 using namespace Protocol;
 

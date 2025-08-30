@@ -1,8 +1,8 @@
 #include "loginwidget.h"
 #include "doctorinfowidget.h"
 #include "patientinfowidget.h"
-#include "core/network/src/client/communicationclient.h"
-#include "core/network/src/protocol.h"
+#include "core/network/communicationclient.h"
+#include "core/network/protocol.h"
 #include <QFont>
 #include <QMessageBox>
 #include <QJsonObject>

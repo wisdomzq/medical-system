@@ -16,7 +16,7 @@
 #include <QTextEdit>
 #include <QMessageBox>
 #include <QGroupBox>
-#include "core/network/src/client/communicationclient.h"
+#include "core/network/communicationclient.h"
 
 EvaluatePage::EvaluatePage(CommunicationClient *c, const QString &patient, QWidget *parent)
     : BasePage(c, patient, parent) {

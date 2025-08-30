@@ -1,6 +1,6 @@
 #include "evaluate.h"
-#include "core/network/src/server/messagerouter.h"
-#include "core/network/src/protocol.h"
+#include "core/network/messagerouter.h"
+#include "core/network/protocol.h"
 #include "core/database/database_config.h"
 #include "core/logging/logging.h"
 #include <QSqlQuery>

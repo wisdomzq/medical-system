@@ -40,9 +40,9 @@ set(srcs
     ui/patientinfowidget/doctorinfopage.h
     ui/patientinfowidget/doctorlistpage.cpp
     ui/patientinfowidget/doctorlistpage.h
-    core/network/src/client/communicationclient.cpp
-    core/network/src/client/responsedispatcher.cpp
-    core/network/src/client/streamparser.cpp
+    core/network/communicationclient.cpp
+    core/network/responsedispatcher.cpp
+    core/network/streamparser.cpp
     resources/resources.qrc
     main.cpp
 )

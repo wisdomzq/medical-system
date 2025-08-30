@@ -1,6 +1,6 @@
 #include "router.h"
-#include "core/network/src/server/messagerouter.h"
-#include "core/network/src/protocol.h"
+#include "core/network/messagerouter.h"
+#include "core/network/protocol.h"
 #include "modules/doctormodule/profile/profile.h"
 #include "modules/doctormodule/assignment/assignment.h"
 #include "modules/doctormodule/attendance/attendance.h"

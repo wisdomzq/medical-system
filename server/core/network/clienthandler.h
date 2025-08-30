@@ -5,7 +5,7 @@
 #include <QPointer>
 #include <QTcpSocket>
 
-#include <protocol.h>
+#include "core/network/protocol.h"
 
 // 每个客户端连接对应一个 ClientHandler，在独立线程中解析协议并通过信号交给调度器处理
 class ClientHandler : public QObject {

@@ -7,7 +7,7 @@
 #include <QLineEdit>
 #include <QStackedWidget>
 #include <QFormLayout>
-#include "core/network/src/client/communicationclient.h"
+#include "core/network/communicationclient.h"
 
 class LoginWidget : public QWidget {
     Q_OBJECT

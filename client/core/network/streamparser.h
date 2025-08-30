@@ -3,7 +3,7 @@
 #include <QObject>
 #include <QByteArray>
 #include <QDataStream>
-#include <protocol.h>
+#include "core/network/protocol.h"
 
 // 增量流解析器：将输入字节流按协议拆分为完整帧
 class StreamFrameParser : public QObject {

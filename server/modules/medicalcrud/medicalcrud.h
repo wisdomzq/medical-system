@@ -1,7 +1,7 @@
 #pragma once
 #include <QObject>
 #include <QJsonObject>
-#include "core/network/src/protocol.h"
+#include "core/network/protocol.h"
 
 // 汇总“create/update/lookup”类医疗数据动作，避免 main.cpp if-else
 class MedicalCrudModule : public QObject {

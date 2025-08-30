@@ -1,5 +1,5 @@
 #include "medicationpage.h"
-#include "core/network/src/client/communicationclient.h"
+#include "core/network/communicationclient.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QHeaderView>

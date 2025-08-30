@@ -1,6 +1,6 @@
 #include "doctorlistpage.h"
 #include "doctorinfopage.h"
-#include "core/network/src/client/communicationclient.h"
+#include "core/network/communicationclient.h"
 #include <QHeaderView>
 #include <QMessageBox>
 #include <QJsonDocument>
