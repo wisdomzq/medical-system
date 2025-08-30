@@ -47,6 +47,7 @@ private:
 
 private slots:
     void forwardBackToLogin();
+    void switchToPrescriptionTab(int prescriptionId);
 
 signals:
     void backToLogin();

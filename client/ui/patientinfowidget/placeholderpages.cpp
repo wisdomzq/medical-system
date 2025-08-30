@@ -8,5 +8,4 @@ template<typename T> static void ensureLayout(T *w,const char* text){ auto *lay=
 CasePage::CasePage(CommunicationClient *c,const QString&p,QWidget*parent):BasePage(c,p,parent){ ensureLayout(this,"我的病例模块"); }
 CommunicationPage::CommunicationPage(CommunicationClient *c,const QString&p,QWidget*parent):BasePage(c,p,parent){ ensureLayout(this,"医患沟通模块"); }
 DoctorInfoPage::DoctorInfoPage(CommunicationClient *c,const QString&p,QWidget*parent):BasePage(c,p,parent){ ensureLayout(this,"查看医生信息"); }
-AdvicePage::AdvicePage(CommunicationClient *c,const QString&p,QWidget*parent):BasePage(c,p,parent){ ensureLayout(this,"医嘱模块"); }
 HealthAssessmentPage::HealthAssessmentPage(CommunicationClient *c,const QString&p,QWidget*parent):BasePage(c,p,parent){ ensureLayout(this,"健康评估"); }

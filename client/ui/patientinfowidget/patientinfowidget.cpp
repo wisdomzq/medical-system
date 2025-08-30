@@ -8,6 +8,7 @@
 #include "medicationpage.h"
 #include "evaluatepage.h"
 #include "prescriptionpage.h"
+#include "advicepage.h"
 #include <QVBoxLayout>
 #include <QTabWidget>
 #include <QJsonObject>
@@ -29,6 +30,11 @@ PatientInfoWidget::PatientInfoWidget(const QString &patientName, QWidget *parent
     m_doctorInfoPage = new DoctorInfoPage(m_communicationClient, m_patientName, this);
     m_advicePage = new AdvicePage(m_communicationClient, m_patientName, this);
     m_prescriptionPage = new PrescriptionPage(m_communicationClient, m_patientName, this);
+    
+    // 连接医嘱页面到处方页面的跳转
+    connect(m_advicePage, &AdvicePage::prescriptionRequested, 
+            this, &PatientInfoWidget::switchToPrescriptionTab);
+    
     m_evaluatePage = new EvaluatePage(m_communicationClient, m_patientName, this);
     m_medicationSearchPage = new MedicationSearchPage(m_communicationClient, m_patientName, this);
     m_hospitalPage = new HospitalPage(m_communicationClient, m_patientName, this); // 新实际页面
@@ -66,3 +72,20 @@ PatientInfoWidget::PatientInfoWidget(const QString &patientName, QWidget *parent
 PatientInfoWidget::~PatientInfoWidget() = default;
 
 void PatientInfoWidget::forwardBackToLogin() { emit backToLogin(); }
+
+void PatientInfoWidget::switchToPrescriptionTab(int prescriptionId) {
+    // 切换到处方tab页面
+    int prescriptionTabIndex = -1;
+    for (int i = 0; i < tabWidget->count(); ++i) {
+        if (tabWidget->widget(i) == m_prescriptionPage) {
+            prescriptionTabIndex = i;
+            break;
+        }
+    }
+    
+    if (prescriptionTabIndex >= 0) {
+        tabWidget->setCurrentIndex(prescriptionTabIndex);
+        // TODO: 如果需要，可以通知处方页面显示特定的处方
+        Q_UNUSED(prescriptionId)
+    }
+}
