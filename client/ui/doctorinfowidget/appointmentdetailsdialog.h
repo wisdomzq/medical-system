@@ -15,7 +15,6 @@ class MedicalCrudService;
 class AppointmentDetailsDialog : public QDialog {
     Q_OBJECT
 public:
-    explicit AppointmentDetailsDialog(const QString& doctorUsername, const QJsonObject& appointment, QWidget* parent=nullptr);
     explicit AppointmentDetailsDialog(const QString& doctorUsername, const QJsonObject& appointment, CommunicationClient* client, QWidget* parent=nullptr);
 
 private slots:

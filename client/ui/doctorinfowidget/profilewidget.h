@@ -20,7 +20,6 @@ class DoctorProfileService;
 class ProfileWidget : public QWidget {
     Q_OBJECT
 public:
-    explicit ProfileWidget(const QString& doctorName, QWidget* parent=nullptr);
     explicit ProfileWidget(const QString& doctorName, CommunicationClient* client, QWidget* parent=nullptr);
     
 

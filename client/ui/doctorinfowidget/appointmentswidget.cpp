@@ -21,23 +21,6 @@
 #include "core/network/protocol.h"
 #include "core/services/appointmentservice.h"
 
-AppointmentsWidget::AppointmentsWidget(const QString& doctorName, QWidget* parent)
-    : QWidget(parent), doctorName_(doctorName), ownsClient_(true) {
-    client_ = new CommunicationClient(this);
-    setupUI();
-    
-    // 直接自管客户端（保留旧构造）
-    connect(client_, &CommunicationClient::connected, this, &AppointmentsWidget::onConnected);
-    connect(refreshBtn_, &QPushButton::clicked, this, &AppointmentsWidget::onRefresh);
-    
-    // 注入服务
-    service_ = new AppointmentService(client_, this);
-    connect(service_, &AppointmentService::fetched, this, &AppointmentsWidget::renderAppointments);
-    connect(service_, &AppointmentService::fetchFailed, this, &AppointmentsWidget::showFetchError);
-
-    client_->connectToServer("127.0.0.1", Protocol::SERVER_PORT);
-}
-
 AppointmentsWidget::AppointmentsWidget(const QString& doctorName, CommunicationClient* client, QWidget* parent)
     : QWidget(parent), doctorName_(doctorName), client_(client), ownsClient_(false) {
     setupUI();

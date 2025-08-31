@@ -13,7 +13,6 @@ class AppointmentService;
 class AppointmentsWidget : public QWidget {
     Q_OBJECT
 public:
-    explicit AppointmentsWidget(const QString& doctorName, QWidget* parent=nullptr);
     explicit AppointmentsWidget(const QString& doctorName, CommunicationClient* client, QWidget* parent=nullptr);
     
     // 无需外部分发

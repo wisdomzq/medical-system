@@ -1,27 +1,28 @@
 #include "doctorinfowidget.h"
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QListWidget>
-#include <QStackedWidget>
-#include <QLabel>
 #include <QFile>
+#include <QHBoxLayout>
 #include <QIODevice>
 #include <QIcon>
+#include <QLabel>
+#include <QListWidget>
+#include <QStackedWidget>
+#include <QVBoxLayout>
 
 // 各模块头文件
+#include "appointmentswidget.h"
 #include "attendancewidget.h"
 #include "chatroomwidget.h"
-#include "profilewidget.h"
-#include "appointmentswidget.h"
-#include "datachartwidget.h"
-#include "remotedatawidget.h"
 #include "core/network/communicationclient.h"
 #include "core/network/protocol.h"
+#include "datachartwidget.h"
+#include "profilewidget.h"
+#include "remotedatawidget.h"
 // #include "caseswidget.h"
 // #include "diagnosiswidget.h"
 
-DoctorInfoWidget::DoctorInfoWidget(const QString &doctorName, QWidget *parent)
-    : QWidget(parent), m_doctorName(doctorName)
+DoctorInfoWidget::DoctorInfoWidget(const QString& doctorName, QWidget* parent)
+    : QWidget(parent)
+    , m_doctorName(doctorName)
 {
     setWindowTitle("医生工作台 - " + m_doctorName);
     setMinimumSize(1000, 700);
@@ -50,21 +51,21 @@ DoctorInfoWidget::DoctorInfoWidget(const QString &doctorName, QWidget *parent)
     auto attendance = new AttendanceWidget(m_doctorName, m_sharedClient, this);
     auto chat = new ChatRoomWidget(m_doctorName, this);
     auto profile = new ProfileWidget(m_doctorName, m_sharedClient, this);
-    auto appts = new AppointmentsWidget(m_doctorName, m_sharedClient, this);  // 使用新的构造函数
+    auto appts = new AppointmentsWidget(m_doctorName, m_sharedClient, this); // 使用新的构造函数
     auto charts = new DataChartWidget(m_doctorName, this);
     auto remote = new RemoteDataWidget(m_doctorName, this);
 
     // 添加至堆叠
-    pages->addWidget(attendance);      // 0
-    pages->addWidget(chat);            // 1
-    pages->addWidget(profile);         // 2
-    pages->addWidget(appts);           // 3
-    pages->addWidget(charts);          // 4
-    pages->addWidget(remote);          // 5
+    pages->addWidget(attendance); // 0
+    pages->addWidget(chat); // 1
+    pages->addWidget(profile); // 2
+    pages->addWidget(appts); // 3
+    pages->addWidget(charts); // 4
+    pages->addWidget(remote); // 5
 
     // 导航项与图标（当前使用资源中的占位图标，可后续替换为具体图标）
-    auto addNav = [&](const QString &text, const QString &iconRes){
-        QListWidgetItem *it = new QListWidgetItem(QIcon(iconRes), text);
+    auto addNav = [&](const QString& text, const QString& iconRes) {
+        QListWidgetItem* it = new QListWidgetItem(QIcon(iconRes), text);
         it->setSizeHint(QSize(160, 36));
         navList->addItem(it);
     };
@@ -83,15 +84,17 @@ DoctorInfoWidget::DoctorInfoWidget(const QString &doctorName, QWidget *parent)
     // 同步切换
     connect(navList, &QListWidget::currentRowChanged, pages, &QStackedWidget::setCurrentIndex);
     // 点击“退出登录”项时触发回到登录
-    connect(navList, &QListWidget::itemClicked, this, [this](QListWidgetItem* it){
-        if (!it) return;
-        if (it->text() == QStringLiteral("退出登录")) emit backToLogin();
+    connect(navList, &QListWidget::itemClicked, this, [this](QListWidgetItem* it) {
+        if (!it)
+            return;
+        if (it->text() == QStringLiteral("退出登录"))
+            emit backToLogin();
     });
 
     // 保证选中项文字加粗（某些平台 QSS 对 item 的 font-weight 不生效，使用代码加粗）
     auto updateBold = [this]() {
         for (int i = 0; i < navList->count(); ++i) {
-            auto *it = navList->item(i);
+            auto* it = navList->item(i);
             QFont f = it->font();
             f.setBold(i == navList->currentRow());
             it->setFont(f);
@@ -100,7 +103,7 @@ DoctorInfoWidget::DoctorInfoWidget(const QString &doctorName, QWidget *parent)
         navList->viewport()->update();
     };
     updateBold();
-    connect(navList, &QListWidget::currentRowChanged, this, [updateBold](int){ updateBold(); });
+    connect(navList, &QListWidget::currentRowChanged, this, [updateBold](int) { updateBold(); });
 
     // 总布局
     auto root = new QHBoxLayout(this);

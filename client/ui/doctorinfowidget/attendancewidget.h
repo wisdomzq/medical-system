@@ -15,14 +15,12 @@ class QPushButton;
 class AttendanceWidget : public QWidget {
     Q_OBJECT
 public:
-    explicit AttendanceWidget(const QString& doctorName, QWidget* parent=nullptr);
     explicit AttendanceWidget(const QString& doctorName, CommunicationClient* client, QWidget* parent=nullptr);
 
 private slots:
     void showCheckIn();
     void showLeave();
     void showCancelLeave();
-    void doCheckIn();
     void submitLeave();
     void refreshActiveLeaves();
     void refreshAttendanceHistory();
