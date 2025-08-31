@@ -61,4 +61,4 @@ DependInfo.cmake
 AutogenInfo.json
 ParseCache.txt
 
-data
+data/
