@@ -1,7 +1,10 @@
 /* 登录界面专属样式（仅 LoginWidget 加载） */
 
-QWidget#LoginRoot { /* 可用于外层容器（可选）*/
-	background: #f7f9fc;
+QWidget#LoginRoot { /* 登录页整页背景 */
+	/* 回退色（未能加载图片时） */
+	background: #f0f4ff;
+	/* 使用整页背景图，等比拉伸填充 */
+	border-image: url(:/background.jpeg) 0 0 0 0 stretch stretch;
 }
 
 /* 大气标题 */
@@ -123,7 +126,8 @@ QWidget#LoginFormCard QLineEdit {
 }
 
 QWidget#LoginFormCard {
-	background: #ffffff;
+	/* 半透明白底，保证在背景图上仍清晰可读 */
+	background: rgba(255,255,255,0.92);
 	border-radius: 14px;
 	border: 1px solid #eef2f7;
 	/* 简单阴影效果（Qt 不支持 box-shadow，用双层边模拟） */

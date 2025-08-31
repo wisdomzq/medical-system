@@ -415,8 +415,14 @@ LoginWidget::~LoginWidget() {}
 QLabel* LoginWidget::createTitleLabel() {
     QLabel* titleLabel = new QLabel("智慧医疗系统");
     titleLabel->setObjectName("LoginTitle");
-    // 最小兜底：若 QSS 未加载，也有较大字号
-    QFont f; f.setPointSize(34); f.setBold(true); titleLabel->setFont(f);
+    // 最小兜底：若 QSS 未加载，也有较大字号与指定字体
+    QFont f;
+    f.setFamily(QStringLiteral("文泉驿微米黑"));
+    f.setPointSize(34);
+    f.setBold(true);
+    // 字符间距加大一些（绝对像素）
+    f.setLetterSpacing(QFont::AbsoluteSpacing, 3.0);
+    titleLabel->setFont(f);
     titleLabel->setAlignment(Qt::AlignCenter);
     return titleLabel;
 }
