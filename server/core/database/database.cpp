@@ -1188,6 +1188,52 @@ bool DBManager::getMedicalRecordsByDoctor(const QString& doctorUsername, QJsonAr
     return true;
 }
 
+bool DBManager::getMedicalRecordsByAppointment(int appointmentId, QJsonArray& records) {
+    QSqlQuery query(m_db);
+    query.prepare(R"(
+        SELECT mr.id, mr.appointment_id, mr.patient_username, mr.doctor_username, mr.visit_date,
+               mr.chief_complaint, mr.present_illness, mr.past_history,
+               mr.physical_examination, mr.diagnosis, mr.treatment_plan, mr.notes,
+               d.name as doctor_name, d.title as doctor_title, d.department,
+               p.name as patient_name, p.age as patient_age, p.gender
+        FROM medical_records mr
+        LEFT JOIN doctors d ON mr.doctor_username = d.username
+        LEFT JOIN patients p ON mr.patient_username = p.username
+        WHERE mr.appointment_id = :appointment_id
+        ORDER BY mr.visit_date DESC
+    )");
+    query.bindValue(":appointment_id", appointmentId);
+    
+    if (!query.exec()) {
+        qDebug() << "getMedicalRecordsByAppointment error:" << query.lastError().text();
+        return false;
+    }
+    
+    while (query.next()) {
+        QJsonObject record;
+        record["id"] = query.value("id").toInt();
+        record["appointment_id"] = query.value("appointment_id").toInt();
+        record["patient_username"] = query.value("patient_username").toString();
+        record["doctor_username"] = query.value("doctor_username").toString();
+        record["visit_date"] = query.value("visit_date").toString();
+        record["chief_complaint"] = query.value("chief_complaint").toString();
+        record["present_illness"] = query.value("present_illness").toString();
+        record["past_history"] = query.value("past_history").toString();
+        record["physical_examination"] = query.value("physical_examination").toString();
+        record["diagnosis"] = query.value("diagnosis").toString();
+        record["treatment_plan"] = query.value("treatment_plan").toString();
+        record["notes"] = query.value("notes").toString();
+        record["doctor_name"] = query.value("doctor_name").toString();
+        record["doctor_title"] = query.value("doctor_title").toString();
+        record["department"] = query.value("department").toString();
+        record["patient_name"] = query.value("patient_name").toString();
+        record["patient_age"] = query.value("patient_age").toInt();
+        record["patient_gender"] = query.value("gender").toString();
+        records.append(record);
+    }
+    return true;
+}
+
 bool DBManager::updateMedicalRecord(int recordId, const QJsonObject& recordData) {
     QSqlQuery query(m_db);
     query.prepare(R"(

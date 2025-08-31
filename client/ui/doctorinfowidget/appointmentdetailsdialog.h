@@ -9,6 +9,7 @@ class QLineEdit;
 class QTextEdit;
 class QPushButton;
 class QListWidget;
+class QComboBox;
 class CommunicationClient;
 class MedicalCrudService;
 
@@ -20,6 +21,7 @@ public:
 private slots:
     void onConnected();
     void onSaveRecord();
+    void onCompleteAppointment();
     void onAddAdvice();
     void onAddPrescription();
 
@@ -28,6 +30,7 @@ private:
     void requestAdvices();
     void requestPrescriptions();
     void populateFromRecord(const QJsonObject& record);
+    void updateAppointmentStatus(const QString& status);
 
     QString doctorUsername_;
     QJsonObject appt_;
@@ -39,9 +42,10 @@ private:
     QTextEdit* planEdit_ {nullptr};
     QTextEdit* notesEdit_ {nullptr};
     QPushButton* saveBtn_ {nullptr};
+    QPushButton* completeBtn_ {nullptr};
     // advices
-    QLineEdit* adviceTypeEdit_ {nullptr};
-    QLineEdit* advicePriorityEdit_ {nullptr};
+    QComboBox* adviceTypeCombo_ {nullptr};
+    QComboBox* advicePriorityCombo_ {nullptr};
     QTextEdit* adviceContentEdit_ {nullptr};
     QPushButton* adviceAddBtn_ {nullptr};
     QListWidget* advicesList_ {nullptr};

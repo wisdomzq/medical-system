@@ -34,6 +34,7 @@ private:
     QVBoxLayout *m_mainLayout;
     QHBoxLayout *m_headerLayout;
     QLabel *m_titleLabel;
+    QPushButton *m_refreshButton;
     QPushButton *m_backButton;
     QTableWidget *m_recordTable;
     

@@ -16,6 +16,11 @@
 #include <QDate>
 #include <QTimer>
 #include <QDebug>
+#include <QLineEdit>
+#include <QFileDialog>
+#include <QFile>
+#include <QTextStream>
+#include <QMessageBox>
 #include "appointmentdetailsdialog.h"
 #include "core/network/communicationclient.h"
 #include "core/network/protocol.h"
@@ -40,17 +45,26 @@ void AppointmentsWidget::setupUI() {
 
     auto* topBar = new QHBoxLayout();
     refreshBtn_ = new QPushButton(tr("刷新"), this);
-    auto* filterBtn = new QPushButton(tr("筛选"), this);
-    auto* exportBtn = new QPushButton(tr("导出"), this);
-    auto* statsBtn = new QPushButton(tr("统计"), this);
+    filterBtn_ = new QPushButton(tr("筛选"), this);
+    exportBtn_ = new QPushButton(tr("导出"), this);
+    statsBtn_ = new QPushButton(tr("统计"), this);
+    filterEdit_ = new QLineEdit(this);
+    filterEdit_->setPlaceholderText(tr("输入患者姓名进行筛选"));
+    filterEdit_->setMaximumWidth(200);
     
     topBar->addWidget(new QLabel(tr("医生预约管理")));
     topBar->addStretch();
-    topBar->addWidget(filterBtn);
-    topBar->addWidget(exportBtn);
-    topBar->addWidget(statsBtn);
+    topBar->addWidget(filterEdit_);
+    topBar->addWidget(filterBtn_);
+    topBar->addWidget(exportBtn_);
+    topBar->addWidget(statsBtn_);
     topBar->addWidget(refreshBtn_);
     root->addLayout(topBar);
+    
+    // 连接按钮事件
+    connect(filterBtn_, &QPushButton::clicked, this, &AppointmentsWidget::onFilterClicked);
+    connect(exportBtn_, &QPushButton::clicked, this, &AppointmentsWidget::onExportClicked);
+    connect(statsBtn_, &QPushButton::clicked, this, &AppointmentsWidget::onStatsClicked);
     
     // 添加统计信息区域
     auto* statsFrame = new QFrame(this);
@@ -130,7 +144,9 @@ void AppointmentsWidget::renderAppointments(const QJsonArray& arr) {
         const auto fee = appt.value("fee").toDouble();
 
         if (date == today) todayCount++;
-        if (status == "pending") pendingCount++; else if (status == "confirmed") confirmedCount++;
+        if (status == "pending") pendingCount++; 
+        else if (status == "confirmed") confirmedCount++;
+        else if (status == "completed") confirmedCount++; // completed也算已确认
 
         auto* idItem = new QTableWidgetItem(QString::number(appointmentId));
         auto* nameItem = new QTableWidgetItem(patientName);
@@ -141,6 +157,7 @@ void AppointmentsWidget::renderAppointments(const QJsonArray& arr) {
         auto* feeItem = new QTableWidgetItem(QString::number(fee, 'f', 2));
 
         if (status == "confirmed") statusItem->setBackground(QBrush(QColor(144, 238, 144)));
+        else if (status == "completed") statusItem->setBackground(QBrush(QColor(173, 255, 47))); // 绿黄色表示已完成
         else if (status == "pending") statusItem->setBackground(QBrush(QColor(255, 255, 224)));
         else if (status == "cancelled") statusItem->setBackground(QBrush(QColor(255, 182, 193)));
 
@@ -203,4 +220,72 @@ void AppointmentsWidget::onRowDetailClicked() {
 void AppointmentsWidget::openDetailDialog(const QJsonObject& appt) {
     AppointmentDetailsDialog dlg(doctorName_, appt, client_, this);
     dlg.exec();
+}
+
+void AppointmentsWidget::onFilterClicked() {
+    QString filterText = filterEdit_->text().trimmed();
+    if (filterText.isEmpty()) {
+        // 显示所有行
+        for (int row = 0; row < table_->rowCount(); ++row) {
+            table_->setRowHidden(row, false);
+        }
+        return;
+    }
+    
+    // 根据患者姓名筛选现有数据
+    for (int row = 0; row < table_->rowCount(); ++row) {
+        QTableWidgetItem* nameItem = table_->item(row, 1);
+        if (nameItem) {
+            bool visible = nameItem->text().contains(filterText, Qt::CaseInsensitive);
+            table_->setRowHidden(row, !visible);
+        }
+    }
+}
+
+void AppointmentsWidget::onExportClicked() {
+    QString fileName = QFileDialog::getSaveFileName(this, "导出预约数据", 
+                                                   QString("appointments_%1.csv").arg(QDate::currentDate().toString("yyyy-MM-dd")),
+                                                   "CSV Files (*.csv)");
+    if (!fileName.isEmpty()) {
+        exportToCSV(fileName);
+    }
+}
+
+void AppointmentsWidget::onStatsClicked() {
+    auto* todayLabel = findChild<QLabel*>("todayLabel");
+    auto* pendingLabel = findChild<QLabel*>("pendingLabel");
+    auto* confirmedLabel = findChild<QLabel*>("confirmedLabel");
+    auto* totalLabel = findChild<QLabel*>("totalLabel");
+    
+    QString stats = QString("预约统计信息:\n\n%1\n%2\n%3\n%4")
+                    .arg(todayLabel ? todayLabel->text() : "今日预约: 0")
+                    .arg(pendingLabel ? pendingLabel->text() : "待确认: 0")
+                    .arg(confirmedLabel ? confirmedLabel->text() : "已确认: 0")
+                    .arg(totalLabel ? totalLabel->text() : "总计: 0");
+    
+    QMessageBox::information(this, "预约统计", stats);
+}
+
+void AppointmentsWidget::exportToCSV(const QString& fileName) {
+    QFile file(fileName);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        QMessageBox::warning(this, "导出失败", "无法创建文件: " + fileName);
+        return;
+    }
+    
+    QTextStream out(&file);
+    out << "预约ID,患者姓名,预约日期,预约时间,科室,状态,费用\n";
+    
+    for (int row = 0; row < table_->rowCount(); ++row) {
+        if (table_->isRowHidden(row)) continue;
+        
+        QStringList rowData;
+        for (int col = 0; col < 7; ++col) { // 不包括操作列
+            QTableWidgetItem* item = table_->item(row, col);
+            rowData << (item ? item->text() : "");
+        }
+        out << rowData.join(",") << "\n";
+    }
+    
+    QMessageBox::information(this, "导出成功", "预约数据已导出到: " + fileName);
 }

@@ -15,6 +15,7 @@ public:
 
     // 病历
     void getRecordsByPatient(const QString& patientUsername);
+    void getRecordsByAppointment(int appointmentId);
     void createRecord(const QJsonObject& data);
     void updateRecord(int recordId, const QJsonObject& data);
 

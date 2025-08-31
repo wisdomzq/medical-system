@@ -47,6 +47,13 @@ PatientInfoWidget::PatientInfoWidget(const QString &patientName, QWidget *parent
     // 创建各个页面
     m_appointmentPage = new AppointmentPage(m_communicationClient, m_patientName, this);
     m_casePage = new CasePage(m_communicationClient, m_patientName, this);
+    
+    // 连接病例页面的返回信号到导航切换
+    connect(m_casePage, &CasePage::backRequested, this, [this]() {
+        navList->setCurrentRow(0); // 切换回"我的预约"页面
+        pages->setCurrentIndex(0);
+    });
+    
     m_communicationPage = new CommunicationPage(m_communicationClient, m_patientName, this);
     m_profilePage = new ProfilePage(m_communicationClient, m_patientName, this);
     connect(m_profilePage, &ProfilePage::backToLogin, this, &PatientInfoWidget::forwardBackToLogin);

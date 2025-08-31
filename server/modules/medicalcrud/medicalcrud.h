@@ -13,6 +13,7 @@ private slots:
 private:
     void handleCreateRecord(const QJsonObject &payload);
     void handleUpdateRecord(const QJsonObject &payload);
+    void handleGetRecordsByAppointment(const QJsonObject &payload);
     void handleGetAdvicesByRecord(const QJsonObject &payload);
     void handleCreateAdvice(const QJsonObject &payload);
     void handleCreatePrescription(const QJsonObject &payload);

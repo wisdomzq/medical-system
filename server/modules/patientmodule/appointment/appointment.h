@@ -15,5 +15,6 @@ private:
     void handleListByDoctor(const QJsonObject &payload);
     void handleOverview(const QJsonObject &payload);
     void handleStats(const QJsonObject &payload);
+    void handleUpdateStatus(const QJsonObject &payload);
     void reply(QJsonObject resp, const QJsonObject &orig);
 };

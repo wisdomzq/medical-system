@@ -39,6 +39,26 @@ void CasePage::setupUI()
     m_titleLabel = new QLabel("我的病例");
     m_titleLabel->setStyleSheet("font-size: 18px; font-weight: bold; color: #2c3e50;");
     
+    // 刷新按钮
+    m_refreshButton = new QPushButton("刷新病例");
+    m_refreshButton->setStyleSheet(
+        "QPushButton {"
+        "    background-color: #27ae60;"
+        "    color: white;"
+        "    border: none;"
+        "    padding: 8px 16px;"
+        "    border-radius: 4px;"
+        "    font-size: 14px;"
+        "}"
+        "QPushButton:hover {"
+        "    background-color: #229954;"
+        "}"
+        "QPushButton:pressed {"
+        "    background-color: #1e8449;"
+        "}"
+    );
+    connect(m_refreshButton, &QPushButton::clicked, this, &CasePage::loadMedicalRecords);
+    
     // 返回按钮
     m_backButton = new QPushButton("返回");
     m_backButton->setStyleSheet(
@@ -61,6 +81,7 @@ void CasePage::setupUI()
     
     m_headerLayout->addWidget(m_titleLabel);
     m_headerLayout->addStretch();
+    m_headerLayout->addWidget(m_refreshButton);
     m_headerLayout->addWidget(m_backButton);
     
     // 病例表格
