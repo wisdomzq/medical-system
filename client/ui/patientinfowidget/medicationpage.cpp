@@ -29,8 +29,8 @@ MedicationSearchPage::MedicationSearchPage(CommunicationClient *c, const QString
     outer->addLayout(hl);
 
     m_table = new QTableWidget(this);
-    m_table->setColumnCount(11);
-    QStringList headers {"ID","名称","通用名","类别","厂家","规格","价格","库存","使用说明","注意事项","图片"};
+    m_table->setColumnCount(14);
+    QStringList headers {"ID","名称","通用名","类别","厂家","规格","单价","库存","使用说明","注意事项","副作用","禁忌症","单位","图片"};
     m_table->setHorizontalHeaderLabels(headers);
     m_table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     m_table->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -99,8 +99,11 @@ void MedicationSearchPage::populateTable(const QJsonArray &arr){
         setText(5, o.value("specification").toString());
         setText(6, QString::number(o.value("price").toDouble(),'f',2));
         setText(7, QString::number(o.value("stock_quantity").toInt()));
-    setText(8, o.value("description").toString());
-    setText(9, o.value("precautions").toString());
+        setText(8, o.value("description").toString());
+        setText(9, o.value("precautions").toString());
+        setText(10, o.value("side_effects").toString());
+        setText(11, o.value("contraindications").toString());
+        setText(12, o.value("unit").toString());
         // 图片列: 异步获取占位
         QLabel *imgLabel = new QLabel; imgLabel->setFixedSize(64,64); imgLabel->setScaledContents(true);
         QString localPath = o.value("image_path").toString();
@@ -115,7 +118,7 @@ void MedicationSearchPage::populateTable(const QJsonArray &arr){
             imgLabel->setText("...");
             fetchImageForRow(row, o.value("name").toString());
         }
-        m_table->setCellWidget(row,10,imgLabel);
+        m_table->setCellWidget(row,13,imgLabel);
         ++row;
     }
 }
@@ -139,7 +142,7 @@ void MedicationSearchPage::onImageDownloaded(){
     QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender()); if(!reply) return; int row = m_replyRowMap.take(reply); QByteArray data = reply->readAll(); reply->deleteLater();
     QPixmap pix; if(pix.loadFromData(data)){
         if(row >=0 && row < m_table->rowCount()){
-            if(QWidget *w = m_table->cellWidget(row,10)){
+            if(QWidget *w = m_table->cellWidget(row,13)){
                 QLabel *lbl = qobject_cast<QLabel*>(w); if(lbl){ lbl->setPixmap(pix); }
             }
         }
