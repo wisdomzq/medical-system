@@ -1,5 +1,6 @@
 #include "advicepage.h"
 #include "core/network/communicationclient.h"
+#include "core/services/adviceservice.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QTableWidget>
@@ -17,9 +18,23 @@ AdvicePage::AdvicePage(CommunicationClient *c, const QString &patient, QWidget *
     : BasePage(c, patient, parent) {
     setupUI();
     
-    // 连接网络响应
-    connect(m_client, &CommunicationClient::jsonReceived, this, [this](const QJsonObject &obj){
-        handleResponse(obj);
+    // 服务化
+    m_service = new AdviceService(m_client, this);
+    connect(m_service, &AdviceService::listFetched, this, [this](const QJsonArray& data){
+        populateTable(data);
+        m_statusLabel->setText(QString("已加载 %1 条医嘱记录").arg(data.size()));
+    });
+    connect(m_service, &AdviceService::listFailed, this, [this](const QString& err){
+        m_statusLabel->setText(QString("加载失败: %1").arg(err));
+        QMessageBox::warning(this, "错误", QString("获取医嘱列表失败:\n%1").arg(err));
+    });
+    connect(m_service, &AdviceService::detailsFetched, this, [this](const QJsonObject& data){
+        showAdviceDetails(data);
+        m_statusLabel->setText("医嘱详情已显示");
+    });
+    connect(m_service, &AdviceService::detailsFailed, this, [this](const QString& err){
+        m_statusLabel->setText(QString("获取详情失败: %1").arg(err));
+        QMessageBox::warning(this, "错误", QString("获取医嘱详情失败:\n%1").arg(err));
     });
     
     // 初始加载数据
@@ -315,46 +330,10 @@ void AdvicePage::onPrescriptionClicked() {
 }
 
 void AdvicePage::requestAdviceList() {
-    QJsonObject req;
-    req["action"] = "advice_get_list";
-    req["patient_username"] = m_patientName;
-    sendJson(req);
+    m_service->fetchAdviceList(m_patientName);
 }
 
 void AdvicePage::requestAdviceDetails(int adviceId) {
-    QJsonObject req;
-    req["action"] = "advice_get_details";
-    req["advice_id"] = adviceId;
-    sendJson(req);
+    m_service->fetchAdviceDetails(adviceId);
 }
 
-void AdvicePage::sendJson(const QJsonObject &obj) {
-    m_client->sendJson(obj);
-}
-
-void AdvicePage::handleResponse(const QJsonObject &obj) {
-    const QString type = obj.value("type").toString();
-    
-    if (type == "advice_list_response") {
-        if (obj.value("success").toBool()) {
-            QJsonArray data = obj.value("data").toArray();
-            populateTable(data);
-            m_statusLabel->setText(QString("已加载 %1 条医嘱记录").arg(data.size()));
-        } else {
-            QString error = obj.value("error").toString();
-            m_statusLabel->setText(QString("加载失败: %1").arg(error));
-            QMessageBox::warning(this, "错误", QString("获取医嘱列表失败:\n%1").arg(error));
-        }
-    }
-    else if (type == "advice_details_response") {
-        if (obj.value("success").toBool()) {
-            QJsonObject data = obj.value("data").toObject();
-            showAdviceDetails(data);
-            m_statusLabel->setText("医嘱详情已显示");
-        } else {
-            QString error = obj.value("error").toString();
-            m_statusLabel->setText(QString("获取详情失败: %1").arg(error));
-            QMessageBox::warning(this, "错误", QString("获取医嘱详情失败:\n%1").arg(error));
-        }
-    }
-}

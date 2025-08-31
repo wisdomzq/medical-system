@@ -1,7 +1,7 @@
 #include "loginwidget.h"
 #include "doctorinfowidget.h"
 #include "patientinfowidget.h"
-#include "core/network/communicationclient.h"
+#include "core/services/authservice.h"
 #include "core/network/protocol.h"
 #include <QFont>
 #include <QMessageBox>
@@ -19,15 +19,35 @@ LoginWidget::LoginWidget(QWidget* parent)
     if (qss.open(QIODevice::ReadOnly)) {
         setStyleSheet(QString::fromUtf8(qss.readAll()));
     }
-    m_communicationClient = new CommunicationClient(this);
-    connect(m_communicationClient, &CommunicationClient::connected, this, [this](){
+    // 初始化认证服务
+    m_authService = new AuthService(this);
+    connect(m_authService, &AuthService::connected, this, [this]() {
         QMessageBox::information(this, "连接成功", "已成功连接到服务器。");
     });
-    connect(m_communicationClient, &CommunicationClient::disconnected, this, [this](){
+    connect(m_authService, &AuthService::disconnected, this, [this]() {
         QMessageBox::warning(this, "连接断开", "与服务器的连接已断开。");
     });
-    m_communicationClient->connectToServer("127.0.0.1", Protocol::SERVER_PORT);
-    connect(m_communicationClient, &CommunicationClient::jsonReceived, this, &LoginWidget::onResponseReceived);
+    connect(m_authService, &AuthService::networkError, this, [this](int, const QString& msg) {
+        QMessageBox::critical(this, "网络错误", msg);
+    });
+    // 登录、注册结果与 UI 交互
+    connect(m_authService, &AuthService::loginSucceeded, this, [this](const QString& role, const QString& username, const QString& message) {
+        if (!message.isEmpty())
+            QMessageBox::information(this, "登录成功", message);
+        if (role == "doctor") emit doctorLoggedIn(username);
+        else if (role == "patient") emit patientLoggedIn(username);
+        else QMessageBox::information(this, "登录", QStringLiteral("登录成功"));
+    });
+    connect(m_authService, &AuthService::loginFailed, this, [this](const QString& message) {
+        QMessageBox::warning(this, "登录失败", message);
+    });
+    connect(m_authService, &AuthService::registerSucceeded, this, [this](const QString& /*role*/, const QString& message) {
+        QMessageBox::information(this, "注册成功", message.isEmpty() ? QStringLiteral("注册成功！请返回登录。") : message);
+    });
+    connect(m_authService, &AuthService::registerFailed, this, [this](const QString& message) {
+        QMessageBox::warning(this, "注册失败", message.isEmpty() ? QStringLiteral("注册失败，请重试。") : message);
+    });
+    m_authService->connectDefault();
 
 
     // Main layout containing only the stacked widget
@@ -422,11 +442,7 @@ void LoginWidget::onDoctorLogin()
         return;
     }
 
-    QJsonObject request;
-    request["action"] = "login";
-    request["username"] = username;
-    request["password"] = password;
-    m_communicationClient->sendJson(request);
+    m_authService->login(username, password);
 }
 
 void LoginWidget::onPatientLogin()
@@ -438,11 +454,7 @@ void LoginWidget::onPatientLogin()
         return;
     }
 
-    QJsonObject request;
-    request["action"] = "login";
-    request["username"] = username;
-    request["password"] = password;
-    m_communicationClient->sendJson(request);
+    m_authService->login(username, password);
 }
 
 void LoginWidget::onDoctorRegister()
@@ -457,15 +469,7 @@ void LoginWidget::onDoctorRegister()
         return;
     }
 
-    QJsonObject request;
-    request["action"] = "register";
-    request["username"] = username;
-    request["password"] = password;
-    request["role"] = "doctor";
-    // 添加缺失的详细信息
-    request["department"] = department;
-    request["phone"] = phone;
-    m_communicationClient->sendJson(request);
+    m_authService->registerDoctor(username, password, department, phone);
 }
 
 void LoginWidget::onPatientRegister()
@@ -489,44 +493,7 @@ void LoginWidget::onPatientRegister()
         return;
     }
 
-    QJsonObject request;
-    request["action"] = "register";
-    request["username"] = username;
-    request["password"] = password;
-    request["role"] = "patient";
-    // 添加缺失的详细信息
-    request["age"] = age;
-    request["phone"] = phone;
-    request["address"] = address;
-    m_communicationClient->sendJson(request);
+    m_authService->registerPatient(username, password, age, phone, address);
 }
 
-// ...existing code...
-void LoginWidget::onResponseReceived(const QJsonObject &response)
-{
-    QString type = response["type"].toString();
-    bool success = response["success"].toBool();
-    QString message = response["message"].toString(); // 获取服务器返回的消息
-
-    if (type == "login_response") {
-        if (success) {
-            QMessageBox::information(this, "登录成功", "登录成功！");
-            const QString role = response["role"].toString();
-            if (role == "doctor") {
-                emit doctorLoggedIn(doctorLoginNameEdit->text());
-            } else if (role == "patient") {
-                emit patientLoggedIn(patientLoginNameEdit->text());
-            }
-        } else {
-            // 使用服务器返回的登录失败消息
-            QMessageBox::warning(this, "登录失败", message.isEmpty() ? "用户名或密码错误。" : message);
-        }
-    } else if (type == "register_response") {
-        if (success) {
-            QMessageBox::information(this, "注册成功", message.isEmpty() ? "注册成功！请返回登录。" : message);
-        } else {
-            // 使用服务器返回的注册失败消息
-            QMessageBox::warning(this, "注册失败", message.isEmpty() ? "注册失败，请重试。" : message);
-        }
-    }
-}
+// 网络响应已由 AuthService 处理

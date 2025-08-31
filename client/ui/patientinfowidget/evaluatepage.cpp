@@ -17,6 +17,7 @@
 #include <QMessageBox>
 #include <QGroupBox>
 #include "core/network/communicationclient.h"
+#include "core/services/evaluateservice.h"
 
 EvaluatePage::EvaluatePage(CommunicationClient *c, const QString &patient, QWidget *parent)
     : BasePage(c, patient, parent) {
@@ -90,9 +91,21 @@ EvaluatePage::EvaluatePage(CommunicationClient *c, const QString &patient, QWidg
     // 初始化量表数据
     initializeScales();
     
-    // 连接网络响应
-    connect(m_client, &CommunicationClient::jsonReceived, this, [this](const QJsonObject &obj){ 
-        handleResponse(obj); 
+    // 服务化
+    m_service = new EvaluateService(m_client, this);
+    connect(m_service, &EvaluateService::configReceived, this, [this](double bal){
+        m_balanceLabel->setText(tr("当前余额: %1 元").arg(QString::number(bal,'f',2)));
+        m_statusLabel->setText(tr("配置已刷新"));
+    });
+    connect(m_service, &EvaluateService::configFailed, this, [this](const QString& err){
+        m_statusLabel->setText(tr("获取配置失败: %1").arg(err));
+    });
+    connect(m_service, &EvaluateService::rechargeSucceeded, this, [this](double bal, double amount){
+        m_balanceLabel->setText(tr("当前余额: %1 元").arg(QString::number(bal,'f',2)));
+        m_statusLabel->setText(tr("充值成功: +%1 元").arg(QString::number(amount,'f',2)));
+    });
+    connect(m_service, &EvaluateService::rechargeFailed, this, [this](const QString& err){
+        m_statusLabel->setText(tr("充值失败: %1").arg(err));
     });
 
     // 请求配置
@@ -100,13 +113,13 @@ EvaluatePage::EvaluatePage(CommunicationClient *c, const QString &patient, QWidg
 }
 
 void EvaluatePage::requestConfig(){
-    QJsonObject o; o["action"] = "evaluate_get_config"; o["patient_username"] = m_patientName; sendJson(o);
+    m_service->fetchConfig(m_patientName);
 }
 
-void EvaluatePage::sendJson(const QJsonObject &o){ m_client->sendJson(o); }
+void EvaluatePage::sendJson(const QJsonObject &){ /* 已服务化，不再直发 */ }
 
 void EvaluatePage::doRecharge(){
-    QJsonObject o; o["action"] = "evaluate_recharge"; o["patient_username"] = m_patientName; o["amount"] = m_amountSpin->value(); sendJson(o);
+    m_service->recharge(m_patientName, m_amountSpin->value());
     m_statusLabel->setText(tr("正在提交充值..."));
 }
 
@@ -336,23 +349,4 @@ void EvaluatePage::calculateAndShowResult() {
     // TODO: 保存结果到数据库
 }
 
-void EvaluatePage::handleResponse(const QJsonObject &obj){
-    const QString type = obj.value("type").toString();
-    if(type == "evaluate_config_response"){
-        if(obj.value("success").toBool()){
-            double bal = obj.value("balance").toDouble();
-            m_balanceLabel->setText(tr("当前余额: %1 元").arg(QString::number(bal,'f',2)));
-            m_statusLabel->setText(tr("配置已刷新"));
-        } else {
-            m_statusLabel->setText(tr("获取配置失败: %1").arg(obj.value("error").toString()));
-        }
-    } else if(type == "evaluate_recharge_response"){
-        if(obj.value("success").toBool()){
-            double bal = obj.value("balance").toDouble();
-            m_balanceLabel->setText(tr("当前余额: %1 元").arg(QString::number(bal,'f',2)));
-            m_statusLabel->setText(tr("充值成功: +%1 元").arg(QString::number(obj.value("amount").toDouble(),'f',2)));
-        } else {
-            m_statusLabel->setText(tr("充值失败: %1").arg(obj.value("error").toString()));
-        }
-    }
-}
+void EvaluatePage::handleResponse(const QJsonObject &){ /* 已服务化，兼容入口保留为空实现 */ }

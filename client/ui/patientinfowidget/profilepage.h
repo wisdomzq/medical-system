@@ -2,6 +2,8 @@
 #include "basepage.h"
 #include <QJsonObject>
 
+class PatientService;
+
 class QLineEdit; 
 class QPushButton;
 class QSpinBox;
@@ -37,4 +39,7 @@ private:
     // 按钮
     QPushButton *refreshBtn_ = nullptr;
     QPushButton *updateBtn_ = nullptr;
+
+    // 服务
+    PatientService* patientService_ = nullptr;
 };

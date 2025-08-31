@@ -1,5 +1,6 @@
 #include "medicationpage.h"
 #include "core/network/communicationclient.h"
+#include "core/services/medicationservice.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QHeaderView>
@@ -41,8 +42,12 @@ MedicationSearchPage::MedicationSearchPage(CommunicationClient *c, const QString
     connect(m_searchEdit,&QLineEdit::returnPressed,this,&MedicationSearchPage::onSearch);
     connect(m_remoteBtn,&QPushButton::clicked,this,&MedicationSearchPage::remoteSearch);
 
+    // 服务化
+    m_service = new MedicationService(m_client, this);
+    connect(m_service, &MedicationService::medicationsFetched, this, [this](const QJsonArray& arr){ populateTable(arr); });
+    connect(m_service, &MedicationService::fetchFailed, this, [](const QString& err){ qWarning() << "[MedicationSearchPage] 搜索失败" << err; });
     // 初始加载全部
-    sendSearchRequest("");
+    m_service->fetchAll();
 }
 
 void MedicationSearchPage::onSearch(){
@@ -54,8 +59,7 @@ void MedicationSearchPage::onSearch(){
 }
 
 void MedicationSearchPage::sendSearchRequest(const QString &keyword){
-    QJsonObject payload; if(keyword.isEmpty()){ payload["action"] = "get_medications"; } else { payload["action"] = "search_medications"; payload["keyword"] = keyword; }
-    m_client->sendJson(payload);
+    if (keyword.isEmpty()) m_service->fetchAll(); else m_service->search(keyword);
 }
 
 void MedicationSearchPage::handleResponse(const QJsonObject &obj){
@@ -119,7 +123,7 @@ void MedicationSearchPage::populateTable(const QJsonArray &arr){
 void MedicationSearchPage::remoteSearch(){
     QString kw = m_searchEdit->text().trimmed();
     if(kw.isEmpty()) return; // 需要关键词
-    QJsonObject p; p["action"]="search_medications_remote"; p["keyword"]=kw; m_client->sendJson(p);
+    m_service->searchRemote(kw);
 }
 
 void MedicationSearchPage::fetchImageForRow(int row,const QString &medName){

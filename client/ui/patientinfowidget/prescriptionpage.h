@@ -10,6 +10,7 @@ class QVBoxLayout;
 class QHBoxLayout;
 class QTextEdit;
 class QDialog;
+class PrescriptionService;
 
 class PrescriptionPage : public BasePage {
     Q_OBJECT
@@ -38,4 +39,5 @@ private:
     
     QJsonArray m_prescriptions; // 缓存处方数据
     int m_selectedRow = -1;
+    PrescriptionService* m_service = nullptr; // 非拥有
 };

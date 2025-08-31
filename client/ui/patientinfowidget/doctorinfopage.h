@@ -5,6 +5,7 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QGridLayout>
+#include "core/services/doctorprofileservice.h"
 #include <QLabel>
 #include <QScrollArea>
 #include <QFrame>
@@ -34,6 +35,7 @@ private:
     
     QString m_doctorUsername;
     CommunicationClient* m_client;
+    DoctorProfileService* m_service = nullptr; // 非拥有
     
     // UI 组件
     QVBoxLayout* m_mainLayout;

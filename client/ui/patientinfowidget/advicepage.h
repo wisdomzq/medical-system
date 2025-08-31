@@ -8,6 +8,7 @@
 class QTableWidget;
 class QPushButton;
 class QLabel;
+class AdviceService;
 
 class AdvicePage : public BasePage {
     Q_OBJECT
@@ -27,8 +28,6 @@ private:
     void showAdviceDetails(const QJsonObject &details);
     void requestAdviceList();
     void requestAdviceDetails(int adviceId);
-    void sendJson(const QJsonObject &obj);
-    void handleResponse(const QJsonObject &obj);
 
     QTableWidget *m_table;
     QPushButton *m_refreshBtn;
@@ -39,6 +38,7 @@ private:
 
     QJsonArray m_advices;
     int m_selectedRow = -1;
+    AdviceService* m_service = nullptr; // 非拥有
 
 signals:
     void prescriptionRequested(int prescriptionId);

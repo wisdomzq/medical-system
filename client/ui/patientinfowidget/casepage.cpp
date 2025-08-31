@@ -1,5 +1,6 @@
 #include "casepage.h"
 #include "core/network/communicationclient.h"
+#include "core/services/medicalrecordservice.h"
 #include <QMessageBox>
 #include <QHeaderView>
 #include <QUuid>
@@ -15,12 +16,11 @@ CasePage::CasePage(CommunicationClient *client, const QString &patientName, QWid
 {
     setupUI();
     
-    // 连接通信客户端的信号
     if (m_client) {
         connect(m_client, &CommunicationClient::connected, this, &CasePage::onConnected);
-        connect(m_client, &CommunicationClient::jsonReceived, this, &CasePage::onMessageReceived);
-        
-        // 尝试加载数据（无论是否连接）
+        m_service = new MedicalRecordService(m_client, this);
+        connect(m_service, &MedicalRecordService::fetched, this, [this](const QJsonArray& records){ m_records = records; populateTable(records); });
+        connect(m_service, &MedicalRecordService::fetchFailed, this, [this](const QString& err){ QMessageBox::warning(this, "错误", "获取病例失败：" + err); });
         loadMedicalRecords();
     }
 }
@@ -98,23 +98,7 @@ void CasePage::onConnected()
     loadMedicalRecords();
 }
 
-void CasePage::onMessageReceived(const QJsonObject &message)
-{
-    QString type = message.value("type").toString();
-    
-    if (type == "medical_records_response") {
-        bool success = message.value("success").toBool();
-        
-        if (success) {
-            QJsonArray records = message.value("data").toArray();
-            m_records = records;
-            populateTable(records);
-        } else {
-            QString error = message.value("error").toString();
-            QMessageBox::warning(this, "错误", "获取病例失败：" + error);
-        }
-    }
-}
+// 响应由服务处理
 
 void CasePage::onBackButtonClicked()
 {
@@ -156,14 +140,7 @@ void CasePage::loadMedicalRecords()
         return;
     }
     
-    // 构建请求
-    QJsonObject request;
-    request["action"] = "get_medical_records";
-    request["patient_username"] = m_patientName;
-    request["uuid"] = QUuid::createUuid().toString();
-    
-    qDebug() << "[CasePage] 发送病例请求：" << request;
-    m_client->sendJson(request);
+    m_service->fetchByPatient(m_patientName);
 }
 
 void CasePage::populateTable(const QJsonArray &records)

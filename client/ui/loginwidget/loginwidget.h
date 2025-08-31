@@ -7,7 +7,8 @@
 #include <QLineEdit>
 #include <QStackedWidget>
 #include <QFormLayout>
-#include "core/network/communicationclient.h"
+// 仅在 UI 头文件中前置声明，避免耦合网络细节
+class AuthService;
 
 class LoginWidget : public QWidget {
     Q_OBJECT
@@ -50,7 +51,8 @@ private:
     QPushButton* patientRegisterButton;
     QPushButton* backToPatientLoginButton;
 
-    CommunicationClient* m_communicationClient;
+    // 业务服务
+    AuthService* m_authService = nullptr;
 
 private:
     // Helper function to create the main title label
@@ -69,7 +71,7 @@ private slots:
     void onPatientLogin();
     void onDoctorRegister();
     void onPatientRegister();
-    void onResponseReceived(const QJsonObject &response);
+    // 不再由 UI 直接处理网络响应
 
 signals:
     void doctorLoggedIn(const QString &doctorName);

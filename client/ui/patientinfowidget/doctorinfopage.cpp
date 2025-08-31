@@ -18,6 +18,12 @@ DoctorInfoPage::DoctorInfoPage(const QString& doctorUsername, CommunicationClien
     : QWidget(parent), m_doctorUsername(doctorUsername), m_client(client)
 {
     setupUI();
+    // 服务化
+    m_service = new DoctorProfileService(m_client, this);
+    connect(m_service, &DoctorProfileService::infoReceived, this, [this](const QJsonObject& data){
+        QJsonObject enriched = data; enriched["username"] = m_doctorUsername; displayDoctorInfo(enriched);
+    });
+    connect(m_service, &DoctorProfileService::infoFailed, this, [this](const QString& err){ QMessageBox::warning(this, "错误", "获取医生信息失败: " + err); });
     loadDoctorInfo();
 }
 
@@ -197,57 +203,8 @@ void DoctorInfoPage::loadDoctorInfo()
         return;
     }
     
-    // 使用专门的get_doctor_info接口获取医生详细信息
-    QJsonObject request;
-    request["action"] = "get_doctor_info";
-    request["username"] = m_doctorUsername;
-    
-    qDebug() << "Sending get_doctor_info request for username:" << m_doctorUsername;
-    
-    // 连接信号处理响应
-    connect(m_client, &CommunicationClient::jsonReceived, this, [this](QJsonObject response) {
-        qDebug() << "=== Lambda received response ===";
-        qDebug() << "Response keys:" << response.keys();
-        
-        QString action = response.value("action").toString();
-        QString type = response.value("type").toString();
-        
-        qDebug() << "Action:" << action << "Type:" << type;
-        
-        // 处理get_doctor_info的响应
-        if (action == "get_doctor_info" || type == "doctor_info_response") {
-            qDebug() << "Processing doctor info response";
-            
-            // 断开连接避免重复处理
-            disconnect(m_client, &CommunicationClient::jsonReceived, this, nullptr);
-            
-            if (response.value("success").toBool()) {
-                QJsonObject doctorData = response.value("data").toObject();
-                qDebug() << "Received doctor data:" << doctorData;
-                
-                if (!doctorData.isEmpty()) {
-                    // 添加用户名到数据中，供显示使用
-                    doctorData["username"] = m_doctorUsername;
-                    displayDoctorInfo(doctorData);
-                } else {
-                    qDebug() << "Doctor data is empty";
-                    QMessageBox::warning(this, "错误", "医生信息为空");
-                }
-            } else {
-                QString error = response.value("error").toString();
-                if (error.isEmpty()) {
-                    error = response.value("message").toString();
-                }
-                qDebug() << "Request failed:" << error;
-                QMessageBox::warning(this, "错误", "获取医生信息失败: " + error);
-            }
-        } else {
-            qDebug() << "Ignoring unrelated response, action:" << action << "type:" << type;
-        }
-    });
-    
-    qDebug() << "Sending request...";
-    m_client->sendJson(request);
+    // 通过服务请求
+    m_service->requestDoctorInfo(m_doctorUsername);
 }
 
 

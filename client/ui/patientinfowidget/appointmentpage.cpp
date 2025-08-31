@@ -1,5 +1,6 @@
 #include "appointmentpage.h"
 #include "core/network/communicationclient.h"
+#include "core/services/patientappointmentservice.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QTableWidget>
@@ -41,9 +42,67 @@ AppointmentPage::AppointmentPage(CommunicationClient *c, const QString &patient,
     connect(registerBtn,&QPushButton::clicked,this,&AppointmentPage::sendRegisterRequest);
     connect(doctorTable,&QTableWidget::cellClicked,this,[&](int r,int){ doctorIdEdit->setText(doctorTable->item(r,0)->text()); doctorNameEdit->setText(doctorTable->item(r,2)->text().isEmpty()? doctorTable->item(r,1)->text(): doctorTable->item(r,2)->text()); });
 
-    // 连接消息接收器 - 这是关键的连接！
-    connect(m_client, &CommunicationClient::jsonReceived, this, [this](const QJsonObject &obj){ 
-        handleResponse(obj); 
+    // 服务化
+    m_service = new PatientAppointmentService(m_client, this);
+    connect(m_service, &PatientAppointmentService::doctorsFetched, this, [this](const QJsonArray& arr){
+        doctorTable->setRowCount(arr.size()); int row=0;
+        for (const auto &v : arr) {
+            QJsonObject o=v.toObject(); auto set=[&](int c,const QString&t){ doctorTable->setItem(row,c,new QTableWidgetItem(t)); };
+            // 兼容不同医生列表响应的字段
+            const bool hasSchedule = o.contains("doctorId") || o.contains("working_days");
+            if (hasSchedule) {
+                set(0, QString::number(o.value("doctorId").toInt(row+1)));
+                set(1, o.value("doctor_username").toString(o.value("username").toString()));
+                set(2, o.value("name").toString());
+                set(3, o.value("department").toString());
+                set(4, o.value("workTime").toString(o.value("working_days").toString()));
+                set(5, QString::number(o.value("fee").toDouble(o.value("consultation_fee").toDouble()), 'f', 2));
+                int reserved=o.value("reservedPatients").toInt(o.value("today_appointments").toInt());
+                int maxp=o.value("maxPatientsPerDay").toInt(o.value("max_patients_per_day").toInt());
+                int remain=o.value("remainingSlots").toInt(o.value("available_slots_today").toInt(maxp));
+                set(6, QString("%1/%2").arg(reserved).arg(maxp));
+                set(7, QString::number(remain));
+            } else {
+                set(0, QString::number(row+1));
+                set(1, o.value("username").toString());
+                set(2, o.value("name").toString());
+                set(3, o.value("department").toString());
+                set(4, QString("%1 (%2)").arg(o.value("title").toString()).arg(o.value("specialization").toString()));
+                set(5, QString::number(o.value("consultation_fee").toDouble(),'f',2));
+                int maxDaily=o.value("max_patients_per_day").toInt();
+                set(6, QString("0/%1").arg(maxDaily));
+                set(7, QString::number(maxDaily));
+            }
+            ++row;
+        }
+    });
+    connect(m_service, &PatientAppointmentService::appointmentsFetched, this, [this](const QJsonArray& arr){
+        appointmentsTable->setRowCount(arr.size()); int r=0;
+        for(const auto &v: arr){ QJsonObject o=v.toObject(); auto set=[&](int c,const QString&t){ appointmentsTable->setItem(r,c,new QTableWidgetItem(t)); };
+            set(0,QString::number(o.value("id").toInt())); 
+            set(1,o.value("doctor_username").toString()); 
+            set(2,o.value("doctor_name").toString()); 
+            set(3,o.value("appointment_date").toString()); 
+            set(4,o.value("appointment_time").toString()); 
+            set(5,o.value("department").toString()); 
+            set(6,o.value("status").toString()); 
+            set(7,QString::number(o.value("fee").toDouble(),'f',2)); 
+            if(!o.value("doctor_title").toString().isEmpty() || !o.value("doctor_specialization").toString().isEmpty()) {
+                QString tooltip = QString("医生职称: %1\n专业: %2")
+                    .arg(o.value("doctor_title").toString())
+                    .arg(o.value("doctor_specialization").toString());
+                if (auto *it = appointmentsTable->item(r,2)) it->setToolTip(tooltip);
+            }
+            ++r; 
+        }
+    });
+    connect(m_service, &PatientAppointmentService::createSucceeded, this, [this](const QString& msg){
+        QMessageBox::information(this, "成功", msg.isEmpty()? QStringLiteral("挂号成功！"): msg);
+        doctorNameEdit->clear(); doctorIdEdit->clear(); patientNameEdit->clear();
+        requestDoctorSchedule(); requestAppointments();
+    });
+    connect(m_service, &PatientAppointmentService::createFailed, this, [this](const QString& err){
+        QMessageBox::warning(this, "挂号失败", err.isEmpty()? QStringLiteral("挂号失败，请稍后重试"): err);
     });
 
     QTimer::singleShot(300,this,&AppointmentPage::requestDoctorSchedule);
@@ -145,18 +204,9 @@ void AppointmentPage::handleResponse(const QJsonObject &obj){
     }
 }
 
-void AppointmentPage::requestDoctorSchedule(){ 
-    QJsonObject req; 
-    req["action"]="get_all_doctors"; // 使用和DoctorListPage相同的API
-    m_client->sendJson(req);
-} 
+void AppointmentPage::requestDoctorSchedule(){ m_service->fetchAllDoctors(); }
 
-void AppointmentPage::requestAppointments(){ 
-    QJsonObject req; 
-    req["action"]="get_appointments_by_patient"; 
-    req["username"]=m_patientName; 
-    m_client->sendJson(req);
-} 
+void AppointmentPage::requestAppointments(){ m_service->fetchAppointmentsForPatient(m_patientName); }
 
 void AppointmentPage::sendRegisterRequest(){
     QString docName = doctorNameEdit->text().trimmed();
@@ -199,9 +249,7 @@ void AppointmentPage::sendRegisterRequest(){
     data["chief_complaint"]  = QString("预约挂号 - %1").arg(doctorRealName);
     data["fee"]              = fee;
 
-    QJsonObject req; req["action"] = "create_appointment"; req["data"] = data;
-    static int counter=1; req["uuid"] = QString("appt_req_%1_%2").arg(QDateTime::currentMSecsSinceEpoch()).arg(counter++);
-
-    qDebug() << "[AppointmentPage] 发送 create_appointment 请求:" << req;
-    m_client->sendJson(req);
+    static int counter=1; const QString uuid = QString("appt_req_%1_%2").arg(QDateTime::currentMSecsSinceEpoch()).arg(counter++);
+    qDebug() << "[AppointmentPage] 发送 create_appointment 请求数据:" << data;
+    m_service->createAppointment(data, uuid);
 }

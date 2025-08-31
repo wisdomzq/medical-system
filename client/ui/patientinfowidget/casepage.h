@@ -9,6 +9,7 @@
 #include <QLabel>
 #include <QJsonObject>
 #include <QJsonArray>
+class MedicalRecordService;
 
 class CasePage : public BasePage
 {
@@ -19,7 +20,6 @@ public:
 
 protected slots:
     void onConnected();
-    void onMessageReceived(const QJsonObject &message);
 
 private slots:
     void onBackButtonClicked();
@@ -29,6 +29,7 @@ private slots:
 private:
     void setupUI();
     void populateTable(const QJsonArray &records);
+    MedicalRecordService* m_service = nullptr; // 非拥有
     
     QVBoxLayout *m_mainLayout;
     QHBoxLayout *m_headerLayout;

@@ -1,6 +1,7 @@
 #include "doctorlistpage.h"
 #include "doctorinfopage.h"
 #include "core/network/communicationclient.h"
+#include "core/services/doctorlistservice.h"
 #include <QHeaderView>
 #include <QMessageBox>
 #include <QJsonDocument>
@@ -10,6 +11,9 @@ DoctorListPage::DoctorListPage(CommunicationClient* client, const QString& patie
     : BasePage(client, patientName, parent), m_doctorInfoPage(nullptr)
 {
     setupUI();
+    m_service = new DoctorListService(m_client, this);
+    connect(m_service, &DoctorListService::fetched, this, [this](const QJsonArray& doctors){ m_doctors = doctors; displayDoctors(doctors); });
+    connect(m_service, &DoctorListService::failed, this, [this](const QString& err){ QMessageBox::warning(this, "错误", QString("获取医生列表失败\n%1").arg(err)); });
     loadDoctorList();
 }
 
@@ -123,27 +127,7 @@ void DoctorListPage::setupUI()
 
 void DoctorListPage::loadDoctorList()
 {
-    QJsonObject request;
-    request["action"] = "get_all_doctors";
-    
-    // 使用 CommunicationClient 发送请求
-    connect(m_client, &CommunicationClient::jsonReceived, this, [this](QJsonObject response) {
-        QString action = response.value("action").toString();
-        QString type = response.value("type").toString();
-        if (action == "get_all_doctors" || type == "doctors_response") {
-            if (response.value("success").toBool()) {
-                QJsonArray doctors = response.value("data").toArray();
-                m_doctors = doctors;
-                displayDoctors(doctors);
-            } else {
-                QMessageBox::warning(this, "错误", "获取医生列表失败");
-            }
-            // 断开连接避免重复处理
-            disconnect(m_client, &CommunicationClient::jsonReceived, this, nullptr);
-        }
-    });
-    
-    m_client->sendJson(request);
+    m_service->fetchAllDoctors();
 }
 
 void DoctorListPage::displayDoctors(const QJsonArray& doctors)

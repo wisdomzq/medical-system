@@ -19,14 +19,13 @@
 #include <QJsonArray>
 #include "core/network/communicationclient.h"
 #include "core/network/protocol.h"
+#include "core/services/doctorprofileservice.h"
 
 ProfileWidget::ProfileWidget(const QString& doctorName, QWidget* parent)
     : QWidget(parent), doctorName_(doctorName)
 {
-    // 复用登录建立的单例/全局通信器在 LoginWidget 外不可直接拿，这里新建一个客户端用于该页
     client_ = new CommunicationClient(this);
     connect(client_, &CommunicationClient::connected, this, &ProfileWidget::onConnected);
-    connect(client_, &CommunicationClient::jsonReceived, this, &ProfileWidget::onJsonReceived);
     client_->connectToServer("127.0.0.1", Protocol::SERVER_PORT);
 
     auto* root = new QVBoxLayout(this);
@@ -85,44 +84,118 @@ ProfileWidget::ProfileWidget(const QString& doctorName, QWidget* parent)
     connect(choosePhotoBtn, &QPushButton::clicked, this, &ProfileWidget::onChoosePhoto);
     connect(saveBtn_, &QPushButton::clicked, this, &ProfileWidget::onSave);
     connect(refreshBtn_, &QPushButton::clicked, this, &ProfileWidget::onRefresh);
-}
 
-void ProfileWidget::onConnected() { requestProfile(); }
-
-void ProfileWidget::requestProfile() {
-    QJsonObject req; req["action"] = "get_doctor_info"; req["username"] = doctorName_;
-    client_->sendJson(req);
-}
-
-void ProfileWidget::onRefresh() { requestProfile(); }
-
-void ProfileWidget::onJsonReceived(const QJsonObject& resp) {
-    const auto type = resp.value("type").toString();
-    if (type == "doctor_info_response") {
-        if (!resp.value("success").toBool()) return;
-        const auto d = resp.value("data").toObject();
-        // DB 字段映射
+    // 注入服务并绑定信号
+    service_ = new DoctorProfileService(client_, this);
+    connect(service_, &DoctorProfileService::infoReceived, this, [this](const QJsonObject& d){
         workNumberEdit_->setText(d.value("work_number").toString());
         departmentEdit_->setText(d.value("department").toString());
-        bioEdit_->setPlainText(d.value("specialization").toString()); // 以 specialization 作为“个人资料”
+        bioEdit_->setPlainText(d.value("specialization").toString());
         feeEdit_->setValue(d.value("consultation_fee").toDouble());
         dailyLimitEdit_->setValue(d.value("max_patients_per_day").toInt());
         parseWorkTitle(d.value("title").toString());
-        // 照片：如后端返回 base64，解析预览
         const auto photoB64 = d.value("photo").toString();
         if (!photoB64.isEmpty()) {
             photoBytes_ = QByteArray::fromBase64(photoB64.toUtf8());
             QPixmap px; px.loadFromData(photoBytes_);
             photoPreview_->setPixmap(px.scaled(photoPreview_->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
         }
-    } else if (type == "update_doctor_info_response") {
-        if (resp.value("success").toBool()) {
-            QMessageBox::information(this, "提示", "保存成功");
-        } else {
-            QMessageBox::warning(this, "失败", "保存失败");
-        }
-    }
+    });
+    connect(service_, &DoctorProfileService::infoFailed, this, [this](const QString& msg){
+        if (!msg.isEmpty()) QMessageBox::warning(this, "失败", msg);
+    });
+    connect(service_, &DoctorProfileService::updateResult, this, [this](bool ok, const QString& msg){
+        if (ok) QMessageBox::information(this, "提示", msg.isEmpty() ? QStringLiteral("保存成功") : msg);
+        else QMessageBox::warning(this, "失败", msg.isEmpty() ? QStringLiteral("保存失败") : msg);
+    });
 }
+
+ProfileWidget::ProfileWidget(const QString& doctorName, CommunicationClient* client, QWidget* parent)
+    : QWidget(parent), doctorName_(doctorName), client_(client)
+{
+    auto* root = new QVBoxLayout(this);
+    auto* title = new QLabel(QString("个人信息 - %1").arg(doctorName_));
+    title->setStyleSheet("font-size:18px;font-weight:600;margin:4px 0 12px 0;");
+    root->addWidget(title);
+
+    auto* form = new QFormLayout();
+    workNumberEdit_ = new QLineEdit(this);
+    departmentEdit_ = new QLineEdit(this);
+    bioEdit_ = new QTextEdit(this);
+    bioEdit_->setPlaceholderText("个人资料……");
+
+    photoPreview_ = new QLabel(this);
+    photoPreview_->setFixedSize(96,96);
+    photoPreview_->setStyleSheet("border:1px solid #ccc;background:#fafafa;");
+    auto* choosePhotoBtn = new QPushButton("选择照片", this);
+
+    auto* photoRowW = new QWidget(this);
+    auto* photoRow = new QHBoxLayout(photoRowW);
+    photoRow->addWidget(photoPreview_);
+    photoRow->addWidget(choosePhotoBtn);
+    photoRow->addStretch();
+
+    workStartEdit_ = new QTimeEdit(this); workStartEdit_->setDisplayFormat("HH:mm");
+    workEndEdit_   = new QTimeEdit(this); workEndEdit_->setDisplayFormat("HH:mm");
+
+    feeEdit_ = new QDoubleSpinBox(this); feeEdit_->setDecimals(2); feeEdit_->setRange(0, 100000); feeEdit_->setSuffix(" 元");
+    dailyLimitEdit_ = new QSpinBox(this); dailyLimitEdit_->setRange(0, 10000); dailyLimitEdit_->setSuffix(" 人/日");
+
+    form->addRow("工号：", workNumberEdit_);
+    form->addRow("科室：", departmentEdit_);
+    form->addRow("个人资料：", bioEdit_);
+    form->addRow("照片：", photoRowW);
+    form->addRow("上班开始：", workStartEdit_);
+    form->addRow("上班结束：", workEndEdit_);
+    form->addRow("挂号费用：", feeEdit_);
+    form->addRow("单日上限：", dailyLimitEdit_);
+
+    root->addLayout(form);
+
+    auto* btns = new QHBoxLayout();
+    btns->addStretch();
+    refreshBtn_ = new QPushButton("刷新", this);
+    saveBtn_ = new QPushButton("保存", this);
+    btns->addWidget(refreshBtn_);
+    btns->addWidget(saveBtn_);
+    root->addLayout(btns);
+    root->addStretch();
+
+    connect(choosePhotoBtn, &QPushButton::clicked, this, &ProfileWidget::onChoosePhoto);
+    connect(saveBtn_, &QPushButton::clicked, this, &ProfileWidget::onSave);
+    connect(refreshBtn_, &QPushButton::clicked, this, &ProfileWidget::onRefresh);
+
+    service_ = new DoctorProfileService(client_, this);
+    connect(service_, &DoctorProfileService::infoReceived, this, [this](const QJsonObject& d){
+        workNumberEdit_->setText(d.value("work_number").toString());
+        departmentEdit_->setText(d.value("department").toString());
+        bioEdit_->setPlainText(d.value("specialization").toString());
+        feeEdit_->setValue(d.value("consultation_fee").toDouble());
+        dailyLimitEdit_->setValue(d.value("max_patients_per_day").toInt());
+        parseWorkTitle(d.value("title").toString());
+        const auto photoB64 = d.value("photo").toString();
+        if (!photoB64.isEmpty()) {
+            photoBytes_ = QByteArray::fromBase64(photoB64.toUtf8());
+            QPixmap px; px.loadFromData(photoBytes_);
+            photoPreview_->setPixmap(px.scaled(photoPreview_->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        }
+    });
+    connect(service_, &DoctorProfileService::infoFailed, this, [this](const QString& msg){
+        if (!msg.isEmpty()) QMessageBox::warning(this, "失败", msg);
+    });
+    connect(service_, &DoctorProfileService::updateResult, this, [this](bool ok, const QString& msg){
+        if (ok) QMessageBox::information(this, "提示", msg.isEmpty() ? QStringLiteral("保存成功") : msg);
+        else QMessageBox::warning(this, "失败", msg.isEmpty() ? QStringLiteral("保存失败") : msg);
+    });
+}
+
+void ProfileWidget::onConnected() { requestProfile(); }
+
+void ProfileWidget::requestProfile() { service_->requestDoctorInfo(doctorName_); }
+
+void ProfileWidget::onRefresh() { requestProfile(); }
+
+// 所有数据更新由 DoctorProfileService 信号驱动，无需直接处理 JSON
 
 QString ProfileWidget::buildWorkTitle() const {
     // 将时间以 "HH:mm-HH:mm" 编码到 title 字段（数据库现有列）
@@ -167,6 +240,5 @@ void ProfileWidget::onSave() {
         data["photo"] = QString::fromUtf8(photoBytes_.toBase64());
     }
 
-    QJsonObject req; req["action"] = "update_doctor_info"; req["username"] = doctorName_; req["data"] = data;
-    client_->sendJson(req);
+    service_->updateDoctorInfo(doctorName_, data);
 }

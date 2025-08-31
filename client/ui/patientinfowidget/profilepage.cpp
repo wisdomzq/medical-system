@@ -1,6 +1,7 @@
 #include "profilepage.h"
 #include "core/network/communicationclient.h"
 #include "core/network/protocol.h"
+#include "core/services/patientservice.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QFormLayout>
@@ -69,7 +70,25 @@ ProfilePage::ProfilePage(CommunicationClient *c,const QString &patient,QWidget *
     connect(updateBtn_, &QPushButton::clicked, this, &ProfilePage::updateProfile);
     connect(refreshBtn_, &QPushButton::clicked, this, &ProfilePage::requestPatientInfo);
     connect(backBtn, &QPushButton::clicked, this, [this]{ emit backToLogin(); });
-    
+
+    // 注入服务并连接信号
+    patientService_ = new PatientService(m_client, this);
+    connect(patientService_, &PatientService::patientInfoReceived, this, [this](const QJsonObject& d){
+        nameEdit_->setText(d.value("name").toString());
+        ageEdit_->setValue(d.value("age").toInt());
+        genderEdit_->setCurrentText(d.value("gender").toString());
+        phoneEdit_->setText(d.value("phone").toString());
+        emailEdit_->setText(d.value("email").toString());
+        addressEdit_->setText(d.value("address").toString());
+        idCardEdit_->setText(d.value("id_card").toString());
+        emergencyContactEdit_->setText(d.value("emergency_contact").toString());
+        emergencyPhoneEdit_->setText(d.value("emergency_phone").toString());
+    });
+    connect(patientService_, &PatientService::updatePatientInfoResult, this, [this](bool ok, const QString& msg){
+        if (ok) QMessageBox::information(this, "提示", msg.isEmpty() ? QStringLiteral("保存成功") : msg);
+        else QMessageBox::warning(this, "失败", msg.isEmpty() ? QStringLiteral("保存失败") : msg);
+    });
+
     QTimer::singleShot(200, this, &ProfilePage::requestPatientInfo);
 }
 
@@ -94,12 +113,7 @@ void ProfilePage::handleResponse(const QJsonObject &obj){
     }
 }
 
-void ProfilePage::requestPatientInfo(){ 
-    QJsonObject req; 
-    req["action"] = "get_patient_info"; 
-    req["username"] = m_patientName; 
-    m_client->sendJson(req);
-} 
+void ProfilePage::requestPatientInfo(){ patientService_->requestPatientInfo(m_patientName); }
 
 void ProfilePage::updateProfile(){ 
     // 将 UI 数据映射到数据库字段
@@ -114,9 +128,5 @@ void ProfilePage::updateProfile(){
     data["emergency_contact"] = emergencyContactEdit_->text();
     data["emergency_phone"] = emergencyPhoneEdit_->text();
 
-    QJsonObject req; 
-    req["action"] = "update_patient_info"; 
-    req["username"] = m_patientName; 
-    req["data"] = data;
-    m_client->sendJson(req);
+    patientService_->updatePatientInfo(m_patientName, data);
 }

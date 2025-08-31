@@ -43,6 +43,20 @@ set(srcs
     core/network/communicationclient.cpp
     core/network/responsedispatcher.cpp
     core/network/streamparser.cpp
+    core/services/authservice.cpp
+    core/services/patientservice.cpp
+    core/services/appointmentservice.cpp
+    core/services/doctorprofileservice.cpp
+    core/services/patientappointmentservice.cpp
+    core/services/adviceservice.cpp
+    core/services/medicationservice.cpp
+    core/services/evaluateservice.cpp
+    core/services/doctorlistservice.cpp
+    core/services/hospitalizationservice.cpp
+    core/services/medicalrecordservice.cpp
+    core/services/prescriptionservice.cpp
+    core/services/attendanceservice.cpp
+    core/services/medicalcrudservice.cpp
     resources/resources.qrc
     main.cpp
 )
@@ -61,6 +75,7 @@ target_include_directories(hello PRIVATE
     core
     core/network/src
     core/network/src/client
+    core/services
 )
 
 target_link_libraries(hello PRIVATE Qt5::Widgets Qt5::Network Qt5::Sql)

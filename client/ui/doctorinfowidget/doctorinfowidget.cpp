@@ -28,7 +28,6 @@ DoctorInfoWidget::DoctorInfoWidget(const QString &doctorName, QWidget *parent)
 
     // 创建共享的通信客户端
     m_sharedClient = new CommunicationClient(this);
-    connect(m_sharedClient, &CommunicationClient::jsonReceived, this, &DoctorInfoWidget::onSharedClientJsonReceived);
     m_sharedClient->connectToServer("127.0.0.1", Protocol::SERVER_PORT);
 
     // 仅对医生界面应用样式
@@ -48,9 +47,9 @@ DoctorInfoWidget::DoctorInfoWidget(const QString &doctorName, QWidget *parent)
     pages = new QStackedWidget(this);
 
     // 构建页面 - 传递共享的通信客户端
-    auto attendance = new AttendanceWidget(m_doctorName, this);
+    auto attendance = new AttendanceWidget(m_doctorName, m_sharedClient, this);
     auto chat = new ChatRoomWidget(m_doctorName, this);
-    auto profile = new ProfileWidget(m_doctorName, this);
+    auto profile = new ProfileWidget(m_doctorName, m_sharedClient, this);
     auto appts = new AppointmentsWidget(m_doctorName, m_sharedClient, this);  // 使用新的构造函数
     auto charts = new DataChartWidget(m_doctorName, this);
     auto remote = new RemoteDataWidget(m_doctorName, this);
@@ -112,27 +111,4 @@ DoctorInfoWidget::DoctorInfoWidget(const QString &doctorName, QWidget *parent)
 
 DoctorInfoWidget::~DoctorInfoWidget() = default;
 
-void DoctorInfoWidget::onSharedClientJsonReceived(const QJsonObject& obj) {
-    const QString type = obj.value("type").toString();
-    qDebug() << "[DoctorInfoWidget] 收到共享客户端消息:" << type;
-    
-    // 根据消息类型分发给相应的模块
-    if (type == "appointments_response") {
-        qDebug() << "[DoctorInfoWidget] 分发预约响应给AppointmentsWidget";
-        // 转发给预约模块
-        auto* appointmentsWidget = qobject_cast<AppointmentsWidget*>(pages->widget(3)); // 预约信息在第4个位置（索引3）
-        if (appointmentsWidget) {
-            qDebug() << "[DoctorInfoWidget] 找到AppointmentsWidget，调用onJsonReceived";
-            appointmentsWidget->onJsonReceived(obj);
-        } else {
-            qDebug() << "[DoctorInfoWidget] 未找到AppointmentsWidget!";
-        }
-    } else if (type == "doctor_info_response" || type == "update_doctor_info_response") {
-        // 转发给个人信息模块
-        auto* profileWidget = qobject_cast<ProfileWidget*>(pages->widget(2)); // 个人信息在第3个位置（索引2）
-        if (profileWidget) {
-            profileWidget->onJsonReceived(obj);
-        }
-    }
-    // 可以继续添加其他模块的消息分发
-}
+// 预约与医生个人信息均由各自 Service 监听网络并驱动 UI，此处无需集中分发

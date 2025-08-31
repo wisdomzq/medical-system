@@ -12,7 +12,7 @@ class MedicationSearchPage : public BasePage {
     Q_OBJECT
 public:
     explicit MedicationSearchPage(CommunicationClient *c, const QString &patient, QWidget *parent=nullptr);
-    void handleResponse(const QJsonObject &obj);
+    void handleResponse(const QJsonObject &obj); // 兼容 PatientInfoWidget 旧转发，后续可移除
 private slots:
     void onSearch();
     void onImageDownloaded();
@@ -26,4 +26,5 @@ private:
     void populateTable(const QJsonArray &arr);
     void fetchImageForRow(int row, const QString &medName);
     void remoteSearch();
+    class MedicationService* m_service = nullptr; // 非拥有
 };

@@ -7,6 +7,7 @@ class QLineEdit;
 class QTextEdit;
 class QTableWidget;
 class CommunicationClient;
+class AttendanceService;
 
 class QStackedWidget;
 class QPushButton;
@@ -15,6 +16,7 @@ class AttendanceWidget : public QWidget {
     Q_OBJECT
 public:
     explicit AttendanceWidget(const QString& doctorName, QWidget* parent=nullptr);
+    explicit AttendanceWidget(const QString& doctorName, CommunicationClient* client, QWidget* parent=nullptr);
 
 private slots:
     void showCheckIn();
@@ -26,7 +28,6 @@ private slots:
     void refreshAttendanceHistory();
     void cancelSelectedLeave();
     void onConnected();
-    void onJsonReceived(const QJsonObject& obj);
 
 private:
     QString doctorName_;
@@ -53,6 +54,7 @@ private:
 
     // 网络
     CommunicationClient* client_ {nullptr};
+    AttendanceService* service_ {nullptr};
     bool historyUserTriggered_ {false};
 };
 

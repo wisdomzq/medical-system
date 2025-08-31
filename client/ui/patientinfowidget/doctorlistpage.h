@@ -13,6 +13,7 @@
 #include <QJsonArray>
 
 class DoctorInfoPage;
+class DoctorListService;
 
 class DoctorListPage : public BasePage
 {
@@ -47,6 +48,7 @@ private:
     
     // 医生详情页面
     DoctorInfoPage* m_doctorInfoPage;
+    DoctorListService* m_service = nullptr; // 非拥有
 };
 
 #endif // DOCTORLISTPAGE_H

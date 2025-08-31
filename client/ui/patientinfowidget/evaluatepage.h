@@ -3,6 +3,7 @@
 #include <QJsonObject>
 class QLabel; class QPushButton; class QLineEdit; class QDoubleSpinBox; class QComboBox; class QListWidget;
 class QStackedWidget; class QScrollArea; class QButtonGroup; class QRadioButton; class QTextEdit; class QGridLayout;
+class EvaluateService;
 
 // 量表题目结构
 struct Question {
@@ -47,4 +48,5 @@ private:
     QList<Scale> m_scales;
     QList<QList<QButtonGroup*>> m_scaleButtonGroups; // 每个量表有多个问题，每个问题一个按钮组
     int m_currentScaleIndex = -1;
+    EvaluateService* m_service = nullptr; // 非拥有
 };

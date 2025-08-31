@@ -1,5 +1,6 @@
 #include "prescriptionpage.h"
 #include "core/network/communicationclient.h"
+#include "core/services/prescriptionservice.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QTableWidget>
@@ -17,10 +18,12 @@ PrescriptionPage::PrescriptionPage(CommunicationClient *c, const QString &patien
     : BasePage(c, patient, parent) {
     setupUI();
     
-    // 连接网络响应
-    connect(m_client, &CommunicationClient::jsonReceived, this, [this](const QJsonObject &obj){
-        handleResponse(obj);
-    });
+    // 服务化
+    m_service = new PrescriptionService(m_client, this);
+    connect(m_service, &PrescriptionService::listFetched, this, [this](const QJsonArray& data){ populateTable(data); m_statusLabel->setText(QString("已加载 %1 条处方记录").arg(data.size())); });
+    connect(m_service, &PrescriptionService::listFailed, this, [this](const QString& err){ m_statusLabel->setText(QString("加载失败: %1").arg(err)); QMessageBox::warning(this, "错误", QString("获取处方列表失败:\n%1").arg(err)); });
+    connect(m_service, &PrescriptionService::detailsFetched, this, [this](const QJsonObject& data){ showPrescriptionDetails(data); m_statusLabel->setText("处方详情已显示"); });
+    connect(m_service, &PrescriptionService::detailsFailed, this, [this](const QString& err){ m_statusLabel->setText(QString("获取详情失败: %1").arg(err)); QMessageBox::warning(this, "错误", QString("获取处方详情失败:\n%1").arg(err)); });
     
     // 初始加载数据
     requestPrescriptionList();
@@ -289,46 +292,13 @@ void PrescriptionPage::onTableDoubleClick(int row, int column) {
 }
 
 void PrescriptionPage::requestPrescriptionList() {
-    QJsonObject req;
-    req["action"] = "prescription_get_list";
-    req["patient_username"] = m_patientName;
-    sendJson(req);
+    m_service->fetchList(m_patientName);
 }
 
 void PrescriptionPage::requestPrescriptionDetails(int prescriptionId) {
-    QJsonObject req;
-    req["action"] = "prescription_get_details";
-    req["prescription_id"] = prescriptionId;
-    sendJson(req);
+    m_service->fetchDetails(prescriptionId);
 }
 
-void PrescriptionPage::sendJson(const QJsonObject &obj) {
-    m_client->sendJson(obj);
-}
+void PrescriptionPage::sendJson(const QJsonObject &) { /* 已服务化，不再直发 */ }
 
-void PrescriptionPage::handleResponse(const QJsonObject &obj) {
-    const QString type = obj.value("type").toString();
-    
-    if (type == "prescription_list_response") {
-        if (obj.value("success").toBool()) {
-            QJsonArray data = obj.value("data").toArray();
-            populateTable(data);
-            m_statusLabel->setText(QString("已加载 %1 条处方记录").arg(data.size()));
-        } else {
-            QString error = obj.value("error").toString();
-            m_statusLabel->setText(QString("加载失败: %1").arg(error));
-            QMessageBox::warning(this, "错误", QString("获取处方列表失败:\n%1").arg(error));
-        }
-    }
-    else if (type == "prescription_details_response") {
-        if (obj.value("success").toBool()) {
-            QJsonObject data = obj.value("data").toObject();
-            showPrescriptionDetails(data);
-            m_statusLabel->setText("处方详情已显示");
-        } else {
-            QString error = obj.value("error").toString();
-            m_statusLabel->setText(QString("获取详情失败: %1").arg(error));
-            QMessageBox::warning(this, "错误", QString("获取处方详情失败:\n%1").arg(error));
-        }
-    }
-}
+void PrescriptionPage::handleResponse(const QJsonObject &) { /* 已服务化，兼容入口保留为空实现 */ }

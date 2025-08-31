@@ -16,7 +16,6 @@
 #include <QListWidget>
 #include <QStackedWidget>
 #include <QTabWidget>
-#include <QJsonObject>
 #include <QFile>
 #include <QIODevice>
 #include <QIcon>
@@ -130,19 +129,7 @@ PatientInfoWidget::PatientInfoWidget(const QString &patientName, QWidget *parent
     root->addWidget(pages, 1);
     setLayout(root);
 
-    connect(m_communicationClient, &CommunicationClient::jsonReceived, this, [this](const QJsonObject &obj){
-        const QString type = obj.value("type").toString();
-        if (type.startsWith("doctor_") || type == "register_doctor_response" || type == "appointments_response")
-            m_appointmentPage->handleResponse(obj);
-        if (type.startsWith("patient_info"))
-            m_profilePage->handleResponse(obj);
-        if (type.startsWith("hospitalizations"))
-            m_hospitalPage->handleResponse(obj);
-        if (type == "medications_response")
-            m_medicationSearchPage->handleResponse(obj);
-        if (type.startsWith("evaluate_"))
-            m_evaluatePage->handleResponse(obj);
-    });
+    // 所有子页均由各自 Service 监听并驱动，无需在此集中分发 JSON
 }
 
 PatientInfoWidget::~PatientInfoWidget() = default;

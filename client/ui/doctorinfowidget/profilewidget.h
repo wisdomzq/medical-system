@@ -14,14 +14,15 @@ class QSpinBox;
 class QLabel;
 class QPushButton;
 class CommunicationClient;
+class DoctorProfileService;
 
 // 个人信息模块：进入时请求后端信息，展示并可编辑后保存
 class ProfileWidget : public QWidget {
     Q_OBJECT
 public:
     explicit ProfileWidget(const QString& doctorName, QWidget* parent=nullptr);
+    explicit ProfileWidget(const QString& doctorName, CommunicationClient* client, QWidget* parent=nullptr);
     
-    void onJsonReceived(const QJsonObject& resp); // 设为公有，便于主界面分发消息
 
 private slots:
     void onConnected();
@@ -36,6 +37,7 @@ private:
 
     QString doctorName_;
     CommunicationClient* client_ {nullptr};
+    DoctorProfileService* service_ {nullptr};
 
     // UI
     QLineEdit* workNumberEdit_ {nullptr};

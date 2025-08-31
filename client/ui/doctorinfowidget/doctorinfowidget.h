@@ -20,7 +20,6 @@ signals:
     void backToLogin();
 
 private slots:
-    void onSharedClientJsonReceived(const QJsonObject& obj);
 
 private:
     QListWidget *navList {nullptr};

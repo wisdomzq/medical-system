@@ -10,15 +10,16 @@ class QTextEdit;
 class QPushButton;
 class QListWidget;
 class CommunicationClient;
+class MedicalCrudService;
 
 class AppointmentDetailsDialog : public QDialog {
     Q_OBJECT
 public:
     explicit AppointmentDetailsDialog(const QString& doctorUsername, const QJsonObject& appointment, QWidget* parent=nullptr);
+    explicit AppointmentDetailsDialog(const QString& doctorUsername, const QJsonObject& appointment, CommunicationClient* client, QWidget* parent=nullptr);
 
 private slots:
     void onConnected();
-    void onJsonReceived(const QJsonObject& obj);
     void onSaveRecord();
     void onAddAdvice();
     void onAddPrescription();
@@ -52,6 +53,8 @@ private:
     QListWidget* prescriptionsList_ {nullptr};
 
     CommunicationClient* client_ {nullptr};
+    MedicalCrudService* service_ {nullptr};
+    bool ownsClient_ {false};
 };
 
 #endif // APPOINTMENT_DETAILS_DIALOG_H
