@@ -18,6 +18,8 @@
 #include <QGroupBox>
 #include "core/network/communicationclient.h"
 #include "core/services/evaluateservice.h"
+#include "qrcodedialog.h"
+#include "paymentsuccessdialog.h"
 
 EvaluatePage::EvaluatePage(CommunicationClient *c, const QString &patient, QWidget *parent)
     : BasePage(c, patient, parent) {
@@ -103,6 +105,11 @@ EvaluatePage::EvaluatePage(CommunicationClient *c, const QString &patient, QWidg
     connect(m_service, &EvaluateService::rechargeSucceeded, this, [this](double bal, double amount){
         m_balanceLabel->setText(tr("当前余额: %1 元").arg(QString::number(bal,'f',2)));
         m_statusLabel->setText(tr("充值成功: +%1 元").arg(QString::number(amount,'f',2)));
+        
+        // 显示充值成功对话框
+        auto *successDialog = new PaymentSuccessDialog(amount, bal, this);
+        successDialog->exec();
+        successDialog->deleteLater();
     });
     connect(m_service, &EvaluateService::rechargeFailed, this, [this](const QString& err){
         m_statusLabel->setText(tr("充值失败: %1").arg(err));
@@ -119,8 +126,29 @@ void EvaluatePage::requestConfig(){
 void EvaluatePage::sendJson(const QJsonObject &){ /* 已服务化，不再直发 */ }
 
 void EvaluatePage::doRecharge(){
-    m_service->recharge(m_patientName, m_amountSpin->value());
-    m_statusLabel->setText(tr("正在提交充值..."));
+    double amount = m_amountSpin->value();
+    if (amount <= 0) {
+        QMessageBox::warning(this, tr("警告"), tr("请输入有效的充值金额"));
+        return;
+    }
+    
+    // 显示二维码对话框
+    auto *qrDialog = new QRCodeDialog(amount, this);
+    
+    // 连接支付完成信号
+    connect(qrDialog, &QRCodeDialog::paymentCompleted, this, [this](double amount) {
+        // 实际发送充值请求到服务器
+        m_service->recharge(m_patientName, amount);
+        m_statusLabel->setText(tr("正在确认支付..."));
+    });
+    
+    // 连接支付取消信号
+    connect(qrDialog, &QRCodeDialog::paymentCancelled, this, [this]() {
+        m_statusLabel->setText(tr("充值已取消"));
+    });
+    
+    qrDialog->exec();
+    qrDialog->deleteLater();
 }
 
 void EvaluatePage::goBack(){ emit requestBackHome(); }

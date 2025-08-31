@@ -4,6 +4,8 @@
 class QLabel; class QPushButton; class QLineEdit; class QDoubleSpinBox; class QComboBox; class QListWidget;
 class QStackedWidget; class QScrollArea; class QButtonGroup; class QRadioButton; class QTextEdit; class QGridLayout;
 class EvaluateService;
+class QRCodeDialog;
+class PaymentSuccessDialog;
 
 // 量表题目结构
 struct Question {

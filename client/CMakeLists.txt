@@ -32,6 +32,10 @@ set(srcs
     ui/patientinfowidget/medicationpage.h
     ui/patientinfowidget/evaluatepage.cpp
     ui/patientinfowidget/evaluatepage.h
+    ui/patientinfowidget/qrcodedialog.cpp
+    ui/patientinfowidget/qrcodedialog.h
+    ui/patientinfowidget/paymentsuccessdialog.cpp
+    ui/patientinfowidget/paymentsuccessdialog.h
     ui/patientinfowidget/prescriptionpage.cpp
     ui/patientinfowidget/prescriptionpage.h
     ui/patientinfowidget/advicepage.cpp
