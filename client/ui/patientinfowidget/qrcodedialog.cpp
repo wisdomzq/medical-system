@@ -15,15 +15,15 @@ QRCodeDialog::QRCodeDialog(double amount, QWidget *parent)
     : QDialog(parent), m_amount(amount), m_timeLeft(60) {
     setWindowTitle(tr("扫码充值"));
     setModal(true);
-    setFixedSize(400, 500);
+    setFixedSize(400, 550); // 增加高度从500到550
     setupUI();
     startPaymentTimer();
 }
 
 void QRCodeDialog::setupUI() {
     auto *mainLay = new QVBoxLayout(this);
-    mainLay->setSpacing(15);
-    mainLay->setContentsMargins(20, 20, 20, 20);
+    mainLay->setSpacing(12); // 减少间距从15到12
+    mainLay->setContentsMargins(20, 15, 20, 20); // 减少上边距从20到15
     
     // 标题
     auto *titleLabel = new QLabel(tr("请使用手机支付宝/微信扫码付款"));
@@ -46,18 +46,21 @@ void QRCodeDialog::setupUI() {
     
     // 二维码显示区域
     m_qrCodeLabel = new QLabel();
-    m_qrCodeLabel->setFixedSize(200, 200);
+    m_qrCodeLabel->setFixedSize(180, 180); // 减少尺寸从200x200到180x180
     m_qrCodeLabel->setAlignment(Qt::AlignCenter);
     m_qrCodeLabel->setStyleSheet("border: 2px solid #cccccc; background-color: #f9f9f9;");
     
     // 创建虚拟二维码图片
-    QPixmap qrPixmap(180, 180);
+    QPixmap qrPixmap(176, 176); // 调整为176x176，减去边框4px后正好填满180x180的标签
     qrPixmap.fill(Qt::white);
     QPainter painter(&qrPixmap);
-    painter.setPen(QPen(Qt::black, 2));
+    painter.setPen(QPen(Qt::black, 1)); // 减少笔宽到1px
     
     // 画一个简单的二维码样式（方块图案）
-    int blockSize = 10;
+    // 176 / 18 ≈ 9.78，使用9px方块，总共162x162，居中显示
+    int blockSize = 9; // 增加块大小到9px，让二维码更饱满
+    int totalSize = 18 * blockSize; // 162px
+    int offset = (176 - totalSize) / 2; // 居中偏移 (176-162)/2 = 7px
     bool pattern[18][18] = {
         {1,1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1,1},
         {1,0,0,0,0,0,1,0,1,0,1,1,0,0,0,0,0,1},
@@ -82,18 +85,23 @@ void QRCodeDialog::setupUI() {
     for (int i = 0; i < 18; i++) {
         for (int j = 0; j < 18; j++) {
             if (pattern[i][j]) {
-                painter.fillRect(j * blockSize, i * blockSize, blockSize, blockSize, Qt::black);
+                painter.fillRect(offset + j * blockSize, offset + i * blockSize, blockSize, blockSize, Qt::black);
             }
         }
     }
     
     m_qrCodeLabel->setPixmap(qrPixmap);
     
+    // 添加一些垂直空间调整
+    mainLay->addSpacing(5); // 在二维码前添加5px间距
+    
     auto *qrLay = new QHBoxLayout();
     qrLay->addStretch();
     qrLay->addWidget(m_qrCodeLabel);
     qrLay->addStretch();
     mainLay->addLayout(qrLay);
+    
+    mainLay->addSpacing(3); // 在二维码后添加3px间距
     
     // 说明文字
     m_instructionLabel = new QLabel(tr("请在1分钟内完成支付\n支付完成后，系统将自动确认到账"));
