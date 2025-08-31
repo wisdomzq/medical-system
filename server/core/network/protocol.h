@@ -31,6 +31,7 @@ enum class MessageType : quint16 {
     ErrorResponse = 3,
     HeartbeatPing = 4,
     HeartbeatPong = 5,
+    ClientDisconnect = 6
 };
 
 // 头部结构（大端序）

@@ -115,6 +115,12 @@ void ClientHandler::onReadyRead()
 
 void ClientHandler::onDisconnected()
 {
+    // 在销毁前，向路由器发出一个“客户端断开”的临时请求，便于清理路由表
+    Header hdr;
+    hdr.type = MessageType::ClientDisconnect;
+    hdr.payloadSize = 0;
+    emit requestReady(this, hdr, QJsonObject());
+
     qInfo() << "[Handler] 客户端断开，准备销毁自身";
     this->deleteLater();
 }

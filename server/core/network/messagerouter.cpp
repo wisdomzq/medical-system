@@ -28,6 +28,12 @@ void MessageRouter::onRequestReady(ClientHandler* sender, Header header, QJsonOb
         qInfo() << "[Router] 广播JSON请求给业务层";
         handleJson(sender, header, payload);
         break;
+    case MessageType::ClientDisconnect: {
+        // 客户端断开：清理该连接相关的路由映射
+        cleanupRoutesFor(sender);
+        qInfo() << "[Router] 已清理断开连接的路由";
+        break;
+    }
     case MessageType::HeartbeatPing: {
         // 心跳无需 JSON 载荷
         emit responseReady(sender, MessageType::HeartbeatPong, QJsonObject());
