@@ -48,7 +48,6 @@ public:
     bool createMedicalRecord(const QJsonObject& recordData);
     bool getMedicalRecordsByPatient(const QString& patientUsername, QJsonArray& records);
     bool getMedicalRecordsByDoctor(const QString& doctorUsername, QJsonArray& records);
-    bool getMedicalRecordsByAppointment(int appointmentId, QJsonArray& records);
     bool updateMedicalRecord(int recordId, const QJsonObject& recordData);
 
     // 医嘱管理

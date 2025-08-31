@@ -24,7 +24,6 @@ void MedicalCrudModule::onRequest(const QJsonObject &payload) {
         Log::request("MedicalCrud", payload);
     if (a == "create_medical_record") return handleCreateRecord(payload);
     if (a == "update_medical_record") return handleUpdateRecord(payload);
-    if (a == "get_medical_records_by_appointment") return handleGetRecordsByAppointment(payload);
     if (a == "get_medical_advices_by_record") return handleGetAdvicesByRecord(payload);
     if (a == "create_medical_advice") return handleCreateAdvice(payload);
     if (a == "create_prescription") return handleCreatePrescription(payload);
@@ -45,18 +44,6 @@ void MedicalCrudModule::handleUpdateRecord(const QJsonObject &payload) {
     bool ok = db.updateMedicalRecord(payload.value("record_id").toInt(), payload.value("data").toObject());
     QJsonObject out; out["type"] = "update_medical_record_response"; out["success"] = ok;
     Log::result("MedicalCrud", ok, "update_medical_record");
-    reply(out, payload);
-}
-
-void MedicalCrudModule::handleGetRecordsByAppointment(const QJsonObject &payload) {
-    DBManager db(DatabaseConfig::getDatabasePath());
-    QJsonArray arr; 
-    bool ok = db.getMedicalRecordsByAppointment(payload.value("appointment_id").toInt(), arr);
-    QJsonObject out; 
-    out["type"] = "medical_records_response"; 
-    out["success"] = ok; 
-    if (ok) out["data"] = arr;
-    Log::resultCount("MedicalCrud", ok, arr.size(), "records_by_appointment");
     reply(out, payload);
 }
 

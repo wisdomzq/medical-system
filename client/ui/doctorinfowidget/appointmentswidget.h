@@ -7,7 +7,6 @@
 
 class QTableWidget;
 class QPushButton;
-class QLineEdit;
 class CommunicationClient;
 class AppointmentService;
 
@@ -22,9 +21,6 @@ private slots:
     void onConnected();
     void onRefresh();
     void onRowDetailClicked();
-    void onFilterClicked();
-    void onExportClicked(); 
-    void onStatsClicked();
 
 private:
     void requestAppointments();
@@ -32,17 +28,12 @@ private:
     void setupUI();
     void renderAppointments(const QJsonArray& data);
     void showFetchError(const QString& message);
-    void exportToCSV(const QString& fileName);
 
     QString doctorName_;
     CommunicationClient* client_ {nullptr};
     bool ownsClient_ {false};
     QTableWidget* table_ {nullptr};
     QPushButton* refreshBtn_ {nullptr};
-    QPushButton* filterBtn_ {nullptr};
-    QPushButton* exportBtn_ {nullptr};
-    QPushButton* statsBtn_ {nullptr};
-    QLineEdit* filterEdit_ {nullptr};
     AppointmentService* service_ {nullptr};
 };
 

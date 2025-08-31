@@ -14,7 +14,6 @@
 #include <QDateTime>
 #include <QDate>
 #include <QTime>
-#include <QSet>
 
 AppointmentPage::AppointmentPage(CommunicationClient *c, const QString &patient, QWidget *parent)
     : BasePage(c, patient, parent)
@@ -155,15 +154,14 @@ void AppointmentPage::handleResponse(const QJsonObject &obj){
             ++row; 
         }
     } else if(type=="register_doctor_response" || type=="create_appointment_response"){
-        // 增强防重复机制
+        static QString lastProcessedUuid;
         QString currentUuid = obj.value("request_uuid").toString();
-        static QSet<QString> processedUuids;
         
-        if (!currentUuid.isEmpty() && processedUuids.contains(currentUuid)) {
-            qDebug() << "重复响应，跳过处理:" << currentUuid;
+        // 防止重复处理同一个响应
+        if (!currentUuid.isEmpty() && currentUuid == lastProcessedUuid) {
             return;
         }
-        processedUuids.insert(currentUuid);
+        lastProcessedUuid = currentUuid;
         
         if(obj.value("success").toBool()){
             QMessageBox::information(this,"成功","挂号成功！");
@@ -171,11 +169,9 @@ void AppointmentPage::handleResponse(const QJsonObject &obj){
             doctorNameEdit->clear();
             doctorIdEdit->clear();
             patientNameEdit->clear();
-            // 延迟刷新，确保数据库已更新
-            QTimer::singleShot(500, [this]() {
-                requestDoctorSchedule();
-                requestAppointments();
-            });
+            // 刷新数据
+            requestDoctorSchedule(); 
+            requestAppointments();
         } else {
             QString errorMsg = obj.value("error").toString();
             if(errorMsg.isEmpty()) {

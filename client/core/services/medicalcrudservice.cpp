@@ -11,10 +11,6 @@ MedicalCrudService::MedicalCrudService(CommunicationClient* sharedClient, QObjec
 void MedicalCrudService::getRecordsByPatient(const QString& patientUsername) {
     m_client->sendJson(QJsonObject{{"action","get_medical_records_by_patient"}, {"patient_username", patientUsername}});
 }
-
-void MedicalCrudService::getRecordsByAppointment(int appointmentId) {
-    m_client->sendJson(QJsonObject{{"action","get_medical_records_by_appointment"}, {"appointment_id", appointmentId}});
-}
 void MedicalCrudService::createRecord(const QJsonObject& data) {
     m_client->sendJson(QJsonObject{{"action","create_medical_record"}, {"data", data}});
 }

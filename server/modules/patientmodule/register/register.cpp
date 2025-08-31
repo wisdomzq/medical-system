@@ -2,7 +2,6 @@
 #include <QJsonArray>
 #include <QDateTime>
 #include <QDebug>
-#include <QDate>
 #include "core/database/database.h"
 #include "core/network/messagerouter.h"
 #include <QCoreApplication>
@@ -32,7 +31,6 @@ QList<DoctorSchedule> RegisterManager::getAllDoctorSchedules() {
     DBManager db(dir.filePath("data/user.db"));
     QJsonArray doctors;
     if (db.getAllDoctors(doctors)) {
-        QString today = QDate::currentDate().toString("yyyy-MM-dd");
         int idx = 1; // 生成临时 doctorId
         for (const auto &v : doctors) {
             QJsonObject o = v.toObject();
@@ -48,22 +46,7 @@ QList<DoctorSchedule> RegisterManager::getAllDoctorSchedules() {
             ds.workTime = "08:30-17:30"; // 默认工作时间占位
             ds.fee = o.value("consultation_fee").toDouble();
             ds.maxPatientsPerDay = 50; // 默认上限
-            
-            // 实时查询当天已预约数量
-            QJsonArray appointments;
-            if (db.getAppointmentsByDoctor(ds.jobNumber, appointments)) {
-                int todayCount = 0;
-                for (const auto& appt : appointments) {
-                    QJsonObject appointmentObj = appt.toObject();
-                    if (appointmentObj.value("appointment_date").toString() == today) {
-                        todayCount++;
-                    }
-                }
-                ds.reservedPatients = todayCount;
-            } else {
-                ds.reservedPatients = 0;   // 查询失败时默认为0
-            }
-            
+            ds.reservedPatients = 0;   // 未统计已预约数量（需改DB才可精确）
             list.push_back(ds);
         }
         if (list.isEmpty()) {
