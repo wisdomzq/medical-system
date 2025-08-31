@@ -9,8 +9,12 @@ class QLineEdit;
 class QTextEdit;
 class QPushButton;
 class QListWidget;
+class QButtonGroup;
+class QGroupBox;
+class QDateEdit;
 class CommunicationClient;
 class MedicalCrudService;
+class HospitalizationService;
 
 class AppointmentDetailsDialog : public QDialog {
     Q_OBJECT
@@ -40,8 +44,8 @@ private:
     QTextEdit* notesEdit_ {nullptr};
     QPushButton* saveBtn_ {nullptr};
     // advices
-    QLineEdit* adviceTypeEdit_ {nullptr};
-    QLineEdit* advicePriorityEdit_ {nullptr};
+    QButtonGroup* adviceTypeGroup_ {nullptr};
+    QButtonGroup* advicePriorityGroup_ {nullptr};
     QTextEdit* adviceContentEdit_ {nullptr};
     QPushButton* adviceAddBtn_ {nullptr};
     QListWidget* advicesList_ {nullptr};
@@ -50,6 +54,17 @@ private:
     QLineEdit* prescriptionNotesEdit_ {nullptr};
     QPushButton* prescriptionAddBtn_ {nullptr};
     QListWidget* prescriptionsList_ {nullptr};
+
+    // hospitalization
+    QGroupBox* hospBox_ {nullptr};
+    QButtonGroup* hospYesNoGroup_ {nullptr};
+    QWidget* hospDetails_ {nullptr};
+    QLineEdit* hospWardEdit_ {nullptr};
+    QLineEdit* hospBedEdit_ {nullptr};
+    QDateEdit* hospAdmissionDateEdit_ {nullptr};
+    // 已移除出院日期与日费用输入框
+    QPushButton* hospCreateBtn_ {nullptr};
+    HospitalizationService* hospService_ {nullptr};
 
     CommunicationClient* client_ {nullptr};
     MedicalCrudService* service_ {nullptr};

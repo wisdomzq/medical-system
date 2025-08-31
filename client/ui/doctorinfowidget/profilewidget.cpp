@@ -75,6 +75,8 @@ ProfileWidget::ProfileWidget(const QString& doctorName, CommunicationClient* cli
     connect(choosePhotoBtn, &QPushButton::clicked, this, &ProfileWidget::onChoosePhoto);
     connect(saveBtn_, &QPushButton::clicked, this, &ProfileWidget::onSave);
     connect(refreshBtn_, &QPushButton::clicked, this, &ProfileWidget::onRefresh);
+    // 网络连上时自动拉取；进入页面立即拉取一次
+    if (client_) connect(client_, &CommunicationClient::connected, this, &ProfileWidget::onConnected);
 
     service_ = new DoctorProfileService(client_, this);
     connect(service_, &DoctorProfileService::infoReceived, this, [this](const QJsonObject& d){
@@ -98,6 +100,9 @@ ProfileWidget::ProfileWidget(const QString& doctorName, CommunicationClient* cli
         if (ok) QMessageBox::information(this, "提示", msg.isEmpty() ? QStringLiteral("保存成功") : msg);
         else QMessageBox::warning(this, "失败", msg.isEmpty() ? QStringLiteral("保存失败") : msg);
     });
+
+    // 进入页面立即请求一次资料
+    requestProfile();
 }
 
 void ProfileWidget::onConnected() { requestProfile(); }

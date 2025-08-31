@@ -13,10 +13,12 @@ public:
 
     void fetchByPatient(const QString& patientUsername);
     void fetchByDoctor(const QString& doctorUsername);
+    void create(const QJsonObject& data);
 
 signals:
     void fetched(const QJsonArray& data);
     void fetchFailed(const QString& error);
+    void created(bool ok, const QString& error);
 
 private slots:
     void onJsonReceived(const QJsonObject& obj);

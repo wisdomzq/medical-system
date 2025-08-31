@@ -20,6 +20,12 @@ void HospitalizationService::fetchByDoctor(const QString& doctorUsername)
     m_client->sendJson(req);
 }
 
+void HospitalizationService::create(const QJsonObject& data)
+{
+    QJsonObject req{{"action", "create_hospitalization"}, {"data", data}};
+    m_client->sendJson(req);
+}
+
 void HospitalizationService::onJsonReceived(const QJsonObject& obj)
 {
     const auto type = obj.value("type").toString();
@@ -27,5 +33,8 @@ void HospitalizationService::onJsonReceived(const QJsonObject& obj)
         const bool ok = obj.value("success").toBool();
         if (ok) emit fetched(obj.value("data").toArray());
         else emit fetchFailed(obj.value("error").toString());
+    } else if (type == "create_hospitalization_response") {
+        const bool ok = obj.value("success").toBool();
+        emit created(ok, ok ? QString() : obj.value("error").toString());
     }
 }
