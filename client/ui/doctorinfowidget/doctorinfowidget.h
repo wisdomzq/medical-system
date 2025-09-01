@@ -13,7 +13,6 @@ class DoctorInfoWidget : public QWidget
     Q_OBJECT
 
 public:
-    explicit DoctorInfoWidget(const QString &doctorName, QWidget *parent = nullptr);
     explicit DoctorInfoWidget(const QString &doctorName, CommunicationClient* sharedClient, QWidget *parent = nullptr);
     ~DoctorInfoWidget();
 
