@@ -124,17 +124,10 @@ QJsonObject ChatModule::handlePollEvents(const QJsonObject &req) {
         return QJsonObject{{"type","poll_events_response"},{"success",true},{"data", data}};
     }
 
-    // 否则挂起请求：若已存在老的挂起，请先以空数据应答并取消其定时器
+    // 否则挂起请求：若已存在同用户挂起，则丢弃本次新请求（快速空响应），保留原挂起不变
     if (m_pendingPollRequests.contains(user)) {
-        QJsonObject oldReq = m_pendingPollRequests.take(user);
-        if (m_pendingPollTimers.contains(user) && m_pendingPollTimers[user]) {
-            m_pendingPollTimers[user]->stop();
-            m_pendingPollTimers[user]->deleteLater();
-            m_pendingPollTimers.remove(user);
-        }
-        QJsonObject emptyData{{"messages", QJsonArray()}, {"instant_events", QJsonArray()}, {"next_cursor", oldReq.value("cursor").toVariant().toLongLong()}, {"has_more", false}};
-        QJsonObject resp{{"type","poll_events_response"},{"success",true},{"data",emptyData}};
-        reply(resp, oldReq);
+        QJsonObject emptyData{{"messages", QJsonArray()}, {"instant_events", QJsonArray()}, {"next_cursor", cursor}, {"has_more", false}};
+        return QJsonObject{{"type","poll_events_response"},{"success",true},{"data",emptyData}};
     }
 
     m_pendingPollRequests.insert(user, req);

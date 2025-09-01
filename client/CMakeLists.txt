@@ -18,6 +18,10 @@ set(srcs
     ui/doctorinfowidget/datachartwidget.cpp
     ui/doctorinfowidget/remotedatawidget.cpp
     ui/patientinfowidget/patientinfowidget.cpp
+    ui/common/chatbubbledelegate.cpp
+    ui/common/chatbubbledelegate.h
+    ui/patientinfowidget/communicationpage.cpp
+    ui/patientinfowidget/communicationpage.h
     ui/patientinfowidget/basepage.h
     ui/patientinfowidget/appointmentpage.cpp
     ui/patientinfowidget/appointmentpage.h

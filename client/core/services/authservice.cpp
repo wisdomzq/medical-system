@@ -3,16 +3,6 @@
 #include "core/network/protocol.h"
 #include "core/logging/logging.h"
 
-AuthService::AuthService(QObject* parent)
-    : QObject(parent)
-{
-    m_client = new CommunicationClient(this);
-    connect(m_client, &CommunicationClient::connected, this, &AuthService::connected);
-    connect(m_client, &CommunicationClient::disconnected, this, &AuthService::disconnected);
-    connect(m_client, &CommunicationClient::errorOccurred, this, &AuthService::networkError);
-    connect(m_client, &CommunicationClient::jsonReceived, this, &AuthService::onJsonReceived);
-}
-
 AuthService::AuthService(CommunicationClient* sharedClient, QObject* parent)
     : QObject(parent)
 {

@@ -9,8 +9,6 @@ class CommunicationClient;
 class AuthService : public QObject {
     Q_OBJECT
 public:
-    explicit AuthService(QObject* parent = nullptr);
-    // 使用共享的 CommunicationClient，不拥有该指针
     explicit AuthService(CommunicationClient* sharedClient, QObject* parent = nullptr);
     ~AuthService();
 

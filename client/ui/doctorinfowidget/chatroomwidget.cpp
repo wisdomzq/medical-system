@@ -1,6 +1,7 @@
 #include "chatroomwidget.h"
 #include "core/services/chatservice.h"
 #include "core/network/communicationclient.h"
+#include "ui/common/chatbubbledelegate.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QLabel>
@@ -17,13 +18,7 @@ ChatRoomWidget::ChatRoomWidget(const QString& doctorName, CommunicationClient* c
     left->addWidget(new QLabel(QString("医生聊天室 - %1").arg(m_doctor)));
     m_convList = new QListWidget(this);
     left->addWidget(m_convList, 1);
-    auto *addLine = new QHBoxLayout();
-    m_peerEdit = new QLineEdit(this);
-    m_peerEdit->setPlaceholderText("输入患者用户名，例如 alice");
-    m_addPeerBtn = new QPushButton("添加会话", this);
-    addLine->addWidget(m_peerEdit,1);
-    addLine->addWidget(m_addPeerBtn);
-    left->addLayout(addLine);
+    // 医生端不允许主动添加患者会话，移除输入与按钮
 
     // 右侧：消息区
     auto* right = new QVBoxLayout();
@@ -34,6 +29,9 @@ ChatRoomWidget::ChatRoomWidget(const QString& doctorName, CommunicationClient* c
     right->addLayout(ctrl);
 
     m_list = new QListWidget(this);
+    m_list->setItemDelegate(new ChatBubbleDelegate(m_doctor, m_list));
+    m_list->setSelectionMode(QAbstractItemView::NoSelection);
+    m_list->setSpacing(8);
     right->addWidget(m_list, 1);
 
     auto bottom = new QHBoxLayout();
@@ -52,11 +50,22 @@ ChatRoomWidget::ChatRoomWidget(const QString& doctorName, CommunicationClient* c
     m_chat = new ChatService(m_client, m_doctor, this);
     connect(m_sendBtn, &QPushButton::clicked, this, &ChatRoomWidget::sendClicked);
     connect(m_input, &QLineEdit::returnPressed, this, &ChatRoomWidget::sendClicked);
-    connect(m_addPeerBtn, &QPushButton::clicked, this, &ChatRoomWidget::addPeer);
+    // 医生端不允许 addPeer
     connect(m_convList, &QListWidget::currentRowChanged, this, &ChatRoomWidget::onPeerChanged);
     connect(m_loadMoreBtn, &QPushButton::clicked, this, &ChatRoomWidget::loadMore);
-    connect(m_chat, &ChatService::historyReceived, this, &ChatRoomWidget::onHistory);
+    // 不直接使用旧的 historyReceived 渲染，避免重复
+    // connect(m_chat, &ChatService::historyReceived, this, &ChatRoomWidget::onHistory);
     connect(m_chat, &ChatService::eventsReceived, this, &ChatRoomWidget::onEvents);
+    // 接入消息管理器
+    connect(m_chat, &ChatService::conversationHistoryLoaded, this, [this](const QString& doctor,const QString& patient,const QList<QJsonObject>& pageAsc,bool /*hasMore*/, qint64 earliest){
+        if (doctor!=m_doctor || patient!=m_currentPeer) return;
+        for (const auto &o : pageAsc) appendMessage(o);
+        m_earliestByPeer[m_currentPeer] = earliest;
+    });
+    connect(m_chat, &ChatService::conversationUpserted, this, [this](const QString& doctor,const QString& patient,const QList<QJsonObject>& deltaAsc){
+        if (doctor!=m_doctor || patient!=m_currentPeer) return;
+        for (const auto &o : deltaAsc) appendMessage(o);
+    });
     connect(m_chat, &ChatService::sendMessageResult, this, [this](bool ok, const QJsonObject& data){
         if (!ok) return;
         // 发送成功后立即刷新列表（等待服务端广播到本用户的poll也可以，但这里直接追加一个本地回显）
@@ -68,13 +77,10 @@ ChatRoomWidget::ChatRoomWidget(const QString& doctorName, CommunicationClient* c
     connect(m_chat, &ChatService::recentContactsReceived, this, [this](const QJsonArray& contacts){
         m_convList->clear();
         for (const auto &v : contacts) m_convList->addItem(v.toObject().value("username").toString());
-        if (m_convList->count()>0) m_convList->setCurrentRow(0);
+        // 初始不自动选中与加载，等待用户选择
     });
-    // 自动初始化会话列表
+    // 仅加载最近联系人，不自动轮询
     m_chat->recentContacts(20);
-
-    // 启动长轮询（链式触发）
-    schedulePoll();
 }
 
 void ChatRoomWidget::sendClicked() {
@@ -85,25 +91,21 @@ void ChatRoomWidget::sendClicked() {
     }
 }
 
-void ChatRoomWidget::addPeer() {
-    const QString peer = m_peerEdit->text().trimmed();
-    if (peer.isEmpty()) return;
-    // 如果已存在则选择，否则新增
-    for (int i=0;i<m_convList->count();++i) {
-        if (m_convList->item(i)->text()==peer){ m_convList->setCurrentRow(i); return; }
-    }
-    m_convList->addItem(peer);
-    m_convList->setCurrentRow(m_convList->count()-1);
-}
+void ChatRoomWidget::addPeer() { /* 医生端禁用 */ }
 
 void ChatRoomWidget::onPeerChanged() {
     auto *item = m_convList->currentItem();
     m_list->clear();
-    if (!item) { m_currentPeer.clear(); return; }
+    if (!item) { m_currentPeer.clear(); m_chat->stopPolling(); return; }
     m_currentPeer = item->text();
-    m_earliestByPeer[m_currentPeer] = 0; // 未知最早id
-    // 拉取最近一页（beforeId=0 表示从最新开始向后取）
+    // 先从本地消息管理器渲染（如有缓存）
+    const auto cached = m_chat->messagesFor(m_doctor, m_currentPeer);
+    for (const auto &o : cached) appendMessage(o);
+    m_earliestByPeer[m_currentPeer] = m_chat->earliestIdFor(m_doctor, m_currentPeer);
+    // 再拉取最近 20 条（beforeId=0）
     m_chat->getHistory(m_doctor, m_currentPeer, 0, 20);
+    // 开启轮询（由 Service 串联）
+    m_chat->startPolling();
 }
 
 void ChatRoomWidget::appendMessage(const QJsonObject& m) {
@@ -116,23 +118,22 @@ void ChatRoomWidget::appendMessage(const QJsonObject& m) {
     const QString sender = m.value("sender_username").toString(m.value("sender").toString());
     const QString text = m.value("text_content").toString();
     const int id = m.value("id").toInt();
-    // 加上角色标识
-    QString role = (sender==m_doctor)? "医生" : "患者";
-    m_list->addItem(QString("#%1 [%2][%3]: %4").arg(id).arg(role).arg(sender).arg(text));
+    auto *item = new QListWidgetItem();
+    item->setData(ChatItemRoles::RoleSender, sender);
+    item->setData(ChatItemRoles::RoleText, text);
+    item->setData(ChatItemRoles::RoleIsOutgoing, sender == m_doctor);
+    item->setData(ChatItemRoles::RoleMessageId, id);
+    item->setSizeHint(QSize(item->sizeHint().width(), 48));
+    m_list->addItem(item);
+    m_list->scrollToBottom();
 }
 
 void ChatRoomWidget::onHistory(const QJsonArray& msgs, bool /*hasMore*/) {
-    // 服务端历史返回按 id DESC，这里先从末尾插（较早的）以实现正序展示
-    QJsonArray arr = msgs;
-    for (int i=arr.size()-1;i>=0;--i) appendMessage(arr.at(i).toObject());
-    if (!msgs.isEmpty()) {
-        qint64 earliest = msgs.last().toObject().value("id").toVariant().toLongLong();
-        m_earliestByPeer[m_currentPeer] = earliest;
-    }
+    Q_UNUSED(msgs);
 }
 
 void ChatRoomWidget::onEvents(const QJsonArray& msgs, const QJsonArray& instant, qint64 nextCursor, bool /*hasMore*/) {
-    for (const auto &v : msgs) appendMessage(v.toObject());
+    Q_UNUSED(msgs); // 增量渲染由 conversationUpserted 处理
     for (const auto &e : instant) {
         auto o = e.toObject();
         m_list->addItem(QString("[事件] %1 %2-%3")
@@ -140,13 +141,7 @@ void ChatRoomWidget::onEvents(const QJsonArray& msgs, const QJsonArray& instant,
                         .arg(o.value("doctor_user").toString())
                         .arg(o.value("patient_user").toString()));
     }
-    m_cursor = nextCursor;
-    schedulePoll();
-}
-
-void ChatRoomWidget::schedulePoll() {
-    // 采用长轮询：上一次返回后立刻发起下一次
-    QTimer::singleShot(0, this, [this]() { m_chat->pollEvents(m_cursor); });
+    m_cursor = nextCursor; // 保留本地记录以便调试/显示
 }
 
 void ChatRoomWidget::insertOlderAtTop(const QJsonArray &msgsDesc) {
@@ -157,7 +152,11 @@ void ChatRoomWidget::insertOlderAtTop(const QJsonArray &msgsDesc) {
         const QString sender = o.value("sender_username").toString(o.value("sender").toString());
         const QString text = o.value("text_content").toString();
         const int id = o.value("id").toInt();
-        auto *item = new QListWidgetItem(QString("#%1 [%2]: %3").arg(id).arg(sender).arg(text));
+    auto *item = new QListWidgetItem();
+    item->setData(ChatItemRoles::RoleSender, sender);
+    item->setData(ChatItemRoles::RoleText, text);
+    item->setData(ChatItemRoles::RoleIsOutgoing, sender == m_doctor);
+    item->setData(ChatItemRoles::RoleMessageId, id);
         m_list->insertItem(insertPos++, item);
     }
 }

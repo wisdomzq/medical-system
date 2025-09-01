@@ -14,7 +14,6 @@ class CommunicationClient;
 class LoginWidget : public QWidget {
     Q_OBJECT
 public:
-    explicit LoginWidget(QWidget* parent = nullptr);
     explicit LoginWidget(CommunicationClient* sharedClient, QWidget* parent = nullptr);
     ~LoginWidget();
 

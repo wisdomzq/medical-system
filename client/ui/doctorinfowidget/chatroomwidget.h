@@ -26,7 +26,6 @@ private slots:
 private:
     void appendMessage(const QJsonObject& m);
     void insertOlderAtTop(const QJsonArray& msgsDesc);
-    void schedulePoll();
     QString m_doctor;
     QString m_currentPeer; // 患者用户名（简化：可编辑输入）
     CommunicationClient* m_client {nullptr};
