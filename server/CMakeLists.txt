@@ -1,15 +1,18 @@
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-set(CMAKE_AUTOUIC ON)
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-
 find_package(Qt5 COMPONENTS Core Network Sql REQUIRED)
 
-set(srcs
+add_executable(server)
+
+set_target_properties(server PROPERTIES
+    AUTOMOC ON
+    AUTOUIC ON
+    AUTORCC ON
+)
+
+target_compile_features(server PRIVATE cxx_std_17)
+
+target_sources(server PRIVATE
     main.cpp
     core/database/database.cpp
-    # 如果你的数据库终端功能也想保留，可以添加：
-    # core/database/dbterminal.cpp  # 文件不存在，暂时注释掉
     core/network/communicationserver.cpp
     core/network/clienthandler.cpp
     core/network/filetransferprocessor.cpp
@@ -36,9 +39,17 @@ set(srcs
     modules/chatmodule/chatmodule.cpp
 )
 
-add_executable(server
-    ${srcs}
+target_include_directories(server PRIVATE
+    .
+    core
+    core/database
+    core/network
+    modules
 )
 
-target_include_directories(server PRIVATE . core core/database core/network/src modules)
-target_link_libraries(server PRIVATE Qt5::Core Qt5::Network Qt5::Sql)
+target_link_libraries(server PRIVATE
+    Qt5::Core
+    Qt5::Network
+    Qt5::Sql
+    project_warnings
+)

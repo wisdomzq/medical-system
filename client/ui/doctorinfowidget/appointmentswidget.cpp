@@ -112,7 +112,7 @@ void AppointmentsWidget::requestAppointments() {
 }
 
 void AppointmentsWidget::renderAppointments(const QJsonArray& arr) {
-    qDebug() << "[AppointmentsWidget] 预约数据数量:" << arr.size();
+    qDebug() << "[ AppointmentsWidget ] 预约数据数量:" << arr.size();
     table_->setRowCount(arr.size());
     int totalCount = arr.size();
     int todayCount = 0;
@@ -191,7 +191,7 @@ void AppointmentsWidget::renderAppointments(const QJsonArray& arr) {
 }
 
 void AppointmentsWidget::showFetchError(const QString& message) {
-    qDebug() << "[AppointmentsWidget] 预约查询失败:" << message;
+    qDebug() << "[ AppointmentsWidget ] 预约查询失败:" << message;
 }
 
 void AppointmentsWidget::onRowDetailClicked() {

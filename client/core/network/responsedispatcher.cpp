@@ -1,3 +1,4 @@
+#include "core/logging/logging.h"
 #include "core/network/responsedispatcher.h"
 
 using namespace Protocol;
@@ -36,6 +37,8 @@ void ResponseDispatcher::onFrame(Header header, QByteArray payload)
 void ResponseDispatcher::handleJson(const QByteArray& payload)
 {
     const QJsonObject obj = fromJsonPayload(payload);
+    qInfo() << "[ Client ] 收到JSON响应";
+    Log::request("CommunicationClient", obj);
     emit jsonResponse(obj);
 }
 

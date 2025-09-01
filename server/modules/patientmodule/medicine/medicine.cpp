@@ -24,10 +24,10 @@ static QString moduleImageDir()
     QString path = QDir::currentPath() + "/../../server/modules/patientmodule/medicine/img";
     QDir d(path);
     if (d.exists()) {
-        qInfo() << "[MedicineModule] 图片目录路径:" << d.absolutePath();
+        qInfo() << "[ MedicineModule ] 图片目录路径:" << d.absolutePath();
         return d.absolutePath();
     }
-    qWarning() << "[MedicineModule] 图片目录不存在:" << path;
+    qWarning() << "[ MedicineModule ] 图片目录不存在:" << path;
     return QString();
 }
 
@@ -43,19 +43,19 @@ MedicineModule::MedicineModule(QObject* parent)
     // 测试图片目录
     QString imgDir = moduleImageDir();
     if (!imgDir.isEmpty()) {
-        qInfo() << "[MedicineModule] 图片目录可用:" << imgDir;
+        qInfo() << "[ MedicineModule ] 图片目录可用:" << imgDir;
         QDir dir(imgDir);
         QStringList imageFiles = dir.entryList(QStringList() << "*.png" << "*.jpg" << "*.jpeg", QDir::Files);
-        qInfo() << "[MedicineModule] 找到" << imageFiles.size() << "个图片文件:" << imageFiles;
+        qInfo() << "[ MedicineModule ] 找到" << imageFiles.size() << "个图片文件:" << imageFiles;
     } else {
-        qWarning() << "[MedicineModule] 图片目录不可用";
+        qWarning() << "[ MedicineModule ] 图片目录不可用";
     }
 }
 
 void MedicineModule::onRequest(const QJsonObject& payload)
 {
     const QString action = payload.value("action").toString();
-    qInfo() << "[MedicineModule] 收到动作" << action;
+    qInfo() << "[ MedicineModule ] 收到动作" << action;
     if (action == "get_medications")
         return handleGetMedications(payload);
     if (action == "search_medications")
@@ -137,10 +137,10 @@ void MedicineModule::handleGetMedications(const QJsonObject& payload)
                 if (!modDir.isEmpty()) {
                     QString base = o.value("name").toString();
                     QStringList exts = { ".png", ".jpg", ".jpeg", ".webp" };
-                    qInfo() << "[MedicineModule] 尝试为药品" << base << "查找图片，目录:" << modDir;
+                    qInfo() << "[ MedicineModule ] 尝试为药品" << base << "查找图片，目录:" << modDir;
                     for (const QString& ext : exts) {
                         QString candidate = modDir + "/" + base + ext;
-                        qInfo() << "[MedicineModule] 检查图片文件:" << candidate;
+                        qInfo() << "[ MedicineModule ] 检查图片文件:" << candidate;
                         if (QFile::exists(candidate)) {
                             QFile f(candidate);
                             if (f.open(QIODevice::ReadOnly)) {
@@ -150,15 +150,15 @@ void MedicineModule::handleGetMedications(const QJsonObject& payload)
                                 if (o.contains("image_path")) {
                                     o.remove("image_path");
                                 }
-                                qInfo() << "[MedicineModule] 为药品" << base << "加载图片成功:" << candidate << "大小:" << imageData.size() << "字节";
+                                qInfo() << "[ MedicineModule ] 为药品" << base << "加载图片成功:" << candidate << "大小:" << imageData.size() << "字节";
                             } else {
-                                qWarning() << "[MedicineModule] 无法打开图片文件:" << candidate;
+                                qWarning() << "[ MedicineModule ] 无法打开图片文件:" << candidate;
                             }
                             break;
                         }
                     }
                     if (!o.contains("image_base64")) {
-                        qWarning() << "[MedicineModule] 未找到药品" << base << "的图片文件";
+                        qWarning() << "[ MedicineModule ] 未找到药品" << base << "的图片文件";
                     }
                 }
             }
@@ -166,28 +166,28 @@ void MedicineModule::handleGetMedications(const QJsonObject& payload)
         }
         
         // 添加调试信息：检查每个药品的图片数据
-        qInfo() << "[MedicineModule] 药品图片加载统计:";
+        qInfo() << "[ MedicineModule ] 药品图片加载统计:";
         for (int i = 0; i < list.size(); ++i) {
             QJsonObject o = list[i].toObject();
             QString medName = o.value("name").toString();
             bool hasImagePath = o.contains("image_path");
             bool hasImageBase64 = o.contains("image_base64");
-            qInfo() << "[MedicineModule] 药品:" << medName 
+            qInfo() << "[ MedicineModule ] 药品:" << medName 
                     << "hasImagePath:" << hasImagePath 
                     << "hasImageBase64:" << hasImageBase64;
             
             if (hasImageBase64) {
                 QString base64 = o.value("image_base64").toString();
-                qInfo() << "[MedicineModule] 药品" << medName << "base64数据长度:" << base64.length();
+                qInfo() << "[ MedicineModule ] 药品" << medName << "base64数据长度:" << base64.length();
             }
         }
         
         // 按ID从小到大排序
         if (ok) {
-            qInfo() << "[MedicineModule] 排序前药品数量:" << list.size();
+            qInfo() << "[ MedicineModule ] 排序前药品数量:" << list.size();
             if (!list.isEmpty()) {
-                qInfo() << "[MedicineModule] 排序前第一个药品ID:" << list.first().toObject().value("id").toInt();
-                qInfo() << "[MedicineModule] 排序前最后一个药品ID:" << list.last().toObject().value("id").toInt();
+                qInfo() << "[ MedicineModule ] 排序前第一个药品ID:" << list.first().toObject().value("id").toInt();
+                qInfo() << "[ MedicineModule ] 排序前最后一个药品ID:" << list.last().toObject().value("id").toInt();
             }
             
             // 转换为std::vector进行排序
@@ -207,8 +207,8 @@ void MedicineModule::handleGetMedications(const QJsonObject& payload)
             }
             
             if (!list.isEmpty()) {
-                qInfo() << "[MedicineModule] 排序后第一个药品ID:" << list.first().toObject().value("id").toInt();
-                qInfo() << "[MedicineModule] 排序后最后一个药品ID:" << list.last().toObject().value("id").toInt();
+                qInfo() << "[ MedicineModule ] 排序后第一个药品ID:" << list.first().toObject().value("id").toInt();
+                qInfo() << "[ MedicineModule ] 排序后最后一个药品ID:" << list.last().toObject().value("id").toInt();
             }
         }
     }
@@ -226,7 +226,7 @@ void MedicineModule::handleSearchMedications(const QJsonObject& payload)
 {
     DBManager db(DatabaseConfig::getDatabasePath());
     const QString keyword = payload.value("keyword").toString();
-    qInfo() << "[MedicineModule] 本地/DB 搜索关键字=" << keyword;
+    qInfo() << "[ MedicineModule ] 本地/DB 搜索关键字=" << keyword;
     QJsonArray list;
     bool ok = db.searchMedications(keyword, list);
     
@@ -255,10 +255,10 @@ void MedicineModule::handleSearchMedications(const QJsonObject& payload)
                 if (!modDir.isEmpty()) {
                     QString base = o.value("name").toString();
                     QStringList exts = { ".png", ".jpg", ".jpeg", ".webp" };
-                    qInfo() << "[MedicineModule] 搜索结果尝试为药品" << base << "查找图片，目录:" << modDir;
+                    qInfo() << "[ MedicineModule ] 搜索结果尝试为药品" << base << "查找图片，目录:" << modDir;
                     for (const QString& ext : exts) {
                         QString candidate = modDir + "/" + base + ext;
-                        qInfo() << "[MedicineModule] 搜索时检查图片文件:" << candidate;
+                        qInfo() << "[ MedicineModule ] 搜索时检查图片文件:" << candidate;
                         if (QFile::exists(candidate)) {
                             QFile f(candidate);
                             if (f.open(QIODevice::ReadOnly)) {
@@ -268,15 +268,15 @@ void MedicineModule::handleSearchMedications(const QJsonObject& payload)
                                 if (o.contains("image_path")) {
                                     o.remove("image_path");
                                 }
-                                qInfo() << "[MedicineModule] 为搜索结果药品" << base << "加载图片成功:" << candidate << "大小:" << imageData.size() << "字节";
+                                qInfo() << "[ MedicineModule ] 为搜索结果药品" << base << "加载图片成功:" << candidate << "大小:" << imageData.size() << "字节";
                             } else {
-                                qWarning() << "[MedicineModule] 无法打开搜索结果图片文件:" << candidate;
+                                qWarning() << "[ MedicineModule ] 无法打开搜索结果图片文件:" << candidate;
                             }
                             break;
                         }
                     }
                     if (!o.contains("image_base64")) {
-                        qWarning() << "[MedicineModule] 搜索时未找到药品" << base << "的图片文件";
+                        qWarning() << "[ MedicineModule ] 搜索时未找到药品" << base << "的图片文件";
                     }
                 }
             }
@@ -304,10 +304,10 @@ void MedicineModule::handleSearchMedications(const QJsonObject& payload)
     
         // 按ID从小到大排序
         if (ok) {
-            qInfo() << "[MedicineModule] 排序前药品数量:" << list.size();
+            qInfo() << "[ MedicineModule ] 排序前药品数量:" << list.size();
             if (!list.isEmpty()) {
-                qInfo() << "[MedicineModule] 排序前第一个药品ID:" << list.first().toObject().value("id").toInt();
-                qInfo() << "[MedicineModule] 排序前最后一个药品ID:" << list.last().toObject().value("id").toInt();
+                qInfo() << "[ MedicineModule ] 排序前第一个药品ID:" << list.first().toObject().value("id").toInt();
+                qInfo() << "[ MedicineModule ] 排序前最后一个药品ID:" << list.last().toObject().value("id").toInt();
             }
             
             // 转换为std::vector进行排序
@@ -327,8 +327,8 @@ void MedicineModule::handleSearchMedications(const QJsonObject& payload)
             }
             
             if (!list.isEmpty()) {
-                qInfo() << "[MedicineModule] 排序后第一个药品ID:" << list.first().toObject().value("id").toInt();
-                qInfo() << "[MedicineModule] 排序后最后一个药品ID:" << list.last().toObject().value("id").toInt();
+                qInfo() << "[ MedicineModule ] 排序后第一个药品ID:" << list.first().toObject().value("id").toInt();
+                qInfo() << "[ MedicineModule ] 排序后最后一个药品ID:" << list.last().toObject().value("id").toInt();
             }
         }
     
@@ -346,7 +346,7 @@ void MedicineModule::handleSearchMedications(const QJsonObject& payload)
 void MedicineModule::handleRemoteSearch(const QJsonObject& payload)
 {
     const QString keyword = payload.value("keyword").toString();
-    qInfo() << "[MedicineModule] 远程搜索关键字=" << keyword;
+    qInfo() << "[ MedicineModule ] 远程搜索关键字=" << keyword;
     // DuckDuckGo 简易查询 (公共 API, 无密钥) 仅作示例
     QUrl url("https://api.duckduckgo.com/");
     QUrlQuery q;
@@ -404,18 +404,18 @@ void MedicineModule::loadLocalMeta()
     QString metaPath = localMedicationsJsonPath();
     QFile f(metaPath);
     if (!f.exists()) {
-        qWarning() << "[MedicineModule] 本地药品元数据不存在:" << metaPath;
+        qWarning() << "[ MedicineModule ] 本地药品元数据不存在:" << metaPath;
         return;
     }
     if (f.open(QIODevice::ReadOnly)) {
         QJsonDocument doc = QJsonDocument::fromJson(f.readAll());
         if (doc.isArray()) {
             m_localMeta = doc.array();
-            qInfo() << "[MedicineModule] 载入本地元数据条目数=" << m_localMeta.size();
+            qInfo() << "[ MedicineModule ] 载入本地元数据条目数=" << m_localMeta.size();
         } else
-            qWarning() << "[MedicineModule] 元数据格式非数组";
+            qWarning() << "[ MedicineModule ] 元数据格式非数组";
     } else {
-        qWarning() << "[MedicineModule] 打开元数据失败:" << metaPath;
+        qWarning() << "[ MedicineModule ] 打开元数据失败:" << metaPath;
     }
 }
 

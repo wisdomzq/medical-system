@@ -45,7 +45,7 @@ MedicationSearchPage::MedicationSearchPage(CommunicationClient *c, const QString
     // 服务化
     m_service = new MedicationService(m_client, this);
     connect(m_service, &MedicationService::medicationsFetched, this, [this](const QJsonArray& arr){ populateTable(arr); });
-    connect(m_service, &MedicationService::fetchFailed, this, [](const QString& err){ qWarning() << "[MedicationSearchPage] 搜索失败" << err; });
+    connect(m_service, &MedicationService::fetchFailed, this, [](const QString& err){ qWarning() << "[ MedicationSearchPage ] 搜索失败" << err; });
     // 初始加载全部
     m_service->fetchAll();
 }
@@ -54,7 +54,7 @@ void MedicationSearchPage::onSearch(){
     QString kw = m_searchEdit->text();
     kw.replace("\u3000", " "); // 全角空格转半角
     kw = kw.trimmed();
-    qInfo() << "[MedicationSearchPage] 发起搜索 keyword=" << kw;
+    qInfo() << "[ MedicationSearchPage ] 发起搜索 keyword=" << kw;
     sendSearchRequest(kw);
 }
 
@@ -64,8 +64,8 @@ void MedicationSearchPage::sendSearchRequest(const QString &keyword){
 
 void MedicationSearchPage::handleResponse(const QJsonObject &obj){
     if(obj.value("type").toString() != "medications_response") return;
-    if(!obj.value("success").toBool()){ qWarning() << "[MedicationSearchPage] 搜索失败" << obj; return; }
-    qInfo() << "[MedicationSearchPage] 收到药品条目数=" << obj.value("data").toArray().size();
+    if(!obj.value("success").toBool()){ qWarning() << "[ MedicationSearchPage ] 搜索失败" << obj; return; }
+    qInfo() << "[ MedicationSearchPage ] 收到药品条目数=" << obj.value("data").toArray().size();
     QJsonArray arr = obj.value("data").toArray();
     populateTable(arr);
 }

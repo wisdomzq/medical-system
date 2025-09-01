@@ -84,7 +84,7 @@ inline QJsonObject fromJsonPayload(const QByteArray& data)
     QJsonParseError err {};
     QJsonDocument doc = QJsonDocument::fromJson(data, &err);
     if (err.error != QJsonParseError::NoError || !doc.isObject()) {
-        qWarning() << "[Protocol] JSON解析失败:" << err.errorString() << ", 原始字节长度=" << data.size();
+        qWarning() << "[ Protocol ] JSON解析失败:" << err.errorString() << ", 原始字节长度=" << data.size();
         return QJsonObject {
             { "error", QStringLiteral("Invalid JSON payload") },
             { "detail", err.errorString() },

@@ -95,7 +95,7 @@ void CasePage::setupUI()
 
 void CasePage::onConnected()
 {
-    qDebug() << "[CasePage] 客户端已连接，加载病例数据";
+    qDebug() << "[ CasePage ] 客户端已连接，加载病例数据";
     loadMedicalRecords();
 }
 
@@ -104,7 +104,7 @@ void CasePage::onConnected()
 void CasePage::onRefreshButtonClicked()
 {
     // 刷新病例数据
-    qDebug() << "[CasePage] 刷新病例数据";
+    qDebug() << "[ CasePage ] 刷新病例数据";
     loadMedicalRecords();
 }
 
@@ -138,7 +138,7 @@ void CasePage::onRowDoubleClicked(int row, int column)
 void CasePage::loadMedicalRecords()
 {
     if (!m_client) {
-        qDebug() << "[CasePage] 客户端未初始化，无法加载病例数据";
+        qDebug() << "[ CasePage ] 客户端未初始化，无法加载病例数据";
         return;
     }
     
@@ -186,5 +186,5 @@ void CasePage::populateTable(const QJsonArray &records)
         m_recordTable->setItem(i, 4, new QTableWidgetItem(diagnosis));
     }
     
-    qDebug() << "[CasePage] 表格已填充，共" << records.size() << "条记录";
+    qDebug() << "[ CasePage ] 表格已填充，共" << records.size() << "条记录";
 }

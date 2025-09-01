@@ -11,14 +11,14 @@
 #include <QSqlError>
 
 RegisterManager::RegisterManager(QObject* parent): QObject(parent) {
-    qDebug() << "[RegisterManager] 构造函数被调用，开始连接信号槽...";
+    qDebug() << "[ RegisterManager ] 构造函数被调用，开始连接信号槽...";
     connect(&MessageRouter::instance(), &MessageRouter::requestReceived,
             this, &RegisterManager::onRequest, Qt::DirectConnection);
-    qDebug() << "[RegisterManager] 信号槽连接完成";
+    qDebug() << "[ RegisterManager ] 信号槽连接完成";
     connect(this, &RegisterManager::businessResponse,
             &MessageRouter::instance(), &MessageRouter::onBusinessResponse,
             Qt::DirectConnection);
-    qDebug() << "[RegisterManager] RegisterManager初始化完成";
+    qDebug() << "[ RegisterManager ] RegisterManager初始化完成";
 }
 
 // 获取所有医生排班信息
@@ -132,8 +132,8 @@ QJsonObject RegisterManager::doctorScheduleToJson(const DoctorSchedule& ds) {
 
 void RegisterManager::onRequest(const QJsonObject& payload) {
     const QString action = payload.value("action").toString(payload.value("type").toString());
-    qDebug() << "[RegisterManager] 收到请求，action:" << action;
-    qDebug() << "[RegisterManager] uuid=" << payload.value("uuid").toString()
+    qDebug() << "[ RegisterManager ] 收到请求，action:" << action;
+    qDebug() << "[ RegisterManager ] uuid=" << payload.value("uuid").toString()
              << ", doctor_name=" << payload.value("doctor_name").toString()
              << ", doctorId=" << payload.value("doctorId").toInt()
              << ", patientName=" << payload.value("patientName").toString();
@@ -143,19 +143,19 @@ void RegisterManager::onRequest(const QJsonObject& payload) {
         return; // 不处理非挂号相关的请求
     }
     
-    qDebug() << "[RegisterManager] 处理挂号相关请求:" << payload;
+    qDebug() << "[ RegisterManager ] 处理挂号相关请求:" << payload;
     
     if (action == "get_doctor_schedule") {
         auto list = getAllDoctorSchedules();
         QJsonArray arr; for (auto &ds : list) arr.append(doctorScheduleToJson(ds));
         QJsonObject resp; resp["type"] = "doctor_schedule_response"; resp["success"] = true; resp["data"] = arr;
     if (payload.contains("uuid")) resp["request_uuid"] = payload.value("uuid").toString();
-    qDebug() << "[RegisterManager] 回传 doctor_schedule_response request_uuid=" << resp.value("request_uuid").toString();
+    qDebug() << "[ RegisterManager ] 回传 doctor_schedule_response request_uuid=" << resp.value("request_uuid").toString();
     emit businessResponse(resp);
     } else if (action == "register_doctor") {
-        qDebug() << "[RegisterManager] 处理挂号请求...";
+        qDebug() << "[ RegisterManager ] 处理挂号请求...";
         QString patientName = payload.value("patientName").toString();
-        qDebug() << "[RegisterManager] 患者姓名:" << patientName;
+        qDebug() << "[ RegisterManager ] 患者姓名:" << patientName;
         QString err; bool ok = false;
         QList<DoctorSchedule> schedules = getAllDoctorSchedules();
         
@@ -191,12 +191,12 @@ void RegisterManager::onRequest(const QJsonObject& payload) {
         }
         
         if (matchId > 0 && matchId <= schedules.size()) {
-            qDebug() << "[RegisterManager] 找到医生，序号:" << matchId << "开始挂号...";
+            qDebug() << "[ RegisterManager ] 找到医生，序号:" << matchId << "开始挂号...";
             ok = registerPatient(matchId, patientName, err);
-            qDebug() << "[RegisterManager] 挂号结果:" << ok << "错误信息:" << err;
+            qDebug() << "[ RegisterManager ] 挂号结果:" << ok << "错误信息:" << err;
         } else {
             err = QStringLiteral("医生不存在或序号无效");
-            qDebug() << "[RegisterManager] 医生不存在，matchId:" << matchId << "schedules.size():" << schedules.size();
+            qDebug() << "[ RegisterManager ] 医生不存在，matchId:" << matchId << "schedules.size():" << schedules.size();
         }
         
         QJsonObject resp; 
@@ -212,7 +212,7 @@ void RegisterManager::onRequest(const QJsonObject& payload) {
         }
         
     if (payload.contains("uuid")) { resp["request_uuid"] = payload.value("uuid").toString(); }
-    qDebug() << "[RegisterManager] 回传 register_doctor_response success=" << ok
+    qDebug() << "[ RegisterManager ] 回传 register_doctor_response success=" << ok
          << ", request_uuid=" << resp.value("request_uuid").toString();
         
     emit businessResponse(resp);

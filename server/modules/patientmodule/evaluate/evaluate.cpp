@@ -72,11 +72,11 @@ double EvaluateModule::ensureAndFetchBalance(const QString &patientUsername) {
             + QString::number(QRandomGenerator::global()->generate())
     );
     tempDb.setDatabaseName(DatabaseConfig::getDatabasePath());
-    if(!tempDb.open()) { qWarning() << "[EvaluateModule] 打开数据库失败:" << tempDb.lastError().text(); return 0.0; }
+    if(!tempDb.open()) { qWarning() << "[ EvaluateModule ] 打开数据库失败:" << tempDb.lastError().text(); return 0.0; }
     {
         QSqlQuery create(tempDb);
         if(!create.exec(WALLET_TABLE_SQL)) {
-            qWarning() << "[EvaluateModule] 创建钱包表失败:" << create.lastError().text();
+            qWarning() << "[ EvaluateModule ] 创建钱包表失败:" << create.lastError().text();
         }
     }
     double balance = 0.0;
@@ -90,7 +90,7 @@ double EvaluateModule::ensureAndFetchBalance(const QString &patientUsername) {
             QSqlQuery ins(tempDb);
             ins.prepare("INSERT INTO patient_wallets (patient_username, balance) VALUES (:p, 0)");
             ins.bindValue(":p", patientUsername);
-            if(!ins.exec()) qWarning() << "[EvaluateModule] 插入初始钱包失败:" << ins.lastError().text();
+            if(!ins.exec()) qWarning() << "[ EvaluateModule ] 插入初始钱包失败:" << ins.lastError().text();
         }
     }
     tempDb.close();

@@ -25,7 +25,7 @@ void ClientHandler::initialize(qintptr socketDescriptor)
 {
     m_socket = new QTcpSocket(this);
     m_socket->setSocketDescriptor(socketDescriptor);
-    qInfo() << "[Handler] 初始化完成，descriptor=" << socketDescriptor << ", 线程=" << QThread::currentThread();
+    qInfo() << "[ Handler ] 初始化完成，descriptor=" << socketDescriptor << ", 线程=" << QThread::currentThread();
     if (!connect(m_socket, &QTcpSocket::readyRead, this, &ClientHandler::onReadyRead)) {
         Log::error("ClientHandler", "Failed to connect QTcpSocket::readyRead to ClientHandler::onReadyRead");
     }
@@ -88,7 +88,7 @@ void ClientHandler::initialize(qintptr socketDescriptor)
         }
     });
     connect(m_parser, &StreamFrameParser::protocolError, this, [this](const QString& msg) {
-        qWarning() << "[Handler] 协议错误:" << msg << ", 断开连接";
+        qWarning() << "[ Handler ] 协议错误:" << msg << ", 断开连接";
         if (m_socket) m_socket->disconnectFromHost();
     });
     if (!connect(m_socket, &QTcpSocket::disconnected, this, &ClientHandler::onDisconnected)) {
@@ -102,7 +102,7 @@ void ClientHandler::sendMessage(MessageType type, const QJsonObject& obj)
         return;
     QByteArray payload = toJsonPayload(obj);
     QByteArray data = pack(type, payload);
-    // qInfo() << "[Handler] 发送消息 type=" << (quint16)type << ", 总字节=" << data.size();
+    // qInfo() << "[ Handler ] 发送消息 type=" << (quint16)type << ", 总字节=" << data.size();
     m_socket->write(data);
 }
 
@@ -138,6 +138,6 @@ void ClientHandler::onDisconnected()
     // 通知路由层清理该连接相关路由，改为通过 destroyed 连接或专用 JSON
     // 这里不再发出非 JSON 的 ClientDisconnect，交由 Router 的对象销毁清理逻辑处理
 
-    qInfo() << "[Handler] 客户端断开，准备销毁自身";
+    qInfo() << "[ Handler ] 客户端断开，准备销毁自身";
     this->deleteLater();
 }
