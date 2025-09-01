@@ -17,24 +17,24 @@ public:
     static MessageRouter& instance();
 
 public slots:
-    // 来自每个连接线程的原始请求（由 CommunicationServer 连接）
-    void onRequestReady(ClientHandler* sender, Protocol::Header header, QJsonObject payload);
+    // 仅接收 JSON 请求（由 CommunicationServer 连接）
+    void onJsonRequest(ClientHandler* sender, QJsonObject payload);
 
     // 业务层回馈响应：payload 内需包含 request_uuid，用于路由回对应连接
     void onBusinessResponse(QJsonObject payload);
+    // ClientHandler 销毁或断开时的清理
+    void onClientHandlerDestroyed(QObject* obj);
 
 signals:
     // 向指定的 ClientHandler 返回响应（由路由器发射，具体发送在对应 handler 线程执行）
-    void responseReady(ClientHandler* target,
-                       Protocol::MessageType type,
-                       QJsonObject payload);
+    void responseReady(ClientHandler* target, QJsonObject payload);
 
     // 向业务层广播一条 JSON 请求（payload 内含 uuid 字段）
     void requestReceived(QJsonObject payload);
 
 private:
     explicit MessageRouter(QObject* parent = nullptr);
-    void handleJson(ClientHandler* sender, const Protocol::Header& header, QJsonObject payload);
+    void handleJson(ClientHandler* sender, QJsonObject payload);
 
     // 记录 uuid -> ClientHandler，用于响应路由
     QHash<QString, QPointer<ClientHandler>> m_uuidToHandler;

@@ -39,6 +39,11 @@ void ClientHandler::sendMessage(MessageType type, const QJsonObject& obj)
     m_socket->write(data);
 }
 
+void ClientHandler::onJsonResponseReady(const QJsonObject& obj)
+{
+    sendMessage(MessageType::JsonResponse, obj);
+}
+
 bool ClientHandler::parseFixedHeader(Header& out, int& headerBytesConsumed)
 {
     if (!ensureBytesAvailable(FIXED_HEADER_SIZE))
@@ -104,7 +109,22 @@ void ClientHandler::onReadyRead()
             m_buffer.remove(0, m_currentHeader.payloadSize);
 
             QJsonObject obj = fromJsonPayload(payload);
-            emit requestReady(this, m_currentHeader, obj);
+
+            // 在 ClientHandler 内部完成基于类型的路由，仅向上层发送 JSON 请求
+            switch (m_currentHeader.type) {
+            case MessageType::JsonRequest:
+                emit requestJsonReady(this, obj);
+                break;
+            case MessageType::HeartbeatPing:
+                // 直接在 handler 层回 PONG，避免传递到上层
+                sendMessage(MessageType::HeartbeatPong, QJsonObject());
+                break;
+            default:
+                // 不支持的类型，在此返回错误响应，避免上层处理非 JSON
+                sendMessage(MessageType::ErrorResponse,
+                            QJsonObject{{"errorCode", 400}, {"errorMessage", QStringLiteral("Unsupported message type")}});
+                break;
+            }
 
             // reset state
             m_state = ParseState::WAITING_FOR_HEADER;
@@ -115,11 +135,8 @@ void ClientHandler::onReadyRead()
 
 void ClientHandler::onDisconnected()
 {
-    // 在销毁前，向路由器发出一个“客户端断开”的临时请求，便于清理路由表
-    Header hdr;
-    hdr.type = MessageType::ClientDisconnect;
-    hdr.payloadSize = 0;
-    emit requestReady(this, hdr, QJsonObject());
+    // 通知路由层清理该连接相关路由，改为通过 destroyed 连接或专用 JSON
+    // 这里不再发出非 JSON 的 ClientDisconnect，交由 Router 的对象销毁清理逻辑处理
 
     qInfo() << "[Handler] 客户端断开，准备销毁自身";
     this->deleteLater();

@@ -14,42 +14,18 @@ MessageRouter& MessageRouter::instance()
 MessageRouter::MessageRouter(QObject* parent)
     : QObject(parent)
 {
-    // 注册用于跨线程队列连接的元类型
+    // 注册用于跨线程队列连接的元类型（仅需 MessageType 给 responseReady 使用）
     qRegisterMetaType<Protocol::MessageType>("Protocol::MessageType");
-    qRegisterMetaType<Protocol::Header>("Protocol::Header");
 }
 
-void MessageRouter::onRequestReady(ClientHandler* sender, Header header, QJsonObject payload)
+void MessageRouter::onJsonRequest(ClientHandler* sender, QJsonObject payload)
 {
-    // qInfo() << "[Dispatcher] 收到请求，type=" << (quint16)header.type
-    //         << ", keys=" << payload.keys().size();
-    switch (header.type) {
-    case MessageType::JsonRequest:
-        qInfo() << "[Router] 广播JSON请求给业务层";
-        handleJson(sender, header, payload);
-        break;
-    case MessageType::ClientDisconnect: {
-        // 客户端断开：清理该连接相关的路由映射
-        cleanupRoutesFor(sender);
-        qInfo() << "[Router] 已清理断开连接的路由";
-        break;
-    }
-    case MessageType::HeartbeatPing: {
-        // 心跳无需 JSON 载荷
-        emit responseReady(sender, MessageType::HeartbeatPong, QJsonObject());
-        // qInfo() << "[Router] 已回复心跳PONG";
-        break;
-    }
-    default: {
-        QJsonObject err { { "errorCode", 400 }, { "errorMessage", QStringLiteral("Unsupported message type") } };
-        emit responseReady(sender, MessageType::ErrorResponse, err);
-        qWarning() << "[Router] 未支持的消息类型，已回复错误";
-        break;
-    }
-    }
+    Q_UNUSED(sender);
+    qInfo() << "[Router] 广播JSON请求给业务层";
+    handleJson(sender, payload);
 }
 
-void MessageRouter::handleJson(ClientHandler* sender, const Header& header, QJsonObject payload)
+void MessageRouter::handleJson(ClientHandler* sender, QJsonObject payload)
 {
     // 1) 确保存在 uuid 字段；如无则创建
     QString uuid = payload.value("uuid").toString();
@@ -87,7 +63,7 @@ void MessageRouter::onBusinessResponse(QJsonObject payload)
     }
     // 统一为 JSON 响应类型
     qInfo() << "[Router] 路由响应给目标连接 uuid=" << uuid;
-    emit responseReady(target, MessageType::JsonResponse, payload);
+    emit responseReady(target, payload);
 }
 
 void MessageRouter::cleanupRoutesFor(ClientHandler* handler)
@@ -98,4 +74,12 @@ void MessageRouter::cleanupRoutesFor(ClientHandler* handler)
         if (it.value() == handler) toRemove.append(it.key());
     }
     for (const auto& k : toRemove) m_uuidToHandler.remove(k);
+}
+
+void MessageRouter::onClientHandlerDestroyed(QObject* obj)
+{
+    auto* handler = qobject_cast<ClientHandler*>(obj);
+    if (!handler) return;
+    cleanupRoutesFor(handler);
+    qInfo() << "[Router] 处理 handler 销毁清理完成";
 }

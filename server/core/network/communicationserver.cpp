@@ -31,16 +31,22 @@ void CommunicationServer::incomingConnection(qintptr socketDescriptor)
         Log::error("CommunicationServer", "Failed to connect QThread::started to handler lambda");
     }
 
-    if (!QObject::connect(handler, &ClientHandler::requestReady,
-        &MessageRouter::instance(), &MessageRouter::onRequestReady,
+    if (!QObject::connect(handler, &ClientHandler::requestJsonReady,
+        &MessageRouter::instance(), &MessageRouter::onJsonRequest,
         Qt::QueuedConnection)) {
-        Log::error("CommunicationServer", "Failed to connect ClientHandler::requestReady to MessageRouter::onRequestReady");
+        Log::error("CommunicationServer", "Failed to connect ClientHandler::requestJsonReady to MessageRouter::onJsonRequest");
+    }
+    // handler 销毁时让路由器清理路由
+    if (!QObject::connect(handler, &QObject::destroyed, &MessageRouter::instance(), &MessageRouter::onClientHandlerDestroyed,
+                          Qt::QueuedConnection)) {
+        Log::error("CommunicationServer", "Failed to connect ClientHandler::destroyed to MessageRouter::onClientHandlerDestroyed");
     }
     
     // 将调度器的响应信号转发到对应的 handler::sendMessage（仅当目标是该 handler 时）
-    if (!QObject::connect(&MessageRouter::instance(), &MessageRouter::responseReady, handler, [handler](ClientHandler* target, Protocol::MessageType type, QJsonObject payload) {
+    if (!QObject::connect(&MessageRouter::instance(), &MessageRouter::responseReady, handler, [handler](ClientHandler* target, QJsonObject payload) {
                          if (target != handler) return; // 只处理发给该 handler 的响应
-                         handler->sendMessage(type, payload); }, Qt::QueuedConnection)) {
+                         handler->onJsonResponseReady(payload);
+                     }, Qt::QueuedConnection)) {
         Log::error("CommunicationServer", "Failed to connect MessageRouter::responseReady to handler lambda");
     }
 
