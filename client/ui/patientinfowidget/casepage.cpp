@@ -39,8 +39,8 @@ void CasePage::setupUI()
     m_titleLabel = new QLabel("我的病例");
     m_titleLabel->setStyleSheet("font-size: 18px; font-weight: bold; color: #2c3e50;");
     
-    // 返回按钮
-    m_backButton = new QPushButton("返回");
+    // 刷新按钮
+    m_backButton = new QPushButton("刷新");
     m_backButton->setStyleSheet(
         "QPushButton {"
         "    background-color: #3498db;"
@@ -57,7 +57,7 @@ void CasePage::setupUI()
         "    background-color: #21618c;"
         "}"
     );
-    connect(m_backButton, &QPushButton::clicked, this, &CasePage::onBackButtonClicked);
+    connect(m_backButton, &QPushButton::clicked, this, &CasePage::onRefreshButtonClicked);
     
     m_headerLayout->addWidget(m_titleLabel);
     m_headerLayout->addStretch();
@@ -100,10 +100,11 @@ void CasePage::onConnected()
 
 // 响应由服务处理
 
-void CasePage::onBackButtonClicked()
+void CasePage::onRefreshButtonClicked()
 {
-    // 发送返回上一页的信号
-    emit backRequested();
+    // 刷新病例数据
+    qDebug() << "[CasePage] 刷新病例数据";
+    loadMedicalRecords();
 }
 
 void CasePage::onRowDoubleClicked(int row, int column)

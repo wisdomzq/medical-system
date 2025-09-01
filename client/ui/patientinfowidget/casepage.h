@@ -22,7 +22,7 @@ protected slots:
     void onConnected();
 
 private slots:
-    void onBackButtonClicked();
+    void onRefreshButtonClicked();
     void onRowDoubleClicked(int row, int column);
     void loadMedicalRecords();
 
@@ -38,9 +38,6 @@ private:
     QTableWidget *m_recordTable;
     
     QJsonArray m_records; // 存储当前的病例记录
-
-signals:
-    void backRequested(); // 返回按钮点击信号
 };
 
 #endif // CASEPAGE_H
