@@ -20,7 +20,7 @@ PrescriptionModule::PrescriptionModule(QObject *parent):QObject(parent) {
 
 void PrescriptionModule::onRequest(const QJsonObject &payload) {
     const QString action = payload.value("action").toString();
-    qInfo() << "[PrescriptionModule] 收到动作" << action;
+    qInfo() << "[ PrescriptionModule ] 收到动作" << action;
     
     if (action == "prescription_get_list") return handleGetList(payload);
     if (action == "prescription_get_details") return handleGetDetails(payload);
@@ -59,10 +59,10 @@ void PrescriptionModule::handleGetList(const QJsonObject &payload) {
         }
         
         // 按prescription_date倒序排序（最新的在前）
-        qInfo() << "[PrescriptionModule] 排序前处方数量:" << prescriptionsVector.size();
+        qInfo() << "[ PrescriptionModule ] 排序前处方数量:" << prescriptionsVector.size();
         if (!prescriptionsVector.isEmpty()) {
-            qInfo() << "[PrescriptionModule] 排序前第一个处方日期:" << prescriptionsVector.first().value("prescription_date").toString();
-            qInfo() << "[PrescriptionModule] 排序前最后一个处方日期:" << prescriptionsVector.last().value("prescription_date").toString();
+            qInfo() << "[ PrescriptionModule ] 排序前第一个处方日期:" << prescriptionsVector.first().value("prescription_date").toString();
+            qInfo() << "[ PrescriptionModule ] 排序前最后一个处方日期:" << prescriptionsVector.last().value("prescription_date").toString();
         }
         
         std::sort(prescriptionsVector.begin(), prescriptionsVector.end(), [](const QJsonObject& a, const QJsonObject& b) {
@@ -72,8 +72,8 @@ void PrescriptionModule::handleGetList(const QJsonObject &payload) {
         });
         
         if (!prescriptionsVector.isEmpty()) {
-            qInfo() << "[PrescriptionModule] 排序后第一个处方日期:" << prescriptionsVector.first().value("prescription_date").toString();
-            qInfo() << "[PrescriptionModule] 排序后最后一个处方日期:" << prescriptionsVector.last().value("prescription_date").toString();
+            qInfo() << "[ PrescriptionModule ] 排序后第一个处方日期:" << prescriptionsVector.first().value("prescription_date").toString();
+            qInfo() << "[ PrescriptionModule ] 排序后最后一个处方日期:" << prescriptionsVector.last().value("prescription_date").toString();
         }
         
         // 为每个处方添加序号

@@ -119,10 +119,10 @@ QJsonObject AdviceModule::getAdvicesByPatient(const QString& patientUsername) {
             advicesVector.append(adviceValue.toObject());
         }
         
-        qInfo() << "[AdviceModule] 排序前医嘱数量:" << advicesVector.size();
+        qInfo() << "[ AdviceModule ] 排序前医嘱数量:" << advicesVector.size();
         if (!advicesVector.isEmpty()) {
-            qInfo() << "[AdviceModule] 排序前第一个医嘱日期:" << advicesVector.first().value("visit_date").toString();
-            qInfo() << "[AdviceModule] 排序前最后一个医嘱日期:" << advicesVector.last().value("visit_date").toString();
+            qInfo() << "[ AdviceModule ] 排序前第一个医嘱日期:" << advicesVector.first().value("visit_date").toString();
+            qInfo() << "[ AdviceModule ] 排序前最后一个医嘱日期:" << advicesVector.last().value("visit_date").toString();
         }
         
         std::sort(advicesVector.begin(), advicesVector.end(), [](const QJsonObject& a, const QJsonObject& b) {
@@ -132,8 +132,8 @@ QJsonObject AdviceModule::getAdvicesByPatient(const QString& patientUsername) {
         });
         
         if (!advicesVector.isEmpty()) {
-            qInfo() << "[AdviceModule] 排序后第一个医嘱日期:" << advicesVector.first().value("visit_date").toString();
-            qInfo() << "[AdviceModule] 排序后最后一个医嘱日期:" << advicesVector.last().value("visit_date").toString();
+            qInfo() << "[ AdviceModule ] 排序后第一个医嘱日期:" << advicesVector.first().value("visit_date").toString();
+            qInfo() << "[ AdviceModule ] 排序后最后一个医嘱日期:" << advicesVector.last().value("visit_date").toString();
         }
         
         // 重新分配序号

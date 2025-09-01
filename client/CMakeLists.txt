@@ -1,11 +1,19 @@
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-set(CMAKE_AUTOUIC ON)
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-
 find_package(Qt5 COMPONENTS Widgets Network Sql REQUIRED)
 
-set(srcs
+add_executable(hello)
+
+# Enable Qt code generation at target scope
+set_target_properties(hello PROPERTIES
+    AUTOMOC ON
+    AUTOUIC ON
+    AUTORCC ON
+)
+
+# Use C++17 in a target-scoped and portable way
+target_compile_features(hello PRIVATE cxx_std_17)
+
+# Sources
+target_sources(hello PRIVATE
     ui/hello/hello.cpp
     ui/loginwidget/loginwidget.cpp
     ui/doctorinfowidget/doctorinfowidget.cpp
@@ -71,10 +79,6 @@ set(srcs
     main.cpp
 )
 
-add_executable(hello
-    ${srcs}
-)
-
 target_include_directories(hello PRIVATE
     .
     ui
@@ -83,10 +87,14 @@ target_include_directories(hello PRIVATE
     ui/doctorinfowidget
     ui/patientinfowidget
     core
-    core/network/src
-    core/network/src/client
+    core/network/
     core/services
     core/logging
 )
 
-target_link_libraries(hello PRIVATE Qt5::Widgets Qt5::Network Qt5::Sql)
+target_link_libraries(hello PRIVATE
+    Qt5::Widgets
+    Qt5::Network
+    Qt5::Sql
+    project_warnings
+)

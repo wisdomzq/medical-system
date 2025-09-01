@@ -111,8 +111,8 @@ AppointmentPage::AppointmentPage(CommunicationClient *c, const QString &patient,
 
 void AppointmentPage::handleResponse(const QJsonObject &obj){
     QString type=obj.value("type").toString();
-    qDebug() << "[AppointmentPage] 收到响应，类型:" << type;
-    qDebug() << "[AppointmentPage] 完整响应:" << obj;
+    qDebug() << "[ AppointmentPage ] 收到响应，类型:" << type;
+    qDebug() << "[ AppointmentPage ] 完整响应:" << obj;
     
     if(type=="doctor_schedule_response"){
         if(!obj.value("success").toBool())return;
@@ -250,6 +250,6 @@ void AppointmentPage::sendRegisterRequest(){
     data["fee"]              = fee;
 
     static int counter=1; const QString uuid = QString("appt_req_%1_%2").arg(QDateTime::currentMSecsSinceEpoch()).arg(counter++);
-    qDebug() << "[AppointmentPage] 发送 create_appointment 请求数据:" << data;
+    qDebug() << "[ AppointmentPage ] 发送 create_appointment 请求数据:" << data;
     m_service->createAppointment(data, uuid);
 }

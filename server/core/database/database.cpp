@@ -1136,7 +1136,7 @@ bool DBManager::getAppointmentsByPatient(const QString& patientUsername, QJsonAr
 }
 
 bool DBManager::getAppointmentsByDoctor(const QString& doctorUsername, QJsonArray& appointments) {
-    qDebug() << "[DBManager] 查询医生预约，用户名:" << doctorUsername;
+    qDebug() << "[ DBManager ] 查询医生预约，用户名:" << doctorUsername;
     
     // 添加文件日志
     QFile logFile("/tmp/db_debug.log");
@@ -1207,7 +1207,7 @@ bool DBManager::getAppointmentsByDoctor(const QString& doctorUsername, QJsonArra
         appointment["schedule_max_appointments"] = 10;
         appointments.append(appointment);
     }
-    qDebug() << "[DBManager] 查询完成，找到" << count << "条预约记录";
+    qDebug() << "[ DBManager ] 查询完成，找到" << count << "条预约记录";
     
     // 添加文件日志
     QFile logFile3("/tmp/db_debug.log");

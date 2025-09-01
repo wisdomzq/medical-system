@@ -50,10 +50,10 @@ void HospitalizationModule::handleByPatient(const QJsonObject &payload) {
         }
         
         // 按admission_date倒序排序（最新的在前）
-        qInfo() << "[HospitalizationModule] 排序前住院记录数量:" << hospitalizationsVector.size();
+        qInfo() << "[ HospitalizationModule ] 排序前住院记录数量:" << hospitalizationsVector.size();
         if (!hospitalizationsVector.isEmpty()) {
-            qInfo() << "[HospitalizationModule] 排序前第一个住院日期:" << hospitalizationsVector.first().value("admission_date").toString();
-            qInfo() << "[HospitalizationModule] 排序前最后一个住院日期:" << hospitalizationsVector.last().value("admission_date").toString();
+            qInfo() << "[ HospitalizationModule ] 排序前第一个住院日期:" << hospitalizationsVector.first().value("admission_date").toString();
+            qInfo() << "[ HospitalizationModule ] 排序前最后一个住院日期:" << hospitalizationsVector.last().value("admission_date").toString();
         }
         
         std::sort(hospitalizationsVector.begin(), hospitalizationsVector.end(), [](const QJsonObject& a, const QJsonObject& b) {
@@ -63,8 +63,8 @@ void HospitalizationModule::handleByPatient(const QJsonObject &payload) {
         });
         
         if (!hospitalizationsVector.isEmpty()) {
-            qInfo() << "[HospitalizationModule] 排序后第一个住院日期:" << hospitalizationsVector.first().value("admission_date").toString();
-            qInfo() << "[HospitalizationModule] 排序后最后一个住院日期:" << hospitalizationsVector.last().value("admission_date").toString();
+            qInfo() << "[ HospitalizationModule ] 排序后第一个住院日期:" << hospitalizationsVector.first().value("admission_date").toString();
+            qInfo() << "[ HospitalizationModule ] 排序后最后一个住院日期:" << hospitalizationsVector.last().value("admission_date").toString();
         }
         
         // 转换回QJsonArray

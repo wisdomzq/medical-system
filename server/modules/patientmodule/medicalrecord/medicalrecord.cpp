@@ -22,7 +22,7 @@ MedicalRecordModule::MedicalRecordModule(QObject *parent) : QObject(parent)
 void MedicalRecordModule::onRequest(const QJsonObject &payload)
 {
     const QString action = payload.value("action").toString();
-    qInfo() << "[MedicalRecordModule] 收到动作" << action;
+    qInfo() << "[ MedicalRecordModule ] 收到动作" << action;
     
     if (action == "get_medical_records" || action == "get_medical_records_by_patient") {
         return handleGetMedicalRecords(payload);
@@ -67,10 +67,10 @@ void MedicalRecordModule::handleGetMedicalRecords(const QJsonObject &payload)
         }
         
         // 按visit_date倒序排序（最新的在前）
-        qInfo() << "[MedicalRecordModule] 排序前病例数量:" << recordsVector.size();
+        qInfo() << "[ MedicalRecordModule ] 排序前病例数量:" << recordsVector.size();
         if (!recordsVector.isEmpty()) {
-            qInfo() << "[MedicalRecordModule] 排序前第一个病例日期:" << recordsVector.first().value("visit_date").toString();
-            qInfo() << "[MedicalRecordModule] 排序前最后一个病例日期:" << recordsVector.last().value("visit_date").toString();
+            qInfo() << "[ MedicalRecordModule ] 排序前第一个病例日期:" << recordsVector.first().value("visit_date").toString();
+            qInfo() << "[ MedicalRecordModule ] 排序前最后一个病例日期:" << recordsVector.last().value("visit_date").toString();
         }
         
         std::sort(recordsVector.begin(), recordsVector.end(), [](const QJsonObject& a, const QJsonObject& b) {
@@ -80,8 +80,8 @@ void MedicalRecordModule::handleGetMedicalRecords(const QJsonObject &payload)
         });
         
         if (!recordsVector.isEmpty()) {
-            qInfo() << "[MedicalRecordModule] 排序后第一个病例日期:" << recordsVector.first().value("visit_date").toString();
-            qInfo() << "[MedicalRecordModule] 排序后最后一个病例日期:" << recordsVector.last().value("visit_date").toString();
+            qInfo() << "[ MedicalRecordModule ] 排序后第一个病例日期:" << recordsVector.first().value("visit_date").toString();
+            qInfo() << "[ MedicalRecordModule ] 排序后最后一个病例日期:" << recordsVector.last().value("visit_date").toString();
         }
         
         // 转换回QJsonArray

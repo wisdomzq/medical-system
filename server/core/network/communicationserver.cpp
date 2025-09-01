@@ -12,7 +12,7 @@ CommunicationServer::CommunicationServer(QObject* parent)
 
 void CommunicationServer::incomingConnection(qintptr socketDescriptor)
 {
-    qInfo() << "[Server] 新连接到达，socketDescriptor=" << socketDescriptor;
+    qInfo() << "[ Server ] 新连接到达，socketDescriptor=" << socketDescriptor;
     QThread* thread = new QThread;
     ClientHandler* handler = new ClientHandler;
     handler->moveToThread(thread);
@@ -25,7 +25,7 @@ void CommunicationServer::incomingConnection(qintptr socketDescriptor)
     }
     // 当线程启动后，通过信号和槽机制调用 handler 的初始化方法
     if (!connect(thread, &QThread::started, handler, [handler, socketDescriptor]() {
-        qInfo() << "[Server] 在线程" << QThread::currentThread() << "中初始化 ClientHandler";
+        qInfo() << "[ Server ] 在线程" << QThread::currentThread() << "中初始化 ClientHandler";
         handler->initialize(socketDescriptor);
     })) {
         Log::error("CommunicationServer", "Failed to connect QThread::started to handler lambda");
@@ -50,6 +50,6 @@ void CommunicationServer::incomingConnection(qintptr socketDescriptor)
         Log::error("CommunicationServer", "Failed to connect MessageRouter::responseReady to handler lambda");
     }
 
-    qInfo() << "[Server] 启动处理线程" << thread;
+    qInfo() << "[ Server ] 启动处理线程" << thread;
     thread->start();
 }
