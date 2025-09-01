@@ -5,6 +5,7 @@
 #include "core/logging/logging.h"
 #include <QJsonArray>
 #include <QDebug>
+#include <algorithm>
 
 PrescriptionModule::PrescriptionModule(QObject *parent):QObject(parent) {
     if (!connect(&MessageRouter::instance(), &MessageRouter::requestReceived,
@@ -39,21 +40,51 @@ void PrescriptionModule::handleGetList(const QJsonObject &payload) {
     QJsonArray list;
     bool ok = db.getPrescriptionsByPatient(patient, list);
     
-    // 为每个处方添加序号和科室信息
-    for (int i = 0; i < list.size(); ++i) {
-        QJsonObject prescription = list[i].toObject();
-        prescription["sequence"] = i + 1; // 序号从1开始
-        
-        // 通过doctor_username获取科室信息
-        QString doctorUsername = prescription.value("doctor_username").toString();
-        QJsonObject doctorInfo;
-        if (db.getDoctorInfo(doctorUsername, doctorInfo)) {
-            prescription["department"] = doctorInfo.value("department").toString();
-        } else {
-            prescription["department"] = "未知科室";
+    if (ok) {
+        // 转换为Vector进行排序
+        QVector<QJsonObject> prescriptionsVector;
+        for (int i = 0; i < list.size(); ++i) {
+            QJsonObject prescription = list[i].toObject();
+            
+            // 通过doctor_username获取科室信息
+            QString doctorUsername = prescription.value("doctor_username").toString();
+            QJsonObject doctorInfo;
+            if (db.getDoctorInfo(doctorUsername, doctorInfo)) {
+                prescription["department"] = doctorInfo.value("department").toString();
+            } else {
+                prescription["department"] = "未知科室";
+            }
+            
+            prescriptionsVector.append(prescription);
         }
         
-        list[i] = prescription;
+        // 按prescription_date倒序排序（最新的在前）
+        qInfo() << "[PrescriptionModule] 排序前处方数量:" << prescriptionsVector.size();
+        if (!prescriptionsVector.isEmpty()) {
+            qInfo() << "[PrescriptionModule] 排序前第一个处方日期:" << prescriptionsVector.first().value("prescription_date").toString();
+            qInfo() << "[PrescriptionModule] 排序前最后一个处方日期:" << prescriptionsVector.last().value("prescription_date").toString();
+        }
+        
+        std::sort(prescriptionsVector.begin(), prescriptionsVector.end(), [](const QJsonObject& a, const QJsonObject& b) {
+            QString dateA = a.value("prescription_date").toString();
+            QString dateB = b.value("prescription_date").toString();
+            return dateA > dateB; // 倒序：最新的在前
+        });
+        
+        if (!prescriptionsVector.isEmpty()) {
+            qInfo() << "[PrescriptionModule] 排序后第一个处方日期:" << prescriptionsVector.first().value("prescription_date").toString();
+            qInfo() << "[PrescriptionModule] 排序后最后一个处方日期:" << prescriptionsVector.last().value("prescription_date").toString();
+        }
+        
+        // 为每个处方添加序号
+        QJsonArray sortedList;
+        for (int i = 0; i < prescriptionsVector.size(); ++i) {
+            QJsonObject prescription = prescriptionsVector[i];
+            prescription["sequence"] = i + 1; // 序号从1开始
+            sortedList.append(prescription);
+        }
+        
+        list = sortedList;
     }
     
     QJsonObject resp;

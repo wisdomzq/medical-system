@@ -5,6 +5,7 @@
 #include "core/logging/logging.h"
 #include <QJsonArray>
 #include <QDebug>
+#include <algorithm>
 
 MedicalRecordModule::MedicalRecordModule(QObject *parent) : QObject(parent)
 {
@@ -51,8 +52,8 @@ void MedicalRecordModule::handleGetMedicalRecords(const QJsonObject &payload)
     bool ok = db.getMedicalRecordsByPatient(patientUsername, records);
     
     if (ok) {
-        // 对返回的数据进行简化，只保留表格显示需要的字段
-        QJsonArray simplifiedRecords;
+        // 转换为Vector进行排序
+        QVector<QJsonObject> recordsVector;
         for (int i = 0; i < records.size(); ++i) {
             QJsonObject record = records[i].toObject();
             QJsonObject simplified;
@@ -62,7 +63,31 @@ void MedicalRecordModule::handleGetMedicalRecords(const QJsonObject &payload)
             simplified["doctor_name"] = record.value("doctor_name").toString();
             simplified["diagnosis"] = record.value("diagnosis").toString();
             simplified["doctor_title"] = record.value("doctor_title").toString();
-            simplifiedRecords.append(simplified);
+            recordsVector.append(simplified);
+        }
+        
+        // 按visit_date倒序排序（最新的在前）
+        qInfo() << "[MedicalRecordModule] 排序前病例数量:" << recordsVector.size();
+        if (!recordsVector.isEmpty()) {
+            qInfo() << "[MedicalRecordModule] 排序前第一个病例日期:" << recordsVector.first().value("visit_date").toString();
+            qInfo() << "[MedicalRecordModule] 排序前最后一个病例日期:" << recordsVector.last().value("visit_date").toString();
+        }
+        
+        std::sort(recordsVector.begin(), recordsVector.end(), [](const QJsonObject& a, const QJsonObject& b) {
+            QString dateA = a.value("visit_date").toString();
+            QString dateB = b.value("visit_date").toString();
+            return dateA > dateB; // 倒序：最新的在前
+        });
+        
+        if (!recordsVector.isEmpty()) {
+            qInfo() << "[MedicalRecordModule] 排序后第一个病例日期:" << recordsVector.first().value("visit_date").toString();
+            qInfo() << "[MedicalRecordModule] 排序后最后一个病例日期:" << recordsVector.last().value("visit_date").toString();
+        }
+        
+        // 转换回QJsonArray
+        QJsonArray simplifiedRecords;
+        for (const auto& record : recordsVector) {
+            simplifiedRecords.append(record);
         }
         
         resp["success"] = true;

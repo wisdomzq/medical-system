@@ -5,6 +5,7 @@
 #include <QHeaderView>
 #include <QUuid>
 #include <QDebug>
+#include <QDateTime>
 
 CasePage::CasePage(CommunicationClient *client, const QString &patientName, QWidget *parent)
     : BasePage(client, patientName, parent)
@@ -80,7 +81,7 @@ void CasePage::setupUI()
     
     // 设置列宽
     m_recordTable->setColumnWidth(0, 60);  // 序号
-    m_recordTable->setColumnWidth(1, 120); // 日期
+    m_recordTable->setColumnWidth(1, 140); // 日期时间（增加宽度）
     m_recordTable->setColumnWidth(2, 100); // 科室
     m_recordTable->setColumnWidth(3, 120); // 医生
     
@@ -146,6 +147,7 @@ void CasePage::loadMedicalRecords()
 
 void CasePage::populateTable(const QJsonArray &records)
 {
+    m_records = records;
     m_recordTable->setRowCount(records.size());
     
     for (int i = 0; i < records.size(); ++i) {
@@ -154,10 +156,14 @@ void CasePage::populateTable(const QJsonArray &records)
         // 序号
         m_recordTable->setItem(i, 0, new QTableWidgetItem(QString::number(i + 1)));
         
-        // 日期
+        // 日期 - 显示完整的日期时间
         QString date = record.value("visit_date").toString();
-        if (date.contains(" ")) {
-            date = date.split(" ")[0]; // 只显示日期部分
+        // 如果日期格式是YYYY-MM-DD HH:MM:SS，显示年月日-时刻
+        if (date.length() > 10 && date.contains(" ")) {
+            QDateTime dt = QDateTime::fromString(date, "yyyy-MM-dd hh:mm:ss");
+            if (dt.isValid()) {
+                date = dt.toString("yyyy-MM-dd-hh:mm"); // 显示年月日-时刻
+            }
         }
         m_recordTable->setItem(i, 1, new QTableWidgetItem(date));
         

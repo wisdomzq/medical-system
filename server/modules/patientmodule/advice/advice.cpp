@@ -5,6 +5,7 @@
 #include "core/logging/logging.h"
 #include <QJsonArray>
 #include <QDebug>
+#include <algorithm>
 
 AdviceModule::AdviceModule(QObject* parent) : QObject(parent) {
     // 连接消息路由器
@@ -112,8 +113,39 @@ QJsonObject AdviceModule::getAdvicesByPatient(const QString& patientUsername) {
             }
         }
         
+        // 按visit_date倒序排序（最新的在前）
+        QVector<QJsonObject> advicesVector;
+        for (const auto& adviceValue : advices) {
+            advicesVector.append(adviceValue.toObject());
+        }
+        
+        qInfo() << "[AdviceModule] 排序前医嘱数量:" << advicesVector.size();
+        if (!advicesVector.isEmpty()) {
+            qInfo() << "[AdviceModule] 排序前第一个医嘱日期:" << advicesVector.first().value("visit_date").toString();
+            qInfo() << "[AdviceModule] 排序前最后一个医嘱日期:" << advicesVector.last().value("visit_date").toString();
+        }
+        
+        std::sort(advicesVector.begin(), advicesVector.end(), [](const QJsonObject& a, const QJsonObject& b) {
+            QString dateA = a.value("visit_date").toString();
+            QString dateB = b.value("visit_date").toString();
+            return dateA > dateB; // 倒序：最新的在前
+        });
+        
+        if (!advicesVector.isEmpty()) {
+            qInfo() << "[AdviceModule] 排序后第一个医嘱日期:" << advicesVector.first().value("visit_date").toString();
+            qInfo() << "[AdviceModule] 排序后最后一个医嘱日期:" << advicesVector.last().value("visit_date").toString();
+        }
+        
+        // 重新分配序号
+        QJsonArray sortedAdvices;
+        for (int i = 0; i < advicesVector.size(); ++i) {
+            QJsonObject advice = advicesVector[i];
+            advice["sequence"] = i + 1; // 重新按排序后的顺序分配序号
+            sortedAdvices.append(advice);
+        }
+        
         response["success"] = true;
-        response["data"] = advices;
+        response["data"] = sortedAdvices;
         
     } catch (const std::exception& e) {
         qDebug() << "获取患者医嘱异常:" << e.what();

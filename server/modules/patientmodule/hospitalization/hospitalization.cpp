@@ -4,6 +4,7 @@
 #include "core/database/database_config.h"
 #include "core/logging/logging.h"
 #include <QJsonArray>
+#include <algorithm>
 
 HospitalizationModule::HospitalizationModule(QObject *parent):QObject(parent) {
     if (!connect(&MessageRouter::instance(), &MessageRouter::requestReceived,
@@ -38,7 +39,42 @@ void HospitalizationModule::handleCreate(const QJsonObject &payload) {
 
 void HospitalizationModule::handleByPatient(const QJsonObject &payload) {
     DBManager db(DatabaseConfig::getDatabasePath());
-    QJsonArray list; bool ok = db.getHospitalizationsByPatient(payload.value("patient_username").toString(), list);
+    QJsonArray list; 
+    bool ok = db.getHospitalizationsByPatient(payload.value("patient_username").toString(), list);
+    
+    if (ok) {
+        // 转换为Vector进行排序
+        QVector<QJsonObject> hospitalizationsVector;
+        for (int i = 0; i < list.size(); ++i) {
+            hospitalizationsVector.append(list[i].toObject());
+        }
+        
+        // 按admission_date倒序排序（最新的在前）
+        qInfo() << "[HospitalizationModule] 排序前住院记录数量:" << hospitalizationsVector.size();
+        if (!hospitalizationsVector.isEmpty()) {
+            qInfo() << "[HospitalizationModule] 排序前第一个住院日期:" << hospitalizationsVector.first().value("admission_date").toString();
+            qInfo() << "[HospitalizationModule] 排序前最后一个住院日期:" << hospitalizationsVector.last().value("admission_date").toString();
+        }
+        
+        std::sort(hospitalizationsVector.begin(), hospitalizationsVector.end(), [](const QJsonObject& a, const QJsonObject& b) {
+            QString dateA = a.value("admission_date").toString();
+            QString dateB = b.value("admission_date").toString();
+            return dateA > dateB; // 倒序：最新的在前
+        });
+        
+        if (!hospitalizationsVector.isEmpty()) {
+            qInfo() << "[HospitalizationModule] 排序后第一个住院日期:" << hospitalizationsVector.first().value("admission_date").toString();
+            qInfo() << "[HospitalizationModule] 排序后最后一个住院日期:" << hospitalizationsVector.last().value("admission_date").toString();
+        }
+        
+        // 转换回QJsonArray
+        QJsonArray sortedList;
+        for (const auto& hospitalization : hospitalizationsVector) {
+            sortedList.append(hospitalization);
+        }
+        list = sortedList;
+    }
+    
     QJsonObject out; out["type"] = "hospitalizations_response"; out["success"] = ok; if (ok) out["data"] = list; else out["error"] = QStringLiteral("查询失败");
     Log::resultCount("Hospitalization", ok, list.size(), "by_patient");
     reply(out, payload);
