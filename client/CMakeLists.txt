@@ -61,6 +61,7 @@ set(srcs
     core/services/prescriptionservice.cpp
     core/services/attendanceservice.cpp
     core/services/medicalcrudservice.cpp
+    core/services/chatservice.cpp
     resources/resources.qrc
     main.cpp
 )

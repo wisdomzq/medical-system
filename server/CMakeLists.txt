@@ -31,6 +31,7 @@ set(srcs
     modules/doctormodule/assignment/assignment.cpp
     modules/doctormodule/attendance/attendance.cpp
     modules/doctormodule/router/router.cpp
+    modules/chatmodule/chatmodule.cpp
 )
 
 add_executable(server

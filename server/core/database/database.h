@@ -100,6 +100,13 @@ public:
     // 考勤查询
     bool getAttendanceByDoctor(const QString &doctorUsername, QJsonArray &records, int limit = 100);
 
+    // 聊天相关（简化实现）
+    bool addChatMessage(const QJsonObject &msg, int &insertedId, QString &errorMessage);
+    bool getChatHistory(const QString &doctorUsername, const QString &patientUsername,
+                        qint64 beforeId, int limit, QJsonArray &out);
+    bool getMessagesSinceForUser(const QString &username, qint64 cursor, int limit, QJsonArray &out);
+    bool getRecentContactsForUser(const QString &username, int limit, QJsonArray &out);
+
 private:
     QSqlDatabase m_db;
     void initDatabase();
@@ -118,6 +125,7 @@ private:
     void createHospitalizationsTable();
     void createAttendanceTable();
     void createLeaveRequestsTable();
+    void createChatMessagesTable();
     
     // 示例数据插入
     void insertSampleMedications();

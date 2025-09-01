@@ -21,6 +21,8 @@
 #include "modules/patientmodule/hospitalization/hospitalization.h"
 #include "modules/medicalcrud/medicalcrud.h"
 #include "modules/doctormodule/router/router.h"
+// 聊天模块
+#include "modules/chatmodule/chatmodule.h"
 
 int main(int argc, char *argv[]) {
     QCoreApplication a(argc, argv);
@@ -43,6 +45,7 @@ int main(int argc, char *argv[]) {
     HospitalizationModule hospitalizationModule;
     MedicalCrudModule medicalCrudModule;
     DoctorRouterModule doctorRouterModule;
+    ChatModule chatModule;
 
     if (server.listen(QHostAddress::Any, Protocol::SERVER_PORT)) {
         qDebug() << "Server started on port" << Protocol::SERVER_PORT;

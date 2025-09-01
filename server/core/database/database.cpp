@@ -5,6 +5,7 @@
 #include <QFile>
 #include <QDateTime>
 #include <QJsonArray>
+#include <QJsonDocument>
 #include <QTimer>
 #include <QCoreApplication>
 
@@ -63,8 +64,174 @@ void DBManager::initDatabase() {
     createHospitalizationsTable(); // 添加住院表
     createAttendanceTable();
     createLeaveRequestsTable();
+    createChatMessagesTable();
     
     // 不插入示例数据，使用现有数据库中的数据
+}
+
+void DBManager::createChatMessagesTable() {
+    if (!m_db.tables().contains(QStringLiteral("chat_messages"))) {
+        QSqlQuery q(m_db);
+        const char *sql = R"(
+            CREATE TABLE chat_messages (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                doctor_username  TEXT NOT NULL,
+                patient_username TEXT NOT NULL,
+                message_id       TEXT NOT NULL UNIQUE,
+                sender_username  TEXT NOT NULL,
+                message_type     TEXT NOT NULL CHECK(message_type IN ('text','image','file')),
+                text_content     TEXT,
+                file_metadata    TEXT,
+                created_at       DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (doctor_username)  REFERENCES users(username),
+                FOREIGN KEY (patient_username) REFERENCES users(username),
+                FOREIGN KEY (sender_username)  REFERENCES users(username)
+            )
+        )";
+        if (!q.exec(sql)) {
+            qDebug() << "创建chat_messages表失败:" << q.lastError().text();
+        } else {
+            QSqlQuery idx(m_db);
+            idx.exec("CREATE INDEX IF NOT EXISTS idx_chat_pair ON chat_messages(doctor_username, patient_username)");
+            idx.exec("CREATE INDEX IF NOT EXISTS idx_chat_pair_id ON chat_messages(doctor_username, patient_username, id DESC)");
+            idx.exec("CREATE INDEX IF NOT EXISTS idx_chat_sender ON chat_messages(sender_username, id DESC)");
+        }
+    }
+}
+
+bool DBManager::addChatMessage(const QJsonObject &msg, int &insertedId, QString &errorMessage) {
+    // 期望字段：doctor_username, patient_username, message_id, sender_username, message_type, text_content(可空), file_metadata(可空)
+    QSqlQuery q(m_db);
+    q.prepare(R"(
+        INSERT INTO chat_messages (
+            doctor_username, patient_username, message_id, sender_username,
+            message_type, text_content, file_metadata
+        ) VALUES (:d, :p, :mid, :s, :t, :text, :file)
+    )");
+    q.bindValue(":d", msg.value("doctor_username").toString());
+    q.bindValue(":p", msg.value("patient_username").toString());
+    q.bindValue(":mid", msg.value("message_id").toString());
+    q.bindValue(":s", msg.value("sender_username").toString());
+    q.bindValue(":t", msg.value("message_type").toString());
+    q.bindValue(":text", msg.value("text_content").toString());
+    // file_metadata 若为对象，序列化为字符串
+    if (msg.contains("file_metadata") && msg.value("file_metadata").isObject()) {
+        q.bindValue(":file", QString::fromUtf8(QJsonDocument(msg.value("file_metadata").toObject()).toJson(QJsonDocument::Compact)));
+    } else if (msg.contains("file_metadata") && msg.value("file_metadata").isString()) {
+        q.bindValue(":file", msg.value("file_metadata").toString());
+    } else {
+        q.bindValue(":file", QVariant(QVariant::String));
+    }
+    if (!q.exec()) {
+        errorMessage = q.lastError().text();
+        return false;
+    }
+    insertedId = q.lastInsertId().toInt();
+    return true;
+}
+
+bool DBManager::getChatHistory(const QString &doctorUsername, const QString &patientUsername,
+                               qint64 beforeId, int limit, QJsonArray &out) {
+    QSqlQuery q(m_db);
+    QString sql = R"(
+        SELECT id, doctor_username, patient_username, message_id, sender_username,
+               message_type, text_content, file_metadata, created_at
+        FROM chat_messages
+        WHERE doctor_username = :d AND patient_username = :p
+    )";
+    if (beforeId > 0) sql += " AND id < :before";
+    sql += " ORDER BY id DESC LIMIT :limit";
+    q.prepare(sql);
+    q.bindValue(":d", doctorUsername);
+    q.bindValue(":p", patientUsername);
+    if (beforeId > 0) q.bindValue(":before", beforeId);
+    q.bindValue(":limit", qMax(1, limit));
+    if (!q.exec()) { qDebug() << "getChatHistory error:" << q.lastError().text(); return false; }
+    while (q.next()) {
+        QJsonObject o;
+        o["id"] = q.value("id").toInt();
+        o["doctor_username"] = q.value("doctor_username").toString();
+        o["patient_username"] = q.value("patient_username").toString();
+        o["message_id"] = q.value("message_id").toString();
+        o["sender_username"] = q.value("sender_username").toString();
+        o["message_type"] = q.value("message_type").toString();
+        o["text_content"] = q.value("text_content").toString();
+        const QString fm = q.value("file_metadata").toString();
+        if (!fm.isEmpty()) {
+            QJsonParseError err; auto doc = QJsonDocument::fromJson(fm.toUtf8(), &err);
+            o["file_metadata"] = (err.error==QJsonParseError::NoError && doc.isObject()) ? doc.object() : QJsonObject();
+        } else o["file_metadata"] = QJsonValue();
+        o["created_at"] = q.value("created_at").toString();
+        out.append(o);
+    }
+    return true;
+}
+
+bool DBManager::getMessagesSinceForUser(const QString &username, qint64 cursor, int limit, QJsonArray &out) {
+    // 返回与该用户相关（作为医生、患者、或发送者）且 id>cursor 的消息
+    QSqlQuery q(m_db);
+    q.prepare(R"(
+        SELECT id, doctor_username, patient_username, message_id, sender_username,
+               message_type, text_content, file_metadata, created_at
+        FROM chat_messages
+        WHERE id > :cursor AND (
+            doctor_username = :u OR patient_username = :u OR sender_username = :u
+        )
+        ORDER BY id ASC
+        LIMIT :limit
+    )");
+    q.bindValue(":cursor", cursor);
+    q.bindValue(":u", username);
+    q.bindValue(":limit", qMax(1, limit));
+    if (!q.exec()) { qDebug() << "getMessagesSinceForUser error:" << q.lastError().text(); return false; }
+    while (q.next()) {
+        QJsonObject o;
+        o["id"] = q.value("id").toInt();
+        o["doctor_username"] = q.value("doctor_username").toString();
+        o["patient_username"] = q.value("patient_username").toString();
+        o["message_id"] = q.value("message_id").toString();
+        o["sender_username"] = q.value("sender_username").toString();
+        o["message_type"] = q.value("message_type").toString();
+        o["text_content"] = q.value("text_content").toString();
+        const QString fm = q.value("file_metadata").toString();
+        if (!fm.isEmpty()) {
+            QJsonParseError err; auto doc = QJsonDocument::fromJson(fm.toUtf8(), &err);
+            o["file_metadata"] = (err.error==QJsonParseError::NoError && doc.isObject()) ? doc.object() : QJsonObject();
+        } else o["file_metadata"] = QJsonValue();
+        o["created_at"] = q.value("created_at").toString();
+        out.append(o);
+    }
+    return true;
+}
+
+bool DBManager::getRecentContactsForUser(const QString &username, int limit, QJsonArray &out) {
+    // 查找最近出现于该用户相关消息中的对端用户名（医生或患者），按最近消息时间倒序，去重
+    // 通过 UNION 取医生视角与患者视角，再按 max(id) 排序
+    QSqlQuery q(m_db);
+    q.prepare(R"(
+        SELECT peer, MAX(id) AS last_id
+        FROM (
+            SELECT CASE WHEN sender_username = :u THEN
+                        CASE WHEN doctor_username = :u THEN patient_username ELSE doctor_username END
+                    ELSE
+                        CASE WHEN doctor_username = :u THEN patient_username ELSE doctor_username END
+                END AS peer,
+                id
+            FROM chat_messages
+            WHERE doctor_username = :u OR patient_username = :u OR sender_username = :u
+        ) t
+        GROUP BY peer
+        ORDER BY last_id DESC
+        LIMIT :limit
+    )");
+    q.bindValue(":u", username);
+    q.bindValue(":limit", qMax(1, limit));
+    if (!q.exec()) { qDebug() << "getRecentContactsForUser error:" << q.lastError().text(); return false; }
+    while (q.next()) {
+        QJsonObject o; o["username"] = q.value(0).toString(); o["last_id"] = q.value(1).toInt();
+        out.append(o);
+    }
+    return true;
 }
 
 void DBManager::createUsersTable() {

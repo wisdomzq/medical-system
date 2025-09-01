@@ -49,7 +49,7 @@ DoctorInfoWidget::DoctorInfoWidget(const QString& doctorName, QWidget* parent)
 
     // 构建页面 - 传递共享的通信客户端
     auto attendance = new AttendanceWidget(m_doctorName, m_sharedClient, this);
-    auto chat = new ChatRoomWidget(m_doctorName, this);
+    auto chat = new ChatRoomWidget(m_doctorName, m_sharedClient, this);
     auto profile = new ProfileWidget(m_doctorName, m_sharedClient, this);
     auto appts = new AppointmentsWidget(m_doctorName, m_sharedClient, this); // 使用新的构造函数
     auto charts = new DataChartWidget(m_doctorName, this);
@@ -139,7 +139,7 @@ DoctorInfoWidget::DoctorInfoWidget(const QString& doctorName, CommunicationClien
     pages = new QStackedWidget(this);
 
     auto attendance = new AttendanceWidget(m_doctorName, m_sharedClient, this);
-    auto chat = new ChatRoomWidget(m_doctorName, this);
+    auto chat = new ChatRoomWidget(m_doctorName, m_sharedClient, this);
     auto profile = new ProfileWidget(m_doctorName, m_sharedClient, this);
     auto appts = new AppointmentsWidget(m_doctorName, m_sharedClient, this);
     auto charts = new DataChartWidget(m_doctorName, this);
