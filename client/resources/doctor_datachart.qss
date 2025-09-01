@@ -1,0 +1,81 @@
+/* 顶部栏样式：与其它页面一致 */
+QWidget#dataTopBar {
+  background: #667eea;
+  border: none;
+  padding: 12px 16px;
+}
+QWidget#dataTopBar QLabel#dataTitle {
+  font-size: 22px;
+  font-weight: 700;
+  color: #ffffff;
+  background: transparent;
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+QWidget#dataTopBar QLabel#dataSubTitle {
+  font-size: 12px;
+  color: rgba(255,255,255,0.85);
+  background: transparent;
+}
+
+/* 控制卡片 */
+QFrame#controlCard {
+  background: #ffffff;
+  border: 1px solid #e8ecf4;
+  border-radius: 12px;
+  padding: 10px; /* 稍减内边距，避免溢出 */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+/* 标签与输入控件 */
+QLabel { color: #334155; font-size: 14px; background: transparent; }
+QLabel#statusLabel { background: transparent; font-weight: 700; }
+QLabel#statusLabel[status="ok"] { color: #16a34a; }
+QLabel#statusLabel[status="warn"] { color: #f59e0b; }
+QLabel#statusLabel[status="err"] { color: #dc2626; }
+
+QComboBox, QDateEdit, QLineEdit {
+  background: #ffffff;
+  border: 1px solid #e8ecf4;
+  border-radius: 8px;
+  padding: 4px 8px; /* 更紧凑 */
+  min-height: 28px;
+}
+QComboBox:focus, QDateEdit:focus, QLineEdit:focus {
+  border: 2px solid #667eea;
+}
+QComboBox::drop-down { border: none; }
+
+/* 按钮样式（复用约定的命名） */
+QPushButton#primaryBtn {
+  background: #667eea;
+  color: #ffffff;
+  border: 1px solid #667eea;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-weight: 600;
+}
+QPushButton#primaryBtn:hover { background: #5a67d8; border-color: #5a67d8; }
+QPushButton#primaryBtn:pressed { background: #4c51bf; border-color: #4c51bf; }
+
+QPushButton#outlineBtn {
+  background: #ffffff;
+  color: #4f63dd;
+  border: 1px solid #d9e6fb;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-weight: 600;
+}
+QPushButton#outlineBtn:hover { background: #eef2ff; }
+
+QPushButton#exportBtn {
+  background: #ff9800;
+  color: #ffffff;
+  border: 1px solid #ff9800;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-weight: 600;
+}
+QPushButton#exportBtn:hover { background: #fb8c00; border-color: #fb8c00; }
+QPushButton#exportBtn:pressed { background: #ef6c00; border-color: #ef6c00; }

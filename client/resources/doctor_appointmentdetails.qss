@@ -1,0 +1,158 @@
+/* 顶部栏样式，保持与 profile/appointment 风格一致 */
+QWidget#detailTopBar {
+  background: #667eea;
+}
+QLabel#detailTitle {
+  color: #fff;
+  font-size: 20px;
+  font-weight: 700;
+}
+QLabel#detailSubtitle {
+  color: rgba(255,255,255,0.92);
+  font-size: 13px;
+}
+
+/* 卡片通用样式 */
+QGroupBox#recordCard,
+QGroupBox#adviceCard,
+QGroupBox#prescriptionCard,
+QGroupBox#hospCard {
+  background: #fff;
+  border: 1px solid #e6eaf2;
+  border-radius: 10px;
+  /* 为标题预留更大顶部空间，避免压到内容 */
+  margin-top: 22px;
+  /* 设置在 GroupBox 上的字体将作用于标题（title），从而确保字号生效 */
+  font-weight: 700;
+  font-size: 15px;
+}
+QGroupBox#recordCard::title,
+QGroupBox#adviceCard::title,
+QGroupBox#prescriptionCard::title,
+QGroupBox#hospCard::title {
+  subcontrol-origin: margin;
+  subcontrol-position: top left;
+  left: 12px;
+  /* 给标题加“标签式”圆角白底和描边 */
+  padding: 2px 10px;
+  background: #fff;
+  border: 1px solid #e6eaf2;
+  border-radius: 8px;
+  color: #1f2d3d;
+  /* 背景不透明，形成悬浮标签效果 */
+}
+
+/* 将卡片内部控件字体恢复为正常，不影响放大的标题 */
+QGroupBox#recordCard QWidget,
+QGroupBox#adviceCard QWidget,
+QGroupBox#prescriptionCard QWidget,
+QGroupBox#hospCard QWidget {
+  font-size: 13px;
+  font-weight: normal;
+}
+
+/* 表单输入统一样式 */
+QLineEdit, QTextEdit, QDateEdit {
+  background: #fbfdff;
+  border: 1px solid #d7deea;
+  border-radius: 6px;
+  padding: 6px 8px;
+}
+QLineEdit:focus, QTextEdit:focus, QDateEdit:focus {
+  border: 1px solid #4f63dd;
+  outline: none;
+}
+
+/* 次级文字标签颜色 */
+QLabel { background: transparent; }
+
+/* 按钮样式 */
+QPushButton#saveBtn,
+QPushButton#primaryBtn {
+  background: #4f63dd;
+  color: #fff;
+  border: 1px solid #4f63dd;
+  border-radius: 6px;
+  padding: 6px 12px;
+}
+QPushButton#saveBtn:hover,
+QPushButton#primaryBtn:hover { filter: brightness(1.05); }
+QPushButton#saveBtn:pressed,
+QPushButton#primaryBtn:pressed { filter: brightness(0.95); }
+
+QPushButton#completeBtn {
+  background: #48bb78;
+  color: #fff;
+  border: 1px solid #48bb78;
+  border-radius: 6px;
+  padding: 6px 12px;
+}
+QPushButton#completeBtn:disabled { background: #b7c5d8; border-color: #b7c5d8; color: #fff; }
+
+QPushButton#outlineBtn,
+QPushButton#secondaryBtn {
+  background: #fff;
+  color: #4f63dd;
+  border: 1px solid #c8d3ea;
+  border-radius: 6px;
+  padding: 6px 12px;
+}
+QPushButton#outlineBtn:hover,
+QPushButton#secondaryBtn:hover { background: #f2f6ff; }
+
+QPushButton#dangerBtn {
+  background: #fff5f5;
+  color: #e53e3e;
+  border: 1px solid #fed7d7;
+  border-radius: 6px;
+  padding: 6px 12px;
+}
+QPushButton#dangerBtn:disabled { opacity: 0.55; }
+
+/* 处方表格 */
+QTableWidget {
+  background: #fff;
+  border: 1px solid #e6eaf2;
+  border-radius: 8px;
+  gridline-color: #e6eaf2;
+}
+QHeaderView::section {
+  background: #f7f9fc;
+  color: #1f2d3d;
+  padding: 6px 8px;
+  border: none;
+  border-bottom: 1px solid #e6eaf2;
+}
+QTableWidget::item { padding: 6px; }
+QTableWidget::item:selected { background: #e9efff; }
+
+/* 底部操作栏 */
+QWidget#detailActions { background: transparent; }
+
+/* 医嘱单选行透明，无灰底 */
+QWidget#adviceRadioRow {
+  background: transparent;
+}
+QWidget#adviceRadioRow QLabel { background: transparent; color: #4a5568; font-weight: normal; }
+QWidget#adviceRadioRow QRadioButton { background: transparent; spacing: 6px; }
+
+/* 住院行透明 */
+QWidget#hospYesNoRow { background: transparent; }
+QWidget#hospYesNoRow QLabel { background: transparent; color: #4a5568; font-weight: normal; }
+QWidget#hospYesNoRow QRadioButton { background: transparent; }
+
+/* 恢复并统一 QRadioButton 指示器样式，确保圆圈可见 */
+QRadioButton::indicator {
+  width: 14px; height: 14px;
+}
+QRadioButton::indicator:unchecked {
+  border: 2px solid #4f63dd;
+  border-radius: 8px;
+  background: #fff;
+}
+QRadioButton::indicator:checked {
+  border: 2px solid #4f63dd;
+  border-radius: 8px;
+  background: radial-gradient(circle at center, #4f63dd 0%, #4f63dd 60%, transparent 62%);
+}
+QRadioButton:disabled { color: #a0aec0; }

@@ -1,0 +1,85 @@
+/* 顶部栏 */
+QWidget#remoteTopBar {
+	background: #667eea;
+	border: none;
+	padding: 12px 16px;
+}
+QWidget#remoteTopBar QLabel#remoteTitle {
+	font-size: 22px; font-weight: 700; color: #ffffff;
+	background: transparent; border: none; margin: 0; padding: 0;
+}
+QWidget#remoteTopBar QLabel#remoteSubTitle {
+	font-size: 12px; color: rgba(255,255,255,0.85); background: transparent;
+}
+
+/* 卡片通用 */
+QGroupBox#deviceCard, QGroupBox#dataCard, QGroupBox#analysisCard {
+	background: #ffffff;
+	border: 1px solid #e8ecf4;
+	border-radius: 12px;
+	margin-top: 26px; /* 缩小标题与内容间距，同时保留足够空间避免裁剪 */
+	font-weight: 700; /* 作用于标题 */
+	font-size: 16px;  /* 作用于标题字号 */
+}
+QGroupBox#deviceCard::title, QGroupBox#dataCard::title, QGroupBox#analysisCard::title {
+	subcontrol-origin: margin;
+	subcontrol-position: top left;
+	left: 12px; top: 0; /* 不再使用负偏移，防止标题被 GroupBox 顶部裁剪 */
+	padding: 3px 12px; /* 稍微收紧上下内边距，减小视觉间距 */
+	border: 1px solid #e8ecf4; border-radius: 10px;
+	background: #ffffff; color: #334155; font-weight: 700; /* 标题字号继承自 GroupBox */
+}
+
+/* 避免组内内容跟随标题变大：将组内控件字号恢复为常规尺寸 */
+QGroupBox#deviceCard QWidget,
+QGroupBox#dataCard QWidget,
+QGroupBox#analysisCard QWidget {
+	font-size: 12px;
+}
+
+/* 表单标签和输入 */
+QLabel#formLabel { color: #334155; background: transparent; }
+QLineEdit, QComboBox, QSpinBox {
+	background: #ffffff; border: 1px solid #e8ecf4; border-radius: 8px; padding: 5px 8px; /* 紧凑输入高度 */
+}
+QLineEdit:focus, QComboBox:focus, QSpinBox:focus { border: 2px solid #667eea; }
+
+/* 状态标签 */
+QLabel#statusLabel { font-weight: 700; background: transparent; }
+QLabel#statusLabel[status="ok"] { color: #16a34a; }
+QLabel#statusLabel[status="warn"] { color: #f59e0b; }
+QLabel#statusLabel[status="err"] { color: #dc2626; }
+QLabel#statusLabel[status="info"] { color: #2563eb; }
+
+/* 按钮 */
+QPushButton#primaryBtn {
+	background: #667eea; color: #ffffff; border: 1px solid #667eea; border-radius: 8px; padding: 6px 12px; font-weight: 600; /* 更紧凑的按钮高度 */
+}
+QPushButton#primaryBtn:hover { background: #5a67d8; border-color: #5a67d8; }
+QPushButton#primaryBtn:pressed { background: #4c51bf; border-color: #4c51bf; }
+
+QPushButton#outlineBtn {
+	background: #ffffff; color: #4f63dd; border: 1px solid #d9e6fb; border-radius: 8px; padding: 6px 12px; font-weight: 600;
+}
+QPushButton#outlineBtn:hover { background: #eef2ff; }
+
+QPushButton#dangerBtn {
+	background: #ef4444; color: #ffffff; border: 1px solid #ef4444; border-radius: 8px; padding: 6px 12px; font-weight: 600;
+}
+QPushButton#dangerBtn:hover { background: #dc2626; border-color: #dc2626; }
+
+QPushButton#exportBtn {
+	background: #ff9800; color: #ffffff; border: 1px solid #ff9800; border-radius: 8px; padding: 6px 12px; font-weight: 600;
+}
+QPushButton#exportBtn:hover { background: #fb8c00; border-color: #fb8c00; }
+
+/* 文本区域与表格 */
+QTextEdit#rawData, QTextEdit {
+	border: 1px solid #e8ecf4; border-radius: 8px; background: #ffffff; font-family: 'Courier New', monospace; font-size: 10px; /* 更紧凑的文本行高 */
+}
+QTableWidget#analysisTable {
+	border: 1px solid #e8ecf4; border-radius: 8px; background: #ffffff;
+}
+QTableWidget#analysisTable QHeaderView::section {
+	background: #f7f9fc; color: #334155; padding: 4px; border: none; border-bottom: 1px solid #e8ecf4; /* 降低表头高度 */
+}

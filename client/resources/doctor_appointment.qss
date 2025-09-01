@@ -1,0 +1,52 @@
+/* 预约页面专属样式 */
+
+/* 根背景由全局控制，这里只定义卡片和工具栏 */
+QWidget#apptTopBar {
+	background: #667eea; /* 与 profile 顶部栏一致 */
+	border: none;
+	padding: 12px 16px; /* 与 profileTopBar: (16,12,16,12) 对齐 */
+}
+QWidget#apptTopBar QLabel#apptTitle {
+	font-size: 22px; font-weight: 700; color: #ffffff; /* 与 profile 标题一致 */
+	background: transparent; border: none; margin: 0; padding: 0;
+}
+
+/* 次按钮（筛选/导出/统计/刷新）统一样式 */
+/* 顶部栏里的按钮使用白底蓝字，保证在蓝色顶栏上对比清晰 */
+QWidget#apptTopBar QPushButton {
+	background: #ffffff; color: #4f63dd; border: 1px solid #d9e6fb; border-radius: 8px; padding: 8px 14px; /* 与 profile 按钮一致 */
+}
+QWidget#apptTopBar QPushButton:hover { background: #eef2ff; }
+/* 其它位置的次按钮维持既有风格 */
+QPushButton[class="ApptSecondary"] { background: #f4f7fb; color: #2d8cf0; border: 1px solid #d9e6fb; border-radius: 8px; padding: 6px 12px; }
+QPushButton[class="ApptSecondary"]:hover { background: #e9f2ff; }
+
+/* 统计卡片 */
+QWidget#statsCard { background: #ffffff; border: 1px solid #e7ebf0; border-radius: 10px; }
+QWidget#statsCard QLabel { background: transparent; color: #5c6b82; font-size: 14px; }
+/* 两端标签可稍加粗 */
+QWidget#statsCard QLabel#todayLabel,
+QWidget#statsCard QLabel#totalLabel { font-weight: 600; }
+/* 分色：今日=主题蓝，待确认=橙，已确认=绿，总计=主标题色 */
+QWidget#statsCard QLabel#todayLabel { color: #4f63dd; }
+QWidget#statsCard QLabel#pendingLabel { color: #f6ad55; }
+QWidget#statsCard QLabel#confirmedLabel { color: #48bb78; }
+QWidget#statsCard QLabel#totalLabel { color: #1f2d3d; }
+
+/* 表格样式 */
+QTableWidget#apptTable {
+	gridline-color: #e6e9ef; background: #ffffff; border: 1px solid #e7ebf0; border-radius: 8px;
+}
+QTableWidget#apptTable QHeaderView::section { background: #f7f9fc; padding: 10px; border: 1px solid #e6e9ef; font-weight: 600; }
+QTableWidget#apptTable::item { selection-background-color: #eef2ff; selection-color: #1f2d3d; }
+QTableWidget#apptTable::item:alternate { background: #fbfdff; }
+
+/* 表格卡片容器 */
+QWidget#apptTableCard { background: #ffffff; border: 1px solid #e7ebf0; border-radius: 10px; }
+
+/* 状态色块（备用，若用到标签徽章） */
+QLabel[class="StatusBadge"] { padding: 2px 8px; border-radius: 9999px; color: #fff; font-size: 12px; }
+QLabel[class="StatusPending"] { background: #f6ad55; }
+QLabel[class="StatusConfirmed"] { background: #48bb78; }
+QLabel[class="StatusCancelled"] { background: #f56565; }
+

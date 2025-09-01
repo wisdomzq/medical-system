@@ -1,0 +1,122 @@
+/* 顶部栏：与 profile/appointment 一致 */
+QWidget#chatTopBar { background: #667eea; border: none; padding: 12px 16px; }
+QWidget#chatTopBar QLabel#chatTitle {
+    font-size: 22px; font-weight: 700; color: #ffffff;
+    background: transparent; border: none; margin: 0; padding: 0;
+}
+/* 顶部栏里的按钮：白底蓝字，与 appointment 顶栏一致 */
+QWidget#chatTopBar QPushButton {
+    background: #ffffff; color: #4f63dd; border: 1px solid #d9e6fb;
+    border-radius: 8px; padding: 8px 14px; font-size: 14px;
+}
+QWidget#chatTopBar QPushButton:hover { background: #eef2ff; }
+
+/* 左侧卡片 */
+QWidget#leftCard {
+    background-color: #f7f9fc; /* 淡色卡片底色 */
+    border: 1px solid #e8ecf4;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* 右侧卡片 */
+QWidget#rightCard {
+    background-color: #ffffff;
+    border: 1px solid #e8ecf4;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* 会话列表（左侧卡片内） */
+QWidget#leftCard QListWidget#convList,
+QWidget#leftCard QListWidget#convList QWidget {
+    background-color: transparent;
+    border: none;
+}
+QWidget#leftCard QListWidget#convList {
+    padding: 0;
+    margin: 0;
+    border-radius: 8px;
+}
+QWidget#leftCard QListWidget#convList > QWidget#qt_scrollarea_viewport {
+    background-color: transparent;
+}
+QWidget#leftCard QListWidget#convList::item {
+    margin: 0;
+    padding: 0;
+    height: 60px;
+    color: #1f2937; /* 深色文字，适配浅底 */
+    background-color: transparent;
+}
+QWidget#leftCard QListWidget#convList::item:hover { background-color: transparent; }
+QWidget#leftCard QListWidget#convList::item:selected { background-color: transparent; }
+
+/* 自定义行部件：默认与选中不同底色 */
+QWidget[objectName="convRow"] {
+    background-color: rgba(79,99,221,0.04) !important; /* 浅蓝轻微高亮 */
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    padding: 0px;
+}
+QWidget[objectName="convRow"][active="true"] {
+    background-color: rgba(79,99,221,0.10) !important;
+}
+QWidget[objectName="convRow"]:hover {
+    background-color: rgba(79,99,221,0.06) !important;
+}
+
+/* 自定义行部件内部元素 */
+QWidget#convRow QLabel#convName {
+    color: #1f2937; /* 浅底上使用深色标题 */
+    font-weight: 600;
+}
+QWidget#convRow QLabel#convBadge {
+    background: #ff4d4f;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 11px;
+    padding: 0px;
+    min-width: 22px;
+}
+QWidget#convRow QLabel#convAvatar {
+    border-radius: 20px; /* 圆形视觉（实际由绘图生成） */
+}
+
+/* 右侧聊天区域（右侧卡片内） */
+QWidget#rightCard QListWidget {
+    border: none;
+    background: transparent;
+    padding: 8px;
+    margin: 0;
+    border-radius: 8px;
+}
+
+/* 发送区按钮 */
+QPushButton {
+    border: 1px solid #667eea;
+    border-radius: 8px;
+    padding: 8px 16px;
+    background: #667eea;
+    color: #ffffff;
+    font-weight: 500;
+}
+QPushButton:hover {
+    background: #5a67d8;
+    border: 1px solid #5a67d8;
+}
+QPushButton:pressed {
+    background: #4c51bf;
+    border: 1px solid #4c51bf;
+}
+
+QLineEdit {
+    border: 1px solid #e8ecf4;
+    border-radius: 8px;
+    padding: 8px 12px;
+    background: #ffffff;
+    font-size: 14px;
+}
+QLineEdit:focus {
+    border: 2px solid #667eea;
+    outline: none;
+}
