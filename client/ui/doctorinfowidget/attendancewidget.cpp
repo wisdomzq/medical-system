@@ -59,8 +59,8 @@ AttendanceWidget::AttendanceWidget(const QString& doctorName, CommunicationClien
     QWidget* segGroup = new QWidget(topBar);
     segGroup->setObjectName("segGroup");
     auto* segLay = new QHBoxLayout(segGroup);
-    segLay->setContentsMargins(6, 6, 6, 6); // 内边距形成圆角留白
-    segLay->setSpacing(6);                  // 按钮之间留细缝
+    segLay->setContentsMargins(10, 10, 10, 10); // 增加内边距，胶囊更圆润
+    segLay->setSpacing(0);                       // 无缝：按钮之间不留缝
     // 三按钮等分铺满
     segLay->addWidget(btnCheckIn_, /*stretch*/1);
     segLay->addWidget(btnLeave_, /*stretch*/1);
@@ -79,13 +79,10 @@ AttendanceWidget::AttendanceWidget(const QString& doctorName, CommunicationClien
         l->setSpacing(12);
 
         // 卡片：打卡操作
-        auto* card = new QWidget(pageCheckIn);
-        card->setProperty("class", "Card");
-        auto* cardLay = new QVBoxLayout(card);
-        cardLay->setContentsMargins(16, 12, 16, 16);
-        auto* title = new QLabel(QString("%1 - 日常打卡").arg(doctorName_), card);
-        title->setProperty("class", "CardTitle");
-        cardLay->addWidget(title);
+    auto* card = new QWidget(pageCheckIn);
+    card->setProperty("class", "Card");
+    auto* cardLay = new QVBoxLayout(card);
+    cardLay->setContentsMargins(16, 12, 16, 16);
 
         auto* form = new QHBoxLayout();
         form->setSpacing(12);
@@ -136,13 +133,10 @@ AttendanceWidget::AttendanceWidget(const QString& doctorName, CommunicationClien
         auto* l = new QVBoxLayout(pageLeave);
         l->setSpacing(12);
         pageLeave->setProperty("class", "AttendanceRoot");
-        auto* card = new QWidget(pageLeave);
-        card->setProperty("class", "Card");
-        auto* cardLay = new QVBoxLayout(card);
-        cardLay->setContentsMargins(16, 12, 16, 16);
-        auto* title = new QLabel(QString("%1 - 请假").arg(doctorName_), card);
-        title->setProperty("class", "CardTitle");
-        cardLay->addWidget(title);
+    auto* card = new QWidget(pageLeave);
+    card->setProperty("class", "Card");
+    auto* cardLay = new QVBoxLayout(card);
+    cardLay->setContentsMargins(16, 12, 16, 16);
         auto* row1 = new QHBoxLayout();
         row1->setSpacing(12);
         auto* lb = new QLabel(tr("请假日期:"), card);
@@ -176,9 +170,6 @@ AttendanceWidget::AttendanceWidget(const QString& doctorName, CommunicationClien
     card->setProperty("class", "Card");
     auto* cardLay = new QVBoxLayout(card);
     cardLay->setContentsMargins(16, 12, 16, 16);
-    auto* title = new QLabel(QString("%1 - 销假").arg(doctorName_), card);
-    title->setProperty("class", "CardTitle");
-    cardLay->addWidget(title);
     auto* bar = new QHBoxLayout();
     btnRefreshLeaves_ = new QPushButton(tr("刷新请假记录"), card);
     btnRefreshLeaves_->setProperty("class", "SecondaryBtn");
