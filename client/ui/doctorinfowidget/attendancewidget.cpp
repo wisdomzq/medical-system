@@ -13,6 +13,8 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QMessageBox>
+#include <QIcon>
+#include <QSize>
 #include <QPushButton>
 #include <QStackedWidget>
 #include <QTableWidget>
@@ -48,7 +50,12 @@ AttendanceWidget::AttendanceWidget(const QString& doctorName, CommunicationClien
         b->setAutoExclusive(true);
         b->setProperty("class", "SegBtn");
         b->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+        b->setIconSize(QSize(18, 18));
     }
+    // 顶部按钮图标
+    btnCheckIn_->setIcon(QIcon(":/icons/打卡.svg"));
+    btnLeave_->setIcon(QIcon(":/icons/请假.svg"));
+    btnCancel_->setIcon(QIcon(":/icons/销假.svg"));
     // 顶部操作条容器 + 胶囊容器
     QWidget* topBar = new QWidget(this);
     topBar->setObjectName("attTopBar");
@@ -93,17 +100,18 @@ AttendanceWidget::AttendanceWidget(const QString& doctorName, CommunicationClien
         auto* lbTime = new QLabel(tr("时间:"), card);
         auto* teTime = new QTimeEdit(QTime::currentTime(), card);
         teTime->setDisplayFormat("HH:mm:ss");
-        btnDoCheckIn_ = new QPushButton(tr("打卡"), card);
-        btnHistory_ = new QPushButton(tr("查看历史打卡"), card);
-        btnHistory_->setProperty("class", "SecondaryBtn");
+    btnDoCheckIn_ = new QPushButton(tr("打卡"), card);
+    btnDoCheckIn_->setIcon(QIcon(":/icons/打卡.svg"));
+    btnDoCheckIn_->setIconSize(QSize(18, 18));
+    btnHistory_ = new QPushButton(tr("查看历史打卡"), card);
+    btnHistory_->setProperty("class", "SecondaryBtn");
 
         form->addWidget(lbDate);
         form->addWidget(deDate);
         form->addWidget(lbTime);
         form->addWidget(teTime);
         form->addStretch();
-        form->addWidget(btnDoCheckIn_);
-        form->addWidget(btnHistory_);
+    form->addWidget(btnDoCheckIn_);
         cardLay->addLayout(form);
         l->addWidget(card);
 
@@ -114,10 +122,34 @@ AttendanceWidget::AttendanceWidget(const QString& doctorName, CommunicationClien
         card2Lay->setContentsMargins(16, 12, 16, 16);
         auto* title2 = new QLabel(tr("历史打卡记录"), card2);
         title2->setProperty("class", "CardTitle");
-        card2Lay->addWidget(title2);
+        // 顶部工具条：右侧放置“查看历史打卡”按钮
+        {
+            auto* headerBar = new QHBoxLayout();
+            headerBar->setContentsMargins(0, 0, 0, 0);
+            headerBar->setSpacing(8);
+            headerBar->addWidget(title2);
+            headerBar->addStretch();
+            headerBar->addWidget(btnHistory_);
+            card2Lay->addLayout(headerBar);
+        }
 
         tblAttendance_ = new QTableWidget(0, 3, card2);
         tblAttendance_->setHorizontalHeaderLabels({ tr("日期"), tr("时间"), tr("创建时间") });
+        // 加粗“日期”“时间”两列的表头
+        {
+            auto* h0 = new QTableWidgetItem(tr("日期"));
+            QFont f0 = h0->font(); f0.setBold(true); h0->setFont(f0);
+            tblAttendance_->setHorizontalHeaderItem(0, h0);
+            auto* h1 = new QTableWidgetItem(tr("时间"));
+            QFont f1 = h1->font(); f1.setBold(true); h1->setFont(f1);
+            tblAttendance_->setHorizontalHeaderItem(1, h1);
+            auto* h2 = new QTableWidgetItem(tr("创建时间"));
+            tblAttendance_->setHorizontalHeaderItem(2, h2);
+        }
+        tblAttendance_->verticalHeader()->setVisible(false);
+        tblAttendance_->setAlternatingRowColors(true);
+        tblAttendance_->setSelectionBehavior(QAbstractItemView::SelectRows);
+        tblAttendance_->setSelectionMode(QAbstractItemView::SingleSelection);
         tblAttendance_->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
         card2Lay->addWidget(tblAttendance_);
         l->addWidget(card2, 1);
@@ -179,8 +211,22 @@ AttendanceWidget::AttendanceWidget(const QString& doctorName, CommunicationClien
     bar->addStretch();
     cardLay->addLayout(bar);
     tblLeaves_ = new QTableWidget(0, 4, card);
+    tblLeaves_->setObjectName("leavesTable");
     tblLeaves_->setHorizontalHeaderLabels({ tr("ID"), tr("日期"), tr("原因"), tr("状态") });
+    tblLeaves_->horizontalHeader()->setDefaultAlignment(Qt::AlignCenter);
+    tblLeaves_->verticalHeader()->setVisible(false);
+    tblLeaves_->setAlternatingRowColors(true);
+    tblLeaves_->setSelectionBehavior(QAbstractItemView::SelectRows);
+    tblLeaves_->setSelectionMode(QAbstractItemView::SingleSelection);
+    tblLeaves_->setShowGrid(false);
     tblLeaves_->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    // 表格样式微调（仅作用于该表）
+    tblLeaves_->setStyleSheet(
+        "QHeaderView::section{font-weight:600;padding:6px 10px;background:#f5f7fa;"
+        "border:0;border-bottom:1px solid #e6e8eb;}"
+        "QTableWidget{selection-background-color:#2d8cf0;selection-color:#fff;gridline-color:#e6e8eb;}"
+        "QTableWidget::item{padding:6px;}"
+    );
     cardLay->addWidget(tblLeaves_);
     l->addWidget(card);
 
@@ -213,10 +259,14 @@ AttendanceWidget::AttendanceWidget(const QString& doctorName, CommunicationClien
         if (ok) {
             int row = tblLeaves_->rowCount();
             tblLeaves_->insertRow(row);
-            tblLeaves_->setItem(row, 0, new QTableWidgetItem("-"));
-            tblLeaves_->setItem(row, 1, new QTableWidgetItem(d.value("leave_date").toString()));
-            tblLeaves_->setItem(row, 2, new QTableWidgetItem(d.value("reason").toString()));
-            tblLeaves_->setItem(row, 3, new QTableWidgetItem("active"));
+            auto* i0 = new QTableWidgetItem("-"); i0->setTextAlignment(Qt::AlignCenter);
+            auto* i1 = new QTableWidgetItem(d.value("leave_date").toString()); i1->setTextAlignment(Qt::AlignCenter);
+            auto* i2 = new QTableWidgetItem(d.value("reason").toString()); i2->setTextAlignment(Qt::AlignCenter);
+            auto* i3 = new QTableWidgetItem("active"); i3->setTextAlignment(Qt::AlignCenter);
+            tblLeaves_->setItem(row, 0, i0);
+            tblLeaves_->setItem(row, 1, i1);
+            tblLeaves_->setItem(row, 2, i2);
+            tblLeaves_->setItem(row, 3, i3);
         }
         Q_UNUSED(msg);
         refreshActiveLeaves();
@@ -226,10 +276,14 @@ AttendanceWidget::AttendanceWidget(const QString& doctorName, CommunicationClien
         tblLeaves_->setRowCount(arr.size());
         for (int i = 0; i < arr.size(); ++i) {
             const auto o = arr[i].toObject();
-            tblLeaves_->setItem(i, 0, new QTableWidgetItem(QString::number(o.value("id").toInt())));
-            tblLeaves_->setItem(i, 1, new QTableWidgetItem(o.value("leave_date").toString()));
-            tblLeaves_->setItem(i, 2, new QTableWidgetItem(o.value("reason").toString()));
-            tblLeaves_->setItem(i, 3, new QTableWidgetItem(o.value("status").toString()));
+            auto* j0 = new QTableWidgetItem(QString::number(o.value("id").toInt())); j0->setTextAlignment(Qt::AlignCenter);
+            auto* j1 = new QTableWidgetItem(o.value("leave_date").toString()); j1->setTextAlignment(Qt::AlignCenter);
+            auto* j2 = new QTableWidgetItem(o.value("reason").toString()); j2->setTextAlignment(Qt::AlignCenter);
+            auto* j3 = new QTableWidgetItem(o.value("status").toString()); j3->setTextAlignment(Qt::AlignCenter);
+            tblLeaves_->setItem(i, 0, j0);
+            tblLeaves_->setItem(i, 1, j1);
+            tblLeaves_->setItem(i, 2, j2);
+            tblLeaves_->setItem(i, 3, j3);
         }
     });
     connect(service_, &AttendanceService::attendanceHistoryReceived, this, [this](const QJsonArray& arr) {
@@ -246,9 +300,12 @@ AttendanceWidget::AttendanceWidget(const QString& doctorName, CommunicationClien
         tblAttendance_->setRowCount(arr.size());
         for (int i = 0; i < arr.size(); ++i) {
             const auto o = arr[i].toObject();
-            tblAttendance_->setItem(i, 0, new QTableWidgetItem(o.value("checkin_date").toString()));
-            tblAttendance_->setItem(i, 1, new QTableWidgetItem(o.value("checkin_time").toString()));
-            tblAttendance_->setItem(i, 2, new QTableWidgetItem(o.value("created_at").toString()));
+            auto* a0 = new QTableWidgetItem(o.value("checkin_date").toString()); a0->setTextAlignment(Qt::AlignCenter);
+            auto* a1 = new QTableWidgetItem(o.value("checkin_time").toString()); a1->setTextAlignment(Qt::AlignCenter);
+            auto* a2 = new QTableWidgetItem(o.value("created_at").toString()); a2->setTextAlignment(Qt::AlignCenter);
+            tblAttendance_->setItem(i, 0, a0);
+            tblAttendance_->setItem(i, 1, a1);
+            tblAttendance_->setItem(i, 2, a2);
         }
         if (historyUserTriggered_)
             QMessageBox::information(this, tr("提示"), tr("查询历史打卡成功"));

@@ -294,6 +294,62 @@ AppointmentDetailsDialog::AppointmentDetailsDialog(const QString& doctorUsername
                 recordId_ = rid;
                 if (adviceAddBtn_) adviceAddBtn_->setEnabled(true);
                 requestAdvices();
+                // 自动提交：若当前已填写医嘱/处方/住院信息，则一并保存（避免重复用属性标记）
+                auto tryAutoAdvice = [this]() {
+                    if (!adviceAddBtn_ || adviceAddBtn_->property("autoAdviceDone").toBool()) return;
+                    if (recordId_ <= 0) return;
+                    QString adviceType;
+                    if (auto* btn = adviceTypeGroup_ ? adviceTypeGroup_->checkedButton() : nullptr) adviceType = btn->property("value").toString();
+                    QString priority;
+                    if (auto* btn = advicePriorityGroup_ ? advicePriorityGroup_->checkedButton() : nullptr) priority = btn->property("value").toString();
+                    const QString content = adviceContentEdit_ ? adviceContentEdit_->toPlainText().trimmed() : QString();
+                    if (!adviceType.isEmpty() && !priority.isEmpty() && !content.isEmpty()) {
+                        QJsonObject data{{"record_id", recordId_}, {"advice_type", adviceType}, {"content", content}, {"priority", priority}};
+                        service_->createAdvice(data);
+                        adviceAddBtn_->setProperty("autoAdviceDone", true);
+                    }
+                };
+                auto tryAutoPrescription = [this]() {
+                    if (!prescriptionAddBtn_ || prescriptionAddBtn_->property("autoPrescriptionDone").toBool()) return;
+                    if (recordId_ <= 0) return;
+                    if (prescriptionItems_.isEmpty()) return;
+                    double totalAmount = 0.0;
+                    for (const auto& v : prescriptionItems_) {
+                        const auto o = v.toObject();
+                        totalAmount += o.value("total_price").toDouble();
+                    }
+                    QJsonObject data{{"record_id", recordId_},
+                                     {"patient_username", appt_.value("patient_username").toString()},
+                                     {"doctor_username", doctorUsername_},
+                                     {"prescription_date", QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss")},
+                                     {"total_amount", totalAmount},
+                                     {"status", "pending"},
+                                     {"notes", prescriptionNotesEdit_ ? prescriptionNotesEdit_->text() : QString()},
+                                     {"items", prescriptionItems_}};
+                    service_->createPrescription(data);
+                    prescriptionAddBtn_->setProperty("autoPrescriptionDone", true);
+                };
+                auto tryAutoHosp = [this]() {
+                    if (!hospCreateBtn_ || hospCreateBtn_->property("autoHospDone").toBool()) return;
+                    if (!hospYesNoGroup_ || hospYesNoGroup_->checkedId() != 1) return; // 仅选择“是”时
+                    const QString ad = hospAdmissionDateEdit_ && hospAdmissionDateEdit_->date().isValid() ? hospAdmissionDateEdit_->date().toString("yyyy-MM-dd") : QString();
+                    if (ad.isEmpty()) return;
+                    QJsonObject data;
+                    data["patient_username"] = appt_.value("patient_username").toString();
+                    data["doctor_username"] = doctorUsername_;
+                    data["admission_date"] = ad;
+                    data["discharge_date"] = "";
+                    data["ward"] = hospWardEdit_ ? hospWardEdit_->text().trimmed() : QString();
+                    data["bed_number"] = hospBedEdit_ ? hospBedEdit_->text().trimmed() : QString();
+                    data["daily_cost"] = 0.0;
+                    data["total_cost"] = 0.0;
+                    data["status"] = "admitted";
+                    hospService_->create(data);
+                    hospCreateBtn_->setProperty("autoHospDone", true);
+                };
+                tryAutoAdvice();
+                tryAutoPrescription();
+                tryAutoHosp();
             } else {
                 // 未返回 record_id，回退获取一次以拿到 recordId_
                 requestExistingRecord();
@@ -310,6 +366,62 @@ AppointmentDetailsDialog::AppointmentDetailsDialog(const QString& doctorUsername
                 QMessageBox::information(this, tr("保存成功"), tr("病例记录已成功更新！"));
             }
             if (adviceAddBtn_) adviceAddBtn_->setEnabled(true);
+            // 同步触发自动提交，避免用户以为“保存病历”未保存其他信息
+            auto tryAutoAdvice = [this]() {
+                if (!adviceAddBtn_ || adviceAddBtn_->property("autoAdviceDone").toBool()) return;
+                if (recordId_ <= 0) return;
+                QString adviceType;
+                if (auto* btn = adviceTypeGroup_ ? adviceTypeGroup_->checkedButton() : nullptr) adviceType = btn->property("value").toString();
+                QString priority;
+                if (auto* btn = advicePriorityGroup_ ? advicePriorityGroup_->checkedButton() : nullptr) priority = btn->property("value").toString();
+                const QString content = adviceContentEdit_ ? adviceContentEdit_->toPlainText().trimmed() : QString();
+                if (!adviceType.isEmpty() && !priority.isEmpty() && !content.isEmpty()) {
+                    QJsonObject data{{"record_id", recordId_}, {"advice_type", adviceType}, {"content", content}, {"priority", priority}};
+                    service_->createAdvice(data);
+                    adviceAddBtn_->setProperty("autoAdviceDone", true);
+                }
+            };
+            auto tryAutoPrescription = [this]() {
+                if (!prescriptionAddBtn_ || prescriptionAddBtn_->property("autoPrescriptionDone").toBool()) return;
+                if (recordId_ <= 0) return;
+                if (prescriptionItems_.isEmpty()) return;
+                double totalAmount = 0.0;
+                for (const auto& v : prescriptionItems_) {
+                    const auto o = v.toObject();
+                    totalAmount += o.value("total_price").toDouble();
+                }
+                QJsonObject data{{"record_id", recordId_},
+                                 {"patient_username", appt_.value("patient_username").toString()},
+                                 {"doctor_username", doctorUsername_},
+                                 {"prescription_date", QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss")},
+                                 {"total_amount", totalAmount},
+                                 {"status", "pending"},
+                                 {"notes", prescriptionNotesEdit_ ? prescriptionNotesEdit_->text() : QString()},
+                                 {"items", prescriptionItems_}};
+                service_->createPrescription(data);
+                prescriptionAddBtn_->setProperty("autoPrescriptionDone", true);
+            };
+            auto tryAutoHosp = [this]() {
+                if (!hospCreateBtn_ || hospCreateBtn_->property("autoHospDone").toBool()) return;
+                if (!hospYesNoGroup_ || hospYesNoGroup_->checkedId() != 1) return;
+                const QString ad = hospAdmissionDateEdit_ && hospAdmissionDateEdit_->date().isValid() ? hospAdmissionDateEdit_->date().toString("yyyy-MM-dd") : QString();
+                if (ad.isEmpty()) return;
+                QJsonObject data;
+                data["patient_username"] = appt_.value("patient_username").toString();
+                data["doctor_username"] = doctorUsername_;
+                data["admission_date"] = ad;
+                data["discharge_date"] = "";
+                data["ward"] = hospWardEdit_ ? hospWardEdit_->text().trimmed() : QString();
+                data["bed_number"] = hospBedEdit_ ? hospBedEdit_->text().trimmed() : QString();
+                data["daily_cost"] = 0.0;
+                data["total_cost"] = 0.0;
+                data["status"] = "admitted";
+                hospService_->create(data);
+                hospCreateBtn_->setProperty("autoHospDone", true);
+            };
+            tryAutoAdvice();
+            tryAutoPrescription();
+            tryAutoHosp();
         } else {
             QMessageBox::warning(this, tr("保存失败"), tr("病例记录更新失败：%1").arg(msg));
         }
@@ -357,6 +469,9 @@ AppointmentDetailsDialog::AppointmentDetailsDialog(const QString& doctorUsername
             QMessageBox::warning(this, tr("保存失败"), tr("处方开具失败：%1").arg(errorMsg));
         }
     });
+
+    // 重要：进入“详情”时立即拉取数据，确保自动出现（不依赖连接事件）
+    onConnected();
 }
 
 void AppointmentDetailsDialog::onConnected() {
