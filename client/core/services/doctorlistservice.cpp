@@ -1,5 +1,6 @@
 #include "core/services/doctorlistservice.h"
 #include "core/network/communicationclient.h"
+#include "core/logging/logging.h"
 
 DoctorListService::DoctorListService(CommunicationClient* sharedClient, QObject* parent)
     : QObject(parent), m_client(sharedClient)
@@ -11,6 +12,7 @@ DoctorListService::DoctorListService(CommunicationClient* sharedClient, QObject*
 void DoctorListService::fetchAllDoctors()
 {
     QJsonObject req{{"action", "get_all_doctors"}};
+    Log::request("DoctorListService", req);
     m_client->sendJson(req);
 }
 

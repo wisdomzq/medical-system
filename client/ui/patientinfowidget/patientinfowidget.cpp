@@ -132,6 +132,99 @@ PatientInfoWidget::PatientInfoWidget(const QString &patientName, QWidget *parent
     // 所有子页均由各自 Service 监听并驱动，无需在此集中分发 JSON
 }
 
+PatientInfoWidget::PatientInfoWidget(const QString &patientName, CommunicationClient* sharedClient, QWidget *parent)
+    : QWidget(parent), m_patientName(patientName)
+{
+    m_communicationClient = sharedClient;
+    Q_ASSERT(m_communicationClient);
+    setWindowTitle("患者中心 - " + m_patientName);
+    setMinimumSize(1000, 700);
+
+    QFile f(":/patientinfo.qss");
+    if (f.open(QIODevice::ReadOnly)) {
+        setStyleSheet(QString::fromUtf8(f.readAll()));
+    }
+
+    navList = new QListWidget(this);
+    navList->setObjectName("leftNav");
+    navList->setIconSize(QSize(18, 18));
+    navList->setUniformItemSizes(true);
+    navList->setFocusPolicy(Qt::NoFocus);
+
+    pages = new QStackedWidget(this);
+
+    m_appointmentPage = new AppointmentPage(m_communicationClient, m_patientName, this);
+    m_casePage = new CasePage(m_communicationClient, m_patientName, this);
+    m_communicationPage = new CommunicationPage(m_communicationClient, m_patientName, this);
+    m_profilePage = new ProfilePage(m_communicationClient, m_patientName, this);
+    connect(m_profilePage, &ProfilePage::backToLogin, this, &PatientInfoWidget::forwardBackToLogin);
+    m_doctorInfoPage = new DoctorListPage(m_communicationClient, m_patientName, this);
+    m_advicePage = new AdvicePage(m_communicationClient, m_patientName, this);
+    m_prescriptionPage = new PrescriptionPage(m_communicationClient, m_patientName, this);
+    connect(m_advicePage, &AdvicePage::prescriptionRequested, this, &PatientInfoWidget::switchToPrescriptionTab);
+    m_evaluatePage = new EvaluatePage(m_communicationClient, m_patientName, this);
+    m_medicationSearchPage = new MedicationSearchPage(m_communicationClient, m_patientName, this);
+    m_hospitalPage = new HospitalPage(m_communicationClient, m_patientName, this);
+
+    pages->addWidget(m_appointmentPage);
+    pages->addWidget(m_casePage);
+    pages->addWidget(m_communicationPage);
+    pages->addWidget(m_profilePage);
+    pages->addWidget(m_doctorInfoPage);
+    pages->addWidget(m_advicePage);
+    pages->addWidget(m_prescriptionPage);
+    pages->addWidget(m_evaluatePage);
+    pages->addWidget(m_medicationSearchPage);
+    pages->addWidget(m_hospitalPage);
+
+    auto addNav = [&](const QString &text, const QString &iconRes){
+        QListWidgetItem *it = new QListWidgetItem(QIcon(iconRes), text);
+        it->setSizeHint(QSize(160, 36));
+        navList->addItem(it);
+    };
+    addNav("我的预约", ":/icons/我的预约.svg");
+    addNav("我的病例", ":/icons/我的病例.svg");
+    addNav("医患沟通", ":/icons/医患沟通.svg");
+    addNav("个人信息", ":/icons/基本信息.svg");
+    addNav("查看医生信息", ":/icons/查看医生信息.svg");
+    addNav("医嘱", ":/icons/医嘱.svg");
+    addNav("处方", ":/icons/处方.svg");
+    addNav("评估与充值", ":/icons/评估与充值.svg");
+    addNav("药品搜索", ":/icons/药品搜索.svg");
+    addNav("住院信息", ":/icons/住院信息.svg");
+    addNav("退出登录", ":/icons/退出登录.svg");
+
+    navList->setCurrentRow(0);
+    pages->setCurrentIndex(0);
+    connect(navList, &QListWidget::currentRowChanged, this, [this](int index) {
+        if (index < pages->count()) {
+            pages->setCurrentIndex(index);
+        }
+    });
+    connect(navList, &QListWidget::itemClicked, this, [this](QListWidgetItem* it){
+        if (!it) return;
+        if (it->text() == QStringLiteral("退出登录")) emit backToLogin();
+    });
+
+    auto updateBold = [this]() {
+        for (int i = 0; i < navList->count(); ++i) {
+            auto *it = navList->item(i);
+            QFont f = it->font();
+            f.setBold(i == navList->currentRow());
+            it->setFont(f);
+            it->setData(Qt::FontRole, f);
+        }
+        navList->viewport()->update();
+    };
+    updateBold();
+    connect(navList, &QListWidget::currentRowChanged, this, [updateBold](int){ updateBold(); });
+
+    auto root = new QHBoxLayout(this);
+    root->addWidget(navList, 0);
+    root->addWidget(pages, 1);
+    setLayout(root);
+}
+
 PatientInfoWidget::~PatientInfoWidget() = default;
 
 void PatientInfoWidget::forwardBackToLogin() { emit backToLogin(); }

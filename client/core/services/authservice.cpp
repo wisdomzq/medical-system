@@ -1,11 +1,23 @@
 #include "core/services/authservice.h"
 #include "core/network/communicationclient.h"
 #include "core/network/protocol.h"
+#include "core/logging/logging.h"
 
 AuthService::AuthService(QObject* parent)
     : QObject(parent)
 {
     m_client = new CommunicationClient(this);
+    connect(m_client, &CommunicationClient::connected, this, &AuthService::connected);
+    connect(m_client, &CommunicationClient::disconnected, this, &AuthService::disconnected);
+    connect(m_client, &CommunicationClient::errorOccurred, this, &AuthService::networkError);
+    connect(m_client, &CommunicationClient::jsonReceived, this, &AuthService::onJsonReceived);
+}
+
+AuthService::AuthService(CommunicationClient* sharedClient, QObject* parent)
+    : QObject(parent)
+{
+    m_client = sharedClient;
+    Q_ASSERT(m_client);
     connect(m_client, &CommunicationClient::connected, this, &AuthService::connected);
     connect(m_client, &CommunicationClient::disconnected, this, &AuthService::disconnected);
     connect(m_client, &CommunicationClient::errorOccurred, this, &AuthService::networkError);
@@ -23,6 +35,7 @@ void AuthService::login(const QString& username, const QString& password)
 {
     m_lastLoginUsername = username;
     QJsonObject request{{"action", "login"}, {"username", username}, {"password", password}};
+    Log::request("AuthService", request, "username", username);
     m_client->sendJson(request);
 }
 
@@ -31,6 +44,7 @@ void AuthService::registerDoctor(const QString& username, const QString& passwor
 {
     QJsonObject request{{"action", "register"}, {"role", "doctor"}, {"username", username},
                         {"password", password}, {"department", department}, {"phone", phone}};
+    Log::request("AuthService", request, "role", "doctor", "username", username);
     m_client->sendJson(request);
 }
 
@@ -39,6 +53,7 @@ void AuthService::registerPatient(const QString& username, const QString& passwo
 {
     QJsonObject request{{"action", "register"}, {"role", "patient"}, {"username", username},
                         {"password", password}, {"age", age}, {"phone", phone}, {"address", address}};
+    Log::request("AuthService", request, "role", "patient", "username", username);
     m_client->sendJson(request);
 }
 

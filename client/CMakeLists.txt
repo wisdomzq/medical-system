@@ -80,6 +80,7 @@ target_include_directories(hello PRIVATE
     core/network/src
     core/network/src/client
     core/services
+    core/logging
 )
 
 target_link_libraries(hello PRIVATE Qt5::Widgets Qt5::Network Qt5::Sql)

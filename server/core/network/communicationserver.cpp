@@ -36,13 +36,7 @@ void CommunicationServer::incomingConnection(qintptr socketDescriptor)
         Qt::QueuedConnection)) {
         Log::error("CommunicationServer", "Failed to connect ClientHandler::requestReady to MessageRouter::onRequestReady");
     }
-
-    if (!QObject::connect(handler, &ClientHandler::requestReady,
-        &MessageRouter::instance(), &MessageRouter::onRequestReady,
-        Qt::QueuedConnection)) {
-        Log::error("CommunicationServer", "Failed to connect ClientHandler::requestReady to MessageRouter::onRequestReady");
-    }
-
+    
     // 将调度器的响应信号转发到对应的 handler::sendMessage（仅当目标是该 handler 时）
     if (!QObject::connect(&MessageRouter::instance(), &MessageRouter::responseReady, handler, [handler](ClientHandler* target, Protocol::MessageType type, QJsonObject payload) {
                          if (target != handler) return; // 只处理发给该 handler 的响应

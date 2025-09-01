@@ -1,5 +1,6 @@
 #include "core/services/appointmentservice.h"
 #include "core/network/communicationclient.h"
+#include "core/logging/logging.h"
 
 AppointmentService::AppointmentService(CommunicationClient* sharedClient, QObject* parent)
     : QObject(parent), m_client(sharedClient)
@@ -11,6 +12,7 @@ AppointmentService::AppointmentService(CommunicationClient* sharedClient, QObjec
 void AppointmentService::fetchByDoctor(const QString& doctorUsername)
 {
     QJsonObject req{{"action", "get_appointments_by_doctor"}, {"username", doctorUsername}};
+    Log::request("AppointmentService", req, "doctor", doctorUsername);
     m_client->sendJson(req);
 }
 

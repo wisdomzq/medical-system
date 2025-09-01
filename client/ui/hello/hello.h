@@ -9,6 +9,7 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
+class CommunicationClient;
 
 class Hello : public QMainWindow {
     Q_OBJECT
@@ -20,6 +21,7 @@ private:
     LoginWidget *loginWidget;
     DoctorInfoWidget *doctorInfoWidget;
     PatientInfoWidget *patientInfoWidget;
+    CommunicationClient *sharedClient {nullptr};
 
 private slots:
     void showDoctorUI(const QString &doctorName);

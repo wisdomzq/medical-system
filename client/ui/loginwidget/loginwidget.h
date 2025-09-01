@@ -9,11 +9,13 @@
 #include <QFormLayout>
 // 仅在 UI 头文件中前置声明，避免耦合网络细节
 class AuthService;
+class CommunicationClient;
 
 class LoginWidget : public QWidget {
     Q_OBJECT
 public:
     explicit LoginWidget(QWidget* parent = nullptr);
+    explicit LoginWidget(CommunicationClient* sharedClient, QWidget* parent = nullptr);
     ~LoginWidget();
 
 private:

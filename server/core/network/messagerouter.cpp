@@ -62,8 +62,8 @@ void MessageRouter::handleJson(ClientHandler* sender, const Header& header, QJso
     m_uuidToHandler.insert(uuid, QPointer<ClientHandler>(sender));
 
     // 3) 广播给业务层
+    qInfo() << "[Router] 广播业务请求 uuid=" << uuid;
     emit requestReceived(payload);
-    qInfo() << "[Router] 已广播业务请求 uuid=" << uuid;
 }
 
 void MessageRouter::onBusinessResponse(QJsonObject payload)
@@ -86,8 +86,8 @@ void MessageRouter::onBusinessResponse(QJsonObject payload)
         return;
     }
     // 统一为 JSON 响应类型
+    qInfo() << "[Router] 路由响应给目标连接 uuid=" << uuid;
     emit responseReady(target, MessageType::JsonResponse, payload);
-    qInfo() << "[Router] 已路由响应给目标连接 uuid=" << uuid;
 }
 
 void MessageRouter::cleanupRoutesFor(ClientHandler* handler)

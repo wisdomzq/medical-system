@@ -1,6 +1,8 @@
 #include "hello.h"
 #include <QFont>
 #include <QSpacerItem>
+#include "core/network/communicationclient.h"
+#include "core/network/protocol.h"
 
 Hello::Hello(QWidget* parent)
     : QMainWindow(parent)
@@ -10,7 +12,11 @@ Hello::Hello(QWidget* parent)
     stackedWidget = new QStackedWidget(this);
     setCentralWidget(stackedWidget);
 
-    loginWidget = new LoginWidget(this);
+    // 创建全局共享通信客户端，仅此一处 new
+    sharedClient = new CommunicationClient(this);
+    sharedClient->connectToServer("127.0.0.1", Protocol::SERVER_PORT);
+
+    loginWidget = new LoginWidget(sharedClient, this);
     doctorInfoWidget = nullptr;
     patientInfoWidget = nullptr;
 
@@ -27,7 +33,7 @@ Hello::~Hello() {}
 void Hello::showDoctorUI(const QString &doctorName)
 {
     if (!doctorInfoWidget) {
-        doctorInfoWidget = new DoctorInfoWidget(doctorName, this);
+        doctorInfoWidget = new DoctorInfoWidget(doctorName, sharedClient, this);
         stackedWidget->addWidget(doctorInfoWidget);
         connect(doctorInfoWidget, &DoctorInfoWidget::backToLogin, this, &Hello::showLoginUI);
     }
@@ -37,7 +43,7 @@ void Hello::showDoctorUI(const QString &doctorName)
 void Hello::showPatientUI(const QString &patientName)
 {
     if (!patientInfoWidget) {
-        patientInfoWidget = new PatientInfoWidget(patientName, this);
+        patientInfoWidget = new PatientInfoWidget(patientName, sharedClient, this);
         stackedWidget->addWidget(patientInfoWidget);
         connect(patientInfoWidget, &PatientInfoWidget::backToLogin, this, &Hello::showLoginUI);
     }

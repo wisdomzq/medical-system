@@ -1,6 +1,7 @@
 #include "core/services/patientappointmentservice.h"
 #include "core/network/communicationclient.h"
 #include <QDateTime>
+#include "core/logging/logging.h"
 
 PatientAppointmentService::PatientAppointmentService(CommunicationClient* sharedClient, QObject* parent)
     : QObject(parent), m_client(sharedClient)
@@ -12,12 +13,14 @@ PatientAppointmentService::PatientAppointmentService(CommunicationClient* shared
 void PatientAppointmentService::fetchAllDoctors()
 {
     QJsonObject req{{"action", "get_all_doctors"}};
+    Log::request("PatientAppointmentService", req);
     m_client->sendJson(req);
 }
 
 void PatientAppointmentService::fetchAppointmentsForPatient(const QString& patientUsername)
 {
     QJsonObject req{{"action", "get_appointments_by_patient"}, {"username", patientUsername}};
+    Log::request("PatientAppointmentService", req, "patient", patientUsername);
     m_client->sendJson(req);
 }
 
@@ -26,6 +29,7 @@ void PatientAppointmentService::createAppointment(const QJsonObject& data, const
     QJsonObject req{{"action", "create_appointment"}, {"data", data}};
     if (!uuid.isEmpty()) req.insert("uuid", uuid);
     else req.insert("uuid", QString("appt_req_%1").arg(QDateTime::currentMSecsSinceEpoch()));
+    Log::request("PatientAppointmentService", req, "uuid", req.value("uuid").toString());
     m_client->sendJson(req);
 }
 

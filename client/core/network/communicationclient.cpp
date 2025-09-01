@@ -1,6 +1,7 @@
 #include "core/network/communicationclient.h"
 #include "core/network/streamparser.h"
 #include "core/network/responsedispatcher.h"
+#include "core/logging/logging.h"
 
 using namespace Protocol;
 
@@ -50,6 +51,8 @@ void CommunicationClient::sendJson(const QJsonObject& obj)
 {
     QByteArray payload = toJsonPayload(obj);
     QByteArray data = pack(MessageType::JsonRequest, payload);
+    // 统一打印 action/uuid，辅助定位重复发送
+    Log::request("CommunicationClient", obj);
     qInfo() << "[Client] 发送JSON请求，大小=" << data.size() << "字节";
     m_socket.write(data);
 }
