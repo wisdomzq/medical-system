@@ -124,9 +124,7 @@ void ChatService::onJsonReceived(const QJsonObject& obj)
         m_pollCursor = nextCursor;
         m_pollInFlight = false;
         if (m_polling) {
-            const bool gotSomething = (!messages.isEmpty() || !instant.isEmpty() || hasMore);
-            // 若为空包（可能是另一端设备已占用挂起，服务端对本端立即返回空），使用轻微回退避免忙轮询
-            scheduleNextPoll(gotSomething ? 0 : 1000);
+            scheduleNextPoll();
         }
 
         // 将 events 中的消息增量并入缓存（通常是最新的消息，可能跨多个会话）

@@ -126,8 +126,7 @@ QJsonObject ChatModule::handlePollEvents(const QJsonObject &req) {
 
     // 否则挂起请求：若已存在同用户挂起，则丢弃本次新请求（快速空响应），保留原挂起不变
     if (m_pendingPollRequests.contains(user)) {
-        QJsonObject emptyData{{"messages", QJsonArray()}, {"instant_events", QJsonArray()}, {"next_cursor", cursor}, {"has_more", false}};
-        return QJsonObject{{"type","poll_events_response"},{"success",true},{"data",emptyData}};
+        return QJsonObject{{"type","null"}};
     }
 
     m_pendingPollRequests.insert(user, req);

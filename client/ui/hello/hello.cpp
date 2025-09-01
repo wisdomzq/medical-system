@@ -52,5 +52,16 @@ void Hello::showPatientUI(const QString &patientName)
 
 void Hello::showLoginUI()
 {
+    // 回到登录页时，销毁登录后创建的业务界面（及其内部 Service），限制其生命周期
+    if (doctorInfoWidget) {
+        stackedWidget->removeWidget(doctorInfoWidget);
+        doctorInfoWidget->deleteLater();
+        doctorInfoWidget = nullptr;
+    }
+    if (patientInfoWidget) {
+        stackedWidget->removeWidget(patientInfoWidget);
+        patientInfoWidget->deleteLater();
+        patientInfoWidget = nullptr;
+    }
     stackedWidget->setCurrentWidget(loginWidget);
 }

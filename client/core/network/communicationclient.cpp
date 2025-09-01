@@ -99,7 +99,7 @@ void CommunicationClient::onDisconnected()
 void CommunicationClient::onReadyRead()
 {
     QByteArray chunk = m_socket.readAll();
-    qInfo() << "[Client] 收到数据块，长度=" << chunk.size();
+    // qInfo() << "[Client] 收到数据块，长度=" << chunk.size();
     m_parser->append(chunk);
 }
 
