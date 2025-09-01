@@ -30,5 +30,6 @@
     <file>icons/电话.svg</file>
     <file>icons/地址.svg</file>
     <file>icons/年龄.svg</file>
+    <file>icons/智慧医疗系统.svg</file>
     </qresource>
 </RCC>

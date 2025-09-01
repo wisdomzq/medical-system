@@ -23,6 +23,7 @@ signals:
 private slots:
 
 private:
+    void initUi();
     QListWidget *navList {nullptr};
     QStackedWidget *pages {nullptr};
     CommunicationClient *m_sharedClient {nullptr};
