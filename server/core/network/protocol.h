@@ -21,7 +21,7 @@ static constexpr quint8 VERSION = 1;
 
 // 配置项
 static constexpr quint16 SERVER_PORT = 8888;
-static constexpr int MAX_PACKET_SIZE = 4 * 1024 * 1024; // 4MB
+static constexpr int MAX_PACKET_SIZE = 10 * 1024 * 1024; // 4MB
 static constexpr int HEARTBEAT_INTERVAL_MS = 30000; // 30s
 static constexpr int HEARTBEAT_TIMEOUT_MS = 5000; // 5s
 
