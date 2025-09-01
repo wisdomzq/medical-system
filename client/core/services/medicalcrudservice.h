@@ -17,6 +17,7 @@ public:
     void getRecordsByPatient(const QString& patientUsername);
     void createRecord(const QJsonObject& data);
     void updateRecord(int recordId, const QJsonObject& data);
+    void getRecordDetails(int recordId, const QString& patientUsername);
 
     // 医嘱
     void getAdvicesByRecord(int recordId);
@@ -31,6 +32,7 @@ signals:
     void recordsFetched(const QJsonArray& rows);
     void recordCreated(bool success, const QString& message, int recordId);
     void recordUpdated(bool success, const QString& message);
+    void recordDetailsFetched(const QJsonObject& record);
 
     // 医嘱
     void advicesFetched(const QJsonArray& rows);

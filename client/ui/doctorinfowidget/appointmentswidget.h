@@ -21,6 +21,7 @@ private slots:
     void onConnected();
     void onRefresh();
     void onRowDetailClicked();
+    void onDiagnosisCompleted(int appointmentId);
 
 private:
     void requestAppointments();
@@ -28,6 +29,7 @@ private:
     void setupUI();
     void renderAppointments(const QJsonArray& data);
     void showFetchError(const QString& message);
+    void adjustCountersForCompletion();
 
     QString doctorName_;
     CommunicationClient* client_ {nullptr};

@@ -18,6 +18,10 @@ void MedicalCrudService::updateRecord(int recordId, const QJsonObject& data) {
     m_client->sendJson(QJsonObject{{"action","update_medical_record"}, {"record_id", recordId}, {"data", data}});
 }
 
+void MedicalCrudService::getRecordDetails(int recordId, const QString& patientUsername) {
+    m_client->sendJson(QJsonObject{{"action","get_medical_record_details"}, {"record_id", recordId}, {"patient_username", patientUsername}});
+}
+
 // 医嘱
 void MedicalCrudService::getAdvicesByRecord(int recordId) {
     m_client->sendJson(QJsonObject{{"action","get_medical_advices_by_record"}, {"record_id", recordId}});
@@ -48,6 +52,10 @@ void MedicalCrudService::onJsonReceived(const QJsonObject& obj) {
     }
     if (type == "update_medical_record_response") {
         emit recordUpdated(obj.value("success").toBool(), obj.value("message").toString());
+        return;
+    }
+    if (type == "medical_record_details_response") {
+        if (obj.value("success").toBool()) emit recordDetailsFetched(obj.value("data").toObject());
         return;
     }
     if (type == "medical_advices_response") {

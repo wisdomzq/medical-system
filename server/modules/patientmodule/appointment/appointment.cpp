@@ -30,6 +30,7 @@ void AppointmentModule::onRequest(const QJsonObject &payload) {
     if (a == "get_appointments_by_doctor") return handleListByDoctor(payload);
     if (a == "get_doctors_schedule_overview") return handleOverview(payload);
     if (a == "get_doctor_schedule_with_stats") return handleStats(payload);
+    if (a == "update_appointment_status") return handleUpdateStatus(payload);
 }
 
 void AppointmentModule::handleCreate(const QJsonObject &payload) {
@@ -80,6 +81,18 @@ void AppointmentModule::handleStats(const QJsonObject &payload) {
     QJsonArray arr; bool ok = db.getDoctorScheduleWithAppointmentStats(payload.value("doctor_username").toString(), arr);
     QJsonObject out; out["type"] = "doctor_schedule_stats_response"; out["success"] = ok; if (ok) out["data"] = arr; else out["error"] = QStringLiteral("获取失败");
     Log::resultCount("Appointment", ok, arr.size(), "doctor_schedule_stats");
+    reply(out, payload);
+}
+
+void AppointmentModule::handleUpdateStatus(const QJsonObject &payload) {
+    DBManager db(DatabaseConfig::getDatabasePath());
+    const QJsonObject data = payload.value("data").toObject();
+    int apptId = data.value("appointment_id").toInt();
+    QString status = data.value("status").toString();
+    bool ok = apptId > 0 && !status.isEmpty() && db.updateAppointmentStatus(apptId, status);
+    QJsonObject out; out["type"] = "update_appointment_status_response"; out["success"] = ok; if (!ok) out["error"] = QStringLiteral("更新失败");
+    QJsonObject ret; ret["appointment_id"] = apptId; ret["status"] = status; out["data"] = ret;
+    Log::result("Appointment", ok, "update_appointment_status");
     reply(out, payload);
 }
 

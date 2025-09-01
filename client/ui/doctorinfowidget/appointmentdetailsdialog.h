@@ -15,17 +15,22 @@ class QDateEdit;
 class CommunicationClient;
 class MedicalCrudService;
 class HospitalizationService;
+class AppointmentService;
 
 class AppointmentDetailsDialog : public QDialog {
     Q_OBJECT
 public:
     explicit AppointmentDetailsDialog(const QString& doctorUsername, const QJsonObject& appointment, CommunicationClient* client, QWidget* parent=nullptr);
 
+signals:
+    void diagnosisCompleted(int appointmentId);
+
 private slots:
     void onConnected();
     void onSaveRecord();
     void onAddAdvice();
     void onAddPrescription();
+    void onCompleteDiagnosis();
 
 private:
     void requestExistingRecord();
@@ -43,6 +48,7 @@ private:
     QTextEdit* planEdit_ {nullptr};
     QTextEdit* notesEdit_ {nullptr};
     QPushButton* saveBtn_ {nullptr};
+    QPushButton* completeBtn_ {nullptr};
     // advices
     QButtonGroup* adviceTypeGroup_ {nullptr};
     QButtonGroup* advicePriorityGroup_ {nullptr};
@@ -68,7 +74,10 @@ private:
 
     CommunicationClient* client_ {nullptr};
     MedicalCrudService* service_ {nullptr};
+    AppointmentService* apptService_ {nullptr};
     bool ownsClient_ {false};
+    // 保存过程中的去重标志，避免重复弹窗
+    bool isSaving_ {false};
 };
 
 #endif // APPOINTMENT_DETAILS_DIALOG_H

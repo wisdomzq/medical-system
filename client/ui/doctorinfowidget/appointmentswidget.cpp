@@ -16,6 +16,7 @@
 #include <QDate>
 #include <QTimer>
 #include <QDebug>
+#include <QRegExp>
 #include "appointmentdetailsdialog.h"
 #include "core/network/communicationclient.h"
 #include "core/network/protocol.h"
@@ -129,8 +130,8 @@ void AppointmentsWidget::renderAppointments(const QJsonArray& arr) {
         const auto status = appt.value("status").toString();
         const auto fee = appt.value("fee").toDouble();
 
-        if (date == today) todayCount++;
-        if (status == "pending") pendingCount++; else if (status == "confirmed") confirmedCount++;
+    if (date == today) todayCount++;
+    if (status == "pending") pendingCount++; else if (status == "confirmed" || status == "completed") confirmedCount++;
 
         auto* idItem = new QTableWidgetItem(QString::number(appointmentId));
         auto* nameItem = new QTableWidgetItem(patientName);
@@ -140,7 +141,7 @@ void AppointmentsWidget::renderAppointments(const QJsonArray& arr) {
         auto* statusItem = new QTableWidgetItem(status);
         auto* feeItem = new QTableWidgetItem(QString::number(fee, 'f', 2));
 
-        if (status == "confirmed") statusItem->setBackground(QBrush(QColor(144, 238, 144)));
+    if (status == "confirmed" || status == "completed") statusItem->setBackground(QBrush(QColor(144, 238, 144)));
         else if (status == "pending") statusItem->setBackground(QBrush(QColor(255, 255, 224)));
         else if (status == "cancelled") statusItem->setBackground(QBrush(QColor(255, 182, 193)));
 
@@ -202,5 +203,45 @@ void AppointmentsWidget::onRowDetailClicked() {
 
 void AppointmentsWidget::openDetailDialog(const QJsonObject& appt) {
     AppointmentDetailsDialog dlg(doctorName_, appt, client_, this);
-    dlg.exec();
+    connect(&dlg, &AppointmentDetailsDialog::diagnosisCompleted, this, &AppointmentsWidget::onDiagnosisCompleted);
+    if (dlg.exec() == QDialog::Accepted) {
+        // 诊断完成后刷新
+        requestAppointments();
+    }
+}
+
+void AppointmentsWidget::onDiagnosisCompleted(int appointmentId) {
+    // 1) 更新表格中该行的状态显示为 completed
+    for (int r = 0; r < table_->rowCount(); ++r) {
+        auto* idItem = table_->item(r, 0);
+        if (!idItem) continue;
+        if (idItem->text().toInt() == appointmentId) {
+            auto* statusItem = table_->item(r, 5);
+            if (statusItem) {
+                statusItem->setText("completed");
+                statusItem->setBackground(QBrush(QColor(144, 238, 144))); // 视作确认完成
+            }
+            break;
+        }
+    }
+    // 2) 调整顶部计数：待确认-1，已确认+1
+    adjustCountersForCompletion();
+}
+
+void AppointmentsWidget::adjustCountersForCompletion() {
+    auto* pendingLabel = findChild<QLabel*>("pendingLabel");
+    auto* confirmedLabel = findChild<QLabel*>("confirmedLabel");
+    if (!pendingLabel || !confirmedLabel) return;
+    // 从文本中提取数字
+    auto extract = [](const QString& text) -> int {
+        QRegExp rx("(\\d+)");
+        if (rx.indexIn(text) != -1) return rx.cap(1).toInt();
+        return 0;
+    };
+    int pending = extract(pendingLabel->text());
+    int confirmed = extract(confirmedLabel->text());
+    if (pending > 0) pending -= 1;
+    confirmed += 1;
+    pendingLabel->setText(tr("待确认: %1").arg(pending));
+    confirmedLabel->setText(tr("已确认: %1").arg(confirmed));
 }

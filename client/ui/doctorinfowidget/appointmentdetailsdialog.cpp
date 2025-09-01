@@ -22,6 +22,7 @@
 #include "core/network/protocol.h"
 #include "core/services/medicalcrudservice.h"
 #include "core/services/hospitalizationservice.h"
+#include "core/services/appointmentservice.h"
 
 AppointmentDetailsDialog::AppointmentDetailsDialog(const QString& doctorUsername, const QJsonObject& appt, CommunicationClient* client, QWidget* parent)
     : QDialog(parent), doctorUsername_(doctorUsername), appt_(appt), client_(client), ownsClient_(false) {
@@ -51,14 +52,17 @@ AppointmentDetailsDialog::AppointmentDetailsDialog(const QString& doctorUsername
     btnRow->addStretch();
     saveBtn_ = new QPushButton(tr("保存病历"), this);
     btnRow->addWidget(saveBtn_);
+    completeBtn_ = new QPushButton(tr("完成诊断"), this);
+    completeBtn_->setEnabled(false); // 默认禁用，开具处方后启用
+    btnRow->addWidget(completeBtn_);
     root->addLayout(btnRow);
 
     auto* adviceBox = new QGroupBox(tr("医嘱"), this);
     auto* adviceLay = new QVBoxLayout(adviceBox);
     advicesList_ = new QListWidget(adviceBox);
     advicesList_->setFrameShape(QFrame::NoFrame);
-    advicesList_->setStyleSheet("background: transparent;");
-    advicesList_->setVisible(false); // 默认隐藏，无空白
+    advicesList_->setStyleSheet("background: transparent; margin: 0; padding: 0;");
+    advicesList_->setVisible(false); // 始终隐藏
     adviceLay->addWidget(advicesList_);
     auto* adviceForm = new QHBoxLayout();
     // 类型与优先级：单选按钮组
@@ -91,6 +95,7 @@ AppointmentDetailsDialog::AppointmentDetailsDialog(const QString& doctorUsername
     };
     adviceContentEdit_ = new QTextEdit(adviceBox); adviceContentEdit_->setPlaceholderText(tr("医嘱内容")); adviceContentEdit_->setFixedHeight(60);
     adviceAddBtn_ = new QPushButton(tr("添加医嘱"), adviceBox);
+    adviceAddBtn_->setEnabled(false); // 初始禁用，待 recordId_ 就绪再启用
     auto* adviceLeft = new QVBoxLayout();
     auto toTypeLabel = [this](const QString& en) -> QString {
         if (en == "medication") return tr("用药");
@@ -122,8 +127,8 @@ AppointmentDetailsDialog::AppointmentDetailsDialog(const QString& doctorUsername
     auto* prescriptionLay = new QVBoxLayout(prescriptionBox);
     prescriptionsList_ = new QListWidget(prescriptionBox);
     prescriptionsList_->setFrameShape(QFrame::NoFrame);
-    prescriptionsList_->setStyleSheet("background: transparent;");
-    prescriptionsList_->setVisible(false); // 默认隐藏，无空白
+    prescriptionsList_->setStyleSheet("background: transparent; margin: 0; padding: 0;");
+    prescriptionsList_->setVisible(false); // 始终隐藏
     prescriptionLay->addWidget(prescriptionsList_);
     auto* prescriptionForm = new QHBoxLayout();
     prescriptionNotesEdit_ = new QLineEdit(prescriptionBox);
@@ -210,73 +215,117 @@ AppointmentDetailsDialog::AppointmentDetailsDialog(const QString& doctorUsername
     connect(saveBtn_, &QPushButton::clicked, this, &AppointmentDetailsDialog::onSaveRecord);
     connect(adviceAddBtn_, &QPushButton::clicked, this, &AppointmentDetailsDialog::onAddAdvice);
     connect(prescriptionAddBtn_, &QPushButton::clicked, this, &AppointmentDetailsDialog::onAddPrescription);
+    connect(completeBtn_, &QPushButton::clicked, this, &AppointmentDetailsDialog::onCompleteDiagnosis);
 
     service_ = new MedicalCrudService(client_, this);
+    apptService_ = new AppointmentService(client_, this);
+    connect(apptService_, &AppointmentService::statusUpdated, this, [this](bool ok, int apptId, const QString& status, const QString& err){
+        if (ok) {
+            QMessageBox::information(this, tr("成功"), tr("该预约已标记为完成"));
+            emit diagnosisCompleted(apptId);
+            accept(); // 关闭对话框
+        } else {
+            QMessageBox::warning(this, tr("失败"), err.isEmpty() ? tr("更新状态失败") : err);
+        }
+    });
     connect(service_, &MedicalCrudService::recordsFetched, this, [this](const QJsonArray& arr){
+        const int targetApptId = appt_.value("id").toInt();
+        const QString targetDate = appt_.value("appointment_date").toString();
+        int fallbackByDateId = -1;
+        QJsonObject fallbackRec;
         for (const auto& v : arr) {
             const auto rec = v.toObject();
-            if (rec.value("appointment_id").toInt() == appt_.value("id").toInt()) {
+            // 优先: 通过 appointment_id 精确匹配
+            if (rec.contains("appointment_id") && rec.value("appointment_id").toInt() == targetApptId) {
                 recordId_ = rec.value("id").toInt();
-                populateFromRecord(rec);
+                // 尝试拉取完整详情
+                service_->getRecordDetails(recordId_, appt_.value("patient_username").toString());
+                if (adviceAddBtn_) adviceAddBtn_->setEnabled(true);
                 break;
             }
+            // 兼容后端精简返回：无 appointment_id 时，回退按日期匹配
+            if (rec.value("visit_date").toString() == targetDate) {
+                fallbackByDateId = rec.value("id").toInt();
+                fallbackRec = rec;
+            }
+        }
+        if (recordId_ < 0 && fallbackByDateId > 0) {
+            recordId_ = fallbackByDateId;
+            service_->getRecordDetails(recordId_, appt_.value("patient_username").toString());
+            if (adviceAddBtn_) adviceAddBtn_->setEnabled(true);
         }
         requestAdvices();
     });
+    connect(service_, &MedicalCrudService::recordDetailsFetched, this, [this](const QJsonObject& full){
+        // 用完整详情填充所有字段
+        populateFromRecord(full);
+    });
     connect(service_, &MedicalCrudService::recordCreated, this, [this](bool ok, const QString& msg, int rid){
         if (ok) {
-            QMessageBox::information(this, tr("保存成功"), tr("病例记录已成功创建！"));
-            if (rid > 0) { recordId_ = rid; requestAdvices(); }
-            else { requestExistingRecord(); }
+            if (isSaving_) {
+                QMessageBox::information(this, tr("保存成功"), tr("病例记录已成功创建！"));
+            }
+            if (rid > 0) {
+                recordId_ = rid;
+                if (adviceAddBtn_) adviceAddBtn_->setEnabled(true);
+                requestAdvices();
+            } else {
+                // 未返回 record_id，回退获取一次以拿到 recordId_
+                requestExistingRecord();
+            }
         } else {
             QMessageBox::warning(this, tr("保存失败"), tr("病例记录创建失败：%1").arg(msg));
         }
+        isSaving_ = false;
+        if (saveBtn_) saveBtn_->setEnabled(true);
     });
     connect(service_, &MedicalCrudService::recordUpdated, this, [this](bool ok, const QString& msg){
-        if (ok) QMessageBox::information(this, tr("保存成功"), tr("病例记录已成功更新！"));
-        else QMessageBox::warning(this, tr("保存失败"), tr("病例记录更新失败：%1").arg(msg));
-    });
-    connect(service_, &MedicalCrudService::advicesFetched, this, [this](const QJsonArray& rows){
-        advicesList_->clear();
-        if (rows.isEmpty()) {
-            advicesList_->setVisible(false);
-        } else {
-            for (const auto& v : rows) {
-                const auto a = v.toObject();
-                advicesList_->addItem(QString("[%1|%2] %3").arg(a.value("advice_type").toString(), a.value("priority").toString(), a.value("content").toString()));
+        if (ok) {
+            if (isSaving_) {
+                QMessageBox::information(this, tr("保存成功"), tr("病例记录已成功更新！"));
             }
-            advicesList_->setVisible(true);
+            if (adviceAddBtn_) adviceAddBtn_->setEnabled(true);
+        } else {
+            QMessageBox::warning(this, tr("保存失败"), tr("病例记录更新失败：%1").arg(msg));
         }
+        isSaving_ = false;
+        if (saveBtn_) saveBtn_->setEnabled(true);
+    });
+    connect(service_, &MedicalCrudService::advicesFetched, this, [this](const QJsonArray& /*rows*/){
+        // 需求：上方不要显示文字 -> 始终隐藏列表
+        advicesList_->clear();
+        advicesList_->setVisible(false);
     });
     connect(service_, &MedicalCrudService::adviceCreated, this, [this](bool ok, const QString& msg){
         if (ok) {
             QMessageBox::information(this, tr("保存成功"), tr("医嘱已成功添加！"));
             requestAdvices();
-            adviceContentEdit_->clear();
+            // 保留输入内容，不清空
         } else {
             QMessageBox::warning(this, tr("保存失败"), tr("医嘱添加失败：%1").arg(msg));
         }
     });
     connect(service_, &MedicalCrudService::prescriptionsFetched, this, [this](const QJsonArray& rows){
+        // 需求：上方不要显示文字 -> 始终隐藏列表
         prescriptionsList_->clear();
-        if (rows.isEmpty()) {
-            prescriptionsList_->setVisible(false);
-        } else {
+        prescriptionsList_->setVisible(false);
+        // 若已有与当前 recordId_ 关联的处方，则允许“完成诊断”
+        if (recordId_ > 0) {
             for (const auto& v : rows) {
-                const auto p = v.toObject();
-                prescriptionsList_->addItem(QString("[%1] %2 - %3").arg(
-                    p.value("prescription_date").toString(),
-                    p.value("status").toString(),
-                    p.value("notes").toString()));
+                const auto obj = v.toObject();
+                if (obj.value("record_id").toInt() == recordId_) {
+                    if (completeBtn_) completeBtn_->setEnabled(true);
+                    break;
+                }
             }
-            prescriptionsList_->setVisible(true);
         }
     });
     connect(service_, &MedicalCrudService::prescriptionCreated, this, [this](bool ok, const QString& msg){
         if (ok) {
             QMessageBox::information(this, tr("保存成功"), tr("处方已成功开具！"));
             requestPrescriptions();
-            prescriptionNotesEdit_->clear();
+            // 保留输入内容，不清空
+            if (completeBtn_) completeBtn_->setEnabled(true); // 处方已开具后允许完成诊断
         } else {
             QMessageBox::warning(this, tr("保存失败"), tr("处方开具失败：%1").arg(msg));
         }
@@ -299,15 +348,23 @@ void AppointmentDetailsDialog::requestAdvices() {
 }
 
 void AppointmentDetailsDialog::populateFromRecord(const QJsonObject& record) {
-    chiefEdit_->setText(record.value("chief_complaint").toString());
-    diagnosisEdit_->setPlainText(record.value("diagnosis").toString());
-    planEdit_->setPlainText(record.value("treatment_plan").toString());
-    notesEdit_->setPlainText(record.value("notes").toString());
+    // 仅在字段存在时才覆盖，避免精简响应清空本地输入
+    if (record.contains("chief_complaint"))
+        chiefEdit_->setText(record.value("chief_complaint").toString());
+    if (record.contains("diagnosis"))
+        diagnosisEdit_->setPlainText(record.value("diagnosis").toString());
+    if (record.contains("treatment_plan"))
+        planEdit_->setPlainText(record.value("treatment_plan").toString());
+    if (record.contains("notes"))
+        notesEdit_->setPlainText(record.value("notes").toString());
 }
 
 // 由 service 信号驱动，已移除直接解析
 
 void AppointmentDetailsDialog::onSaveRecord() {
+    if (isSaving_) return;
+    isSaving_ = true;
+    if (saveBtn_) saveBtn_->setEnabled(false);
     QJsonObject data{
         {"appointment_id", appt_.value("id").toInt()},
         {"patient_username", appt_.value("patient_username").toString()},
@@ -372,4 +429,16 @@ void AppointmentDetailsDialog::onAddPrescription() {
     
     qDebug() << "Sending create_prescription with data:" << data;
     service_->createPrescription(data);
+}
+
+void AppointmentDetailsDialog::onCompleteDiagnosis() {
+    const int apptId = appt_.value("id").toInt();
+    if (apptId <= 0) {
+        QMessageBox::warning(this, tr("提示"), tr("预约信息缺失，无法更新状态"));
+        return;
+    }
+    if (QMessageBox::question(this, tr("确认"), tr("确认将该预约标记为已完成吗？")) != QMessageBox::Yes) return;
+    if (apptService_) {
+        apptService_->updateStatus(apptId, "completed");
+    }
 }

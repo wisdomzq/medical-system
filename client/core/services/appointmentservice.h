@@ -15,9 +15,13 @@ public:
     // 查询指定医生的预约列表
     void fetchByDoctor(const QString& doctorUsername);
 
+    // 更新预约状态
+    void updateStatus(int appointmentId, const QString& status);
+
 signals:
     void fetched(const QJsonArray& data);
     void fetchFailed(const QString& message);
+    void statusUpdated(bool ok, int appointmentId, const QString& status, const QString& errorMessage);
 
 private slots:
     void onJsonReceived(const QJsonObject& obj);
