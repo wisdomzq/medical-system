@@ -2,6 +2,7 @@
     <qresource prefix="/">
         <file>style.qss</file>
     <file>doctorinfo.qss</file>
+    <file>doctor_attendance.qss</file>
     <file>patientinfo.qss</file>
     <file>login.qss</file>
     <file>background.jpeg</file>

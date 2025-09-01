@@ -2,7 +2,10 @@
 #include "core/network/communicationclient.h"
 #include "core/network/protocol.h"
 #include "core/services/attendanceservice.h"
+#include <QFile>
+#include <QIODevice>
 #include <QDate>
+#include <QDateEdit>
 #include <QHBoxLayout>
 #include <QHeaderView>
 #include <QJsonArray>
@@ -15,6 +18,7 @@
 #include <QTableWidget>
 #include <QTextEdit>
 #include <QTime>
+#include <QTimeEdit>
 #include <QVBoxLayout>
 
 AttendanceWidget::AttendanceWidget(const QString& doctorName, CommunicationClient* client, QWidget* parent)
@@ -22,83 +26,172 @@ AttendanceWidget::AttendanceWidget(const QString& doctorName, CommunicationClien
     , doctorName_(doctorName)
     , client_(client)
 {
+    // 样式：加载专用 QSS
+    {
+        QFile f(":/doctor_attendance.qss");
+        if (f.open(QIODevice::ReadOnly)) {
+            this->setStyleSheet(QString::fromUtf8(f.readAll()));
+        }
+    }
+
     auto* root = new QVBoxLayout(this);
+    root->setContentsMargins(16, 16, 16, 16);
+    root->setSpacing(12);
 
     auto* nav = new QHBoxLayout();
     btnCheckIn_ = new QPushButton(tr("日常打卡"), this);
     btnLeave_ = new QPushButton(tr("请假"), this);
     btnCancel_ = new QPushButton(tr("销假"), this);
-    nav->addStretch();
-    nav->addWidget(btnCheckIn_);
-    nav->addWidget(btnLeave_);
-    nav->addWidget(btnCancel_);
-    root->addLayout(nav);
+    // 分段按钮：checkable + autoExclusive 实现互斥高亮
+    for (QPushButton* b : {btnCheckIn_, btnLeave_, btnCancel_}) {
+        b->setCheckable(true);
+        b->setAutoExclusive(true);
+        b->setProperty("class", "SegBtn");
+        b->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+    }
+    // 顶部操作条容器 + 胶囊容器
+    QWidget* topBar = new QWidget(this);
+    topBar->setObjectName("attTopBar");
+    auto* topLay = new QHBoxLayout(topBar);
+    topLay->setContentsMargins(0, 0, 0, 0);
+    topLay->setSpacing(0);
+
+    QWidget* segGroup = new QWidget(topBar);
+    segGroup->setObjectName("segGroup");
+    auto* segLay = new QHBoxLayout(segGroup);
+    segLay->setContentsMargins(6, 6, 6, 6); // 内边距形成圆角留白
+    segLay->setSpacing(6);                  // 按钮之间留细缝
+    // 三按钮等分铺满
+    segLay->addWidget(btnCheckIn_, /*stretch*/1);
+    segLay->addWidget(btnLeave_, /*stretch*/1);
+    segLay->addWidget(btnCancel_, /*stretch*/1);
+    segGroup->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+
+    // 胶囊容器填满右侧
+    topLay->addWidget(segGroup, 1);
+    root->addWidget(topBar);
 
     stack_ = new QStackedWidget(this);
     auto* pageCheckIn = new QWidget(this);
     {
+        pageCheckIn->setProperty("class", "AttendanceRoot");
         auto* l = new QVBoxLayout(pageCheckIn);
-        l->addWidget(new QLabel(QString("%1 - 日常打卡").arg(doctorName_), pageCheckIn));
-        auto* row = new QHBoxLayout();
-        auto* lbDate = new QLabel(tr("日期(yyyy-MM-dd):"), pageCheckIn);
-        auto* leDate = new QLineEdit(QDate::currentDate().toString("yyyy-MM-dd"), pageCheckIn);
-        auto* lbTime = new QLabel(tr("时间(HH:mm:ss):"), pageCheckIn);
-        auto* leTime = new QLineEdit(QTime::currentTime().toString("HH:mm:ss"), pageCheckIn);
-        btnDoCheckIn_ = new QPushButton(tr("打卡"), pageCheckIn);
-        btnHistory_ = new QPushButton(tr("查看历史打卡"), pageCheckIn);
-        row->addWidget(lbDate);
-        row->addWidget(leDate);
-        row->addWidget(lbTime);
-        row->addWidget(leTime);
-        row->addWidget(btnDoCheckIn_);
-        row->addWidget(btnHistory_);
-        l->addLayout(row);
-        tblAttendance_ = new QTableWidget(0, 3, pageCheckIn);
+        l->setSpacing(12);
+
+        // 卡片：打卡操作
+        auto* card = new QWidget(pageCheckIn);
+        card->setProperty("class", "Card");
+        auto* cardLay = new QVBoxLayout(card);
+        cardLay->setContentsMargins(16, 12, 16, 16);
+        auto* title = new QLabel(QString("%1 - 日常打卡").arg(doctorName_), card);
+        title->setProperty("class", "CardTitle");
+        cardLay->addWidget(title);
+
+        auto* form = new QHBoxLayout();
+        form->setSpacing(12);
+        auto* lbDate = new QLabel(tr("日期:"), card);
+        auto* deDate = new QDateEdit(QDate::currentDate(), card);
+        deDate->setDisplayFormat("yyyy-MM-dd");
+        deDate->setCalendarPopup(true);
+        auto* lbTime = new QLabel(tr("时间:"), card);
+        auto* teTime = new QTimeEdit(QTime::currentTime(), card);
+        teTime->setDisplayFormat("HH:mm:ss");
+        btnDoCheckIn_ = new QPushButton(tr("打卡"), card);
+        btnHistory_ = new QPushButton(tr("查看历史打卡"), card);
+        btnHistory_->setProperty("class", "SecondaryBtn");
+
+        form->addWidget(lbDate);
+        form->addWidget(deDate);
+        form->addWidget(lbTime);
+        form->addWidget(teTime);
+        form->addStretch();
+        form->addWidget(btnDoCheckIn_);
+        form->addWidget(btnHistory_);
+        cardLay->addLayout(form);
+        l->addWidget(card);
+
+        // 卡片：历史记录
+        auto* card2 = new QWidget(pageCheckIn);
+        card2->setProperty("class", "Card");
+        auto* card2Lay = new QVBoxLayout(card2);
+        card2Lay->setContentsMargins(16, 12, 16, 16);
+        auto* title2 = new QLabel(tr("历史打卡记录"), card2);
+        title2->setProperty("class", "CardTitle");
+        card2Lay->addWidget(title2);
+
+        tblAttendance_ = new QTableWidget(0, 3, card2);
         tblAttendance_->setHorizontalHeaderLabels({ tr("日期"), tr("时间"), tr("创建时间") });
         tblAttendance_->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-        l->addWidget(tblAttendance_);
-        l->addStretch();
+        card2Lay->addWidget(tblAttendance_);
+        l->addWidget(card2, 1);
 
-        connect(btnDoCheckIn_, &QPushButton::clicked, this, [this, leDate, leTime] {
+        connect(btnDoCheckIn_, &QPushButton::clicked, this, [this, deDate, teTime] {
             if (service_)
-                service_->checkIn(doctorName_, leDate->text(), leTime->text());
+                service_->checkIn(doctorName_, deDate->date().toString("yyyy-MM-dd"), teTime->time().toString("HH:mm:ss"));
         });
         connect(btnHistory_, &QPushButton::clicked, this, [this] { historyUserTriggered_ = true; refreshAttendanceHistory(); });
     }
     auto* pageLeave = new QWidget(this);
     {
         auto* l = new QVBoxLayout(pageLeave);
-        l->addWidget(new QLabel(QString("%1 - 请假").arg(doctorName_), pageLeave));
+        l->setSpacing(12);
+        pageLeave->setProperty("class", "AttendanceRoot");
+        auto* card = new QWidget(pageLeave);
+        card->setProperty("class", "Card");
+        auto* cardLay = new QVBoxLayout(card);
+        cardLay->setContentsMargins(16, 12, 16, 16);
+        auto* title = new QLabel(QString("%1 - 请假").arg(doctorName_), card);
+        title->setProperty("class", "CardTitle");
+        cardLay->addWidget(title);
         auto* row1 = new QHBoxLayout();
-        row1->addWidget(new QLabel(tr("请假日期(yyyy-MM-dd):"), pageLeave));
-        leLeaveDate_ = new QLineEdit(QDate::currentDate().toString("yyyy-MM-dd"), pageLeave);
-        row1->addWidget(leLeaveDate_);
-        l->addLayout(row1);
-        teReason_ = new QTextEdit(pageLeave);
+        row1->setSpacing(12);
+        auto* lb = new QLabel(tr("请假日期:"), card);
+        auto* de = new QDateEdit(QDate::currentDate(), card);
+        de->setDisplayFormat("yyyy-MM-dd");
+        de->setCalendarPopup(true);
+        leLeaveDate_ = new QLineEdit(QDate::currentDate().toString("yyyy-MM-dd"), card); // 保留数据成员但不直接显示
+        leLeaveDate_->setVisible(false);
+        row1->addWidget(lb);
+        row1->addWidget(de);
+        cardLay->addLayout(row1);
+        teReason_ = new QTextEdit(card);
         teReason_->setPlaceholderText(tr("请假原因..."));
-        l->addWidget(teReason_);
-        btnSubmitLeave_ = new QPushButton(tr("保存请假"), pageLeave);
-        l->addWidget(btnSubmitLeave_);
-        l->addStretch();
+        cardLay->addWidget(teReason_);
+        btnSubmitLeave_ = new QPushButton(tr("保存请假"), card);
+        cardLay->addWidget(btnSubmitLeave_);
+        l->addWidget(card);
 
-        connect(btnSubmitLeave_, &QPushButton::clicked, this, &AttendanceWidget::submitLeave);
+        connect(btnSubmitLeave_, &QPushButton::clicked, this, [this, de](){
+            if (leLeaveDate_) leLeaveDate_->setText(de->date().toString("yyyy-MM-dd"));
+            submitLeave();
+        });
     }
     auto* pageCancel = new QWidget(this);
     {
-        auto* l = new QVBoxLayout(pageCancel);
-        l->addWidget(new QLabel(QString("%1 - 销假").arg(doctorName_), pageCancel));
-        auto* bar = new QHBoxLayout();
-        btnRefreshLeaves_ = new QPushButton(tr("刷新请假记录"), pageCancel);
-        btnCancelLeave_ = new QPushButton(tr("销选中假"), pageCancel);
-        bar->addWidget(btnRefreshLeaves_);
-        bar->addWidget(btnCancelLeave_);
-        bar->addStretch();
-        l->addLayout(bar);
-        tblLeaves_ = new QTableWidget(0, 4, pageCancel);
-        tblLeaves_->setHorizontalHeaderLabels({ tr("ID"), tr("日期"), tr("原因"), tr("状态") });
-        tblLeaves_->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-        l->addWidget(tblLeaves_);
-        l->addStretch();
+    auto* l = new QVBoxLayout(pageCancel);
+    l->setSpacing(12);
+    pageCancel->setProperty("class", "AttendanceRoot");
+
+    auto* card = new QWidget(pageCancel);
+    card->setProperty("class", "Card");
+    auto* cardLay = new QVBoxLayout(card);
+    cardLay->setContentsMargins(16, 12, 16, 16);
+    auto* title = new QLabel(QString("%1 - 销假").arg(doctorName_), card);
+    title->setProperty("class", "CardTitle");
+    cardLay->addWidget(title);
+    auto* bar = new QHBoxLayout();
+    btnRefreshLeaves_ = new QPushButton(tr("刷新请假记录"), card);
+    btnRefreshLeaves_->setProperty("class", "SecondaryBtn");
+    btnCancelLeave_ = new QPushButton(tr("销选中假"), card);
+    bar->addWidget(btnRefreshLeaves_);
+    bar->addWidget(btnCancelLeave_);
+    bar->addStretch();
+    cardLay->addLayout(bar);
+    tblLeaves_ = new QTableWidget(0, 4, card);
+    tblLeaves_->setHorizontalHeaderLabels({ tr("ID"), tr("日期"), tr("原因"), tr("状态") });
+    tblLeaves_->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    cardLay->addWidget(tblLeaves_);
+    l->addWidget(card);
 
         connect(btnRefreshLeaves_, &QPushButton::clicked, this, &AttendanceWidget::refreshActiveLeaves);
         connect(btnCancelLeave_, &QPushButton::clicked, this, &AttendanceWidget::cancelSelectedLeave);
@@ -173,9 +266,9 @@ AttendanceWidget::AttendanceWidget(const QString& doctorName, CommunicationClien
     connect(service_, &AttendanceService::cancelLeaveResult, this, [this](bool /*ok*/, const QString& /*msg*/) { refreshActiveLeaves(); });
 }
 
-void AttendanceWidget::showCheckIn() { stack_->setCurrentIndex(0); }
-void AttendanceWidget::showLeave() { stack_->setCurrentIndex(1); }
-void AttendanceWidget::showCancelLeave() { stack_->setCurrentIndex(2); }
+void AttendanceWidget::showCheckIn() { stack_->setCurrentIndex(0); if (btnCheckIn_) btnCheckIn_->setChecked(true); }
+void AttendanceWidget::showLeave() { stack_->setCurrentIndex(1); if (btnLeave_) btnLeave_->setChecked(true); }
+void AttendanceWidget::showCancelLeave() { stack_->setCurrentIndex(2); if (btnCancel_) btnCancel_->setChecked(true); }
 
 void AttendanceWidget::submitLeave()
 {

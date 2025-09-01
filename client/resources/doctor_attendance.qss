@@ -1,0 +1,49 @@
+/* 考勤页专属样式（作用域：AttendanceWidget 及其子控件） */
+
+/* 根容器留白 */
+[class="AttendanceRoot"] { background: #ffffff; }
+
+/* 顶部操作条：右对齐按钮组 */
+#attTopBar { background: #ffffff; border-bottom: 1px solid #eef0f3; padding: 8px 8px; }
+#attTopBar QPushButton { padding: 10px 16px; font-weight: 600; font-size: 16px; }
+
+/* 胶囊容器外观 */
+#attTopBar #segGroup {
+	background: #f6f7f9;
+	border: 1px solid #e4e6eb;
+	border-radius: 999px;
+	/* 让容器看起来铺满区域（实际是随布局拉伸）*/
+}
+
+/* 分段切换按钮（仅作用于顶部三个按钮） */
+#attTopBar QPushButton[class="SegBtn"] {
+	background: transparent; color: #5c6b82; border: none; border-radius: 999px; padding: 8px 18px;
+	text-align: center;
+}
+#attTopBar QPushButton[class="SegBtn"]:hover { background: rgba(45, 140, 240, 0.10); }
+#attTopBar QPushButton[class="SegBtn"]:checked {
+	background: #ffffff; color: #1f3a68; border: 1px solid #e0e5ee; border-radius: 999px;
+	/* 投影在大多数平台不生效，这里用边框+前景色替代参考图的浮起效果 */
+}
+
+/* 通用卡片容器 */
+[class="Card"] { background: #ffffff; border: 1px solid #e7ebf0; border-radius: 8px; }
+QLabel[class="CardTitle"] { font-size: 16px; font-weight: 700; color: #1f2d3d; padding: 8px 0 4px; }
+[class="CardBody"] { padding: 12px; }
+
+/* 表单控件统一风格 */
+QLineEdit, QTextEdit, QDateEdit, QTimeEdit {
+	border: 1px solid #cfd6de; border-radius: 6px; padding: 6px 8px; background: #fff; color: #1f2d3d;
+}
+QLineEdit:focus, QTextEdit:focus, QDateEdit:focus, QTimeEdit:focus {
+	border-color: #2d8cf0; /* box-shadow 在部分平台不生效，仍可保留边框高亮 */
+}
+
+/* 次按钮（历史/刷新） */
+QPushButton[class="SecondaryBtn"] { background: #f4f7fb; color: #2d8cf0; border: 1px solid #d9e6fb; }
+QPushButton[class="SecondaryBtn"]:hover { background: #e9f2ff; }
+
+/* 表格美化 */
+QTableWidget { gridline-color: #e6e9ef; }
+QHeaderView::section { background: #f7f9fc; padding: 8px; border: 1px solid #e6e9ef; font-weight: 600; }
+QTableWidget QTableCornerButton::section { background: #f7f9fc; border: 1px solid #e6e9ef; }
