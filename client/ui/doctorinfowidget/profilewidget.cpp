@@ -24,52 +24,114 @@
 ProfileWidget::ProfileWidget(const QString& doctorName, CommunicationClient* client, QWidget* parent)
     : QWidget(parent), doctorName_(doctorName), client_(client)
 {
-    auto* root = new QVBoxLayout(this);
-    auto* title = new QLabel(QString("个人信息 - %1").arg(doctorName_));
-    title->setStyleSheet("font-size:18px;font-weight:600;margin:4px 0 12px 0;");
-    root->addWidget(title);
+    // 加载专用样式
+    if (QFile::exists(":/doctor_profile.qss")) {
+        QFile f(":/doctor_profile.qss");
+        if (f.open(QIODevice::ReadOnly)) this->setStyleSheet(QString::fromUtf8(f.readAll()));
+    }
 
-    auto* form = new QFormLayout();
+    // 根布局
+    auto* root = new QVBoxLayout(this);
+    root->setContentsMargins(0, 0, 0, 0);
+    root->setSpacing(12);
+
+    // 顶栏
+    auto* topBar = new QWidget(this);
+    topBar->setObjectName("profileTopBar");
+    topBar->setAttribute(Qt::WA_StyledBackground, true);
+    auto* topBarLy = new QHBoxLayout(topBar);
+    topBarLy->setContentsMargins(16, 12, 16, 12);
+    topBarLy->setSpacing(10);
+    auto* title = new QLabel("医生个人信息", topBar);
+    title->setObjectName("profileTitle");
+    auto* subtitle = new QLabel(doctorName_, topBar);
+    subtitle->setObjectName("profileSubtitle");
+    auto* titleBox = new QVBoxLayout();
+    titleBox->setContentsMargins(0,0,0,0);
+    titleBox->setSpacing(2);
+    titleBox->addWidget(title);
+    titleBox->addWidget(subtitle);
+    topBarLy->addLayout(titleBox);
+    topBarLy->addStretch();
+    root->addWidget(topBar);
+
+    // 内容卡片
+    auto* card = new QWidget(this);
+    card->setObjectName("profileCard");
+    card->setAttribute(Qt::WA_StyledBackground, true);
+    auto* cardLy = new QVBoxLayout(card);
+    cardLy->setContentsMargins(16, 16, 16, 16);
+    cardLy->setSpacing(12);
+
+    // 表单网格（左：标签+字段，右：头像列）
+    auto* formGrid = new QGridLayout();
+    formGrid->setContentsMargins(0,0,0,0);
+    formGrid->setHorizontalSpacing(16);
+    formGrid->setVerticalSpacing(10);
+
+    // 左侧字段
     workNumberEdit_ = new QLineEdit(this);
     departmentEdit_ = new QLineEdit(this);
     bioEdit_ = new QTextEdit(this);
     bioEdit_->setPlaceholderText("个人资料……");
 
-    photoPreview_ = new QLabel(this);
-    photoPreview_->setFixedSize(96,96);
-    photoPreview_->setStyleSheet("border:1px solid #ccc;background:#fafafa;");
-    auto* choosePhotoBtn = new QPushButton("选择照片", this);
-
-    auto* photoRowW = new QWidget(this);
-    auto* photoRow = new QHBoxLayout(photoRowW);
-    photoRow->addWidget(photoPreview_);
-    photoRow->addWidget(choosePhotoBtn);
-    photoRow->addStretch();
-
     workStartEdit_ = new QTimeEdit(this); workStartEdit_->setDisplayFormat("HH:mm");
     workEndEdit_   = new QTimeEdit(this); workEndEdit_->setDisplayFormat("HH:mm");
-
     feeEdit_ = new QDoubleSpinBox(this); feeEdit_->setDecimals(2); feeEdit_->setRange(0, 100000); feeEdit_->setSuffix(" 元");
     dailyLimitEdit_ = new QSpinBox(this); dailyLimitEdit_->setRange(0, 10000); dailyLimitEdit_->setSuffix(" 人/日");
 
-    form->addRow("工号：", workNumberEdit_);
-    form->addRow("科室：", departmentEdit_);
-    form->addRow("个人资料：", bioEdit_);
-    form->addRow("照片：", photoRowW);
-    form->addRow("上班开始：", workStartEdit_);
-    form->addRow("上班结束：", workEndEdit_);
-    form->addRow("挂号费用：", feeEdit_);
-    form->addRow("单日上限：", dailyLimitEdit_);
+    int r = 0;
+    formGrid->addWidget(new QLabel("工号："), r, 0, Qt::AlignRight); formGrid->addWidget(workNumberEdit_, r, 1); r++;
+    formGrid->addWidget(new QLabel("科室："), r, 0, Qt::AlignRight); formGrid->addWidget(departmentEdit_, r, 1); r++;
+    formGrid->addWidget(new QLabel("个人资料："), r, 0, Qt::AlignRight | Qt::AlignTop); formGrid->addWidget(bioEdit_, r, 1); r++;
+    formGrid->addWidget(new QLabel("上班开始："), r, 0, Qt::AlignRight); formGrid->addWidget(workStartEdit_, r, 1); r++;
+    formGrid->addWidget(new QLabel("上班结束："), r, 0, Qt::AlignRight); formGrid->addWidget(workEndEdit_, r, 1); r++;
+    formGrid->addWidget(new QLabel("挂号费用："), r, 0, Qt::AlignRight); formGrid->addWidget(feeEdit_, r, 1); r++;
+    formGrid->addWidget(new QLabel("单日上限："), r, 0, Qt::AlignRight); formGrid->addWidget(dailyLimitEdit_, r, 1); r++;
 
-    root->addLayout(form);
+    // 右侧头像列
+    photoPreview_ = new QLabel(this);
+    photoPreview_->setObjectName("photoPreview");
+    photoPreview_->setFixedSize(120,120);
+    photoPreview_->setAlignment(Qt::AlignCenter);
+    photoPreview_->setAttribute(Qt::WA_StyledBackground, true);
+    // 外层边框容器，保证边框可见
+    auto* photoFrame = new QWidget(this);
+    photoFrame->setObjectName("photoFrame");
+    photoFrame->setAttribute(Qt::WA_StyledBackground, true);
+    photoFrame->setFixedSize(128,128);
+    auto* photoFrameLy = new QVBoxLayout(photoFrame);
+    photoFrameLy->setContentsMargins(4,4,4,4); // 内边距让边框更明显
+    photoFrameLy->addWidget(photoPreview_, 0, Qt::AlignCenter);
+    auto* choosePhotoBtn = new QPushButton("选择照片", this);
+    choosePhotoBtn->setObjectName("choosePhotoBtn");
+    auto* photoColW = new QWidget(this);
+    photoColW->setObjectName("photoCol");
+    auto* photoCol = new QVBoxLayout(photoColW);
+    photoCol->setContentsMargins(0,0,0,0);
+    photoCol->setSpacing(8);
+    photoCol->addWidget(photoFrame, 0, Qt::AlignLeft);
+    photoCol->addWidget(choosePhotoBtn, 0, Qt::AlignLeft);
+    photoCol->addStretch();
+    formGrid->addWidget(photoColW, 0, 2, r, 1);
+    formGrid->setColumnStretch(1, 1);
+    formGrid->setColumnStretch(2, 0);
 
-    auto* btns = new QHBoxLayout();
+    cardLy->addLayout(formGrid);
+
+    // 操作区
+    auto* actions = new QWidget(this);
+    actions->setObjectName("profileActions");
+    auto* btns = new QHBoxLayout(actions);
+    btns->setContentsMargins(0, 8, 0, 0);
     btns->addStretch();
-    refreshBtn_ = new QPushButton("刷新", this);
-    saveBtn_ = new QPushButton("保存", this);
+    refreshBtn_ = new QPushButton("刷新", this); refreshBtn_->setObjectName("refreshBtn");
+    saveBtn_ = new QPushButton("保存", this); saveBtn_->setObjectName("saveBtn");
     btns->addWidget(refreshBtn_);
     btns->addWidget(saveBtn_);
-    root->addLayout(btns);
+    cardLy->addWidget(actions);
+
+    root->addWidget(card);
     root->addStretch();
 
     connect(choosePhotoBtn, &QPushButton::clicked, this, &ProfileWidget::onChoosePhoto);

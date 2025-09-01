@@ -1,0 +1,114 @@
+/* Profile page styling */
+
+QWidget#profileTopBar {
+  background: #667eea; /* 可按需改为渐变 */
+  border: none;
+}
+QWidget#profileTopBar QLabel#profileTitle {
+  color: #ffffff;
+  font-size: 22px;
+  font-weight: 700;
+  background: transparent;
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+QWidget#profileTopBar QLabel#profileSubtitle {
+  color: rgba(255,255,255,0.9);
+  font-size: 14px;
+  background: transparent;
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+
+QWidget#profileCard {
+  background: #ffffff;
+  border: 1px solid #e6eaf2;
+  border-radius: 12px;
+}
+
+/* labels in grid */
+QWidget#profileCard QLabel {
+  color: #2b2f36;
+  font-size: 14px;
+  background: transparent; /* 去掉灰色方块 */
+  border: none;
+  padding: 0px;
+}
+
+/* make inner containers transparent to avoid gray blocks */
+QWidget#photoCol { background: transparent; }
+QWidget#profileActions { background: transparent; }
+
+/* inputs */
+QWidget#profileCard QLineEdit,
+QWidget#profileCard QTextEdit,
+QWidget#profileCard QTimeEdit,
+QWidget#profileCard QDoubleSpinBox,
+QWidget#profileCard QSpinBox {
+  background: #f8fafc;
+  border: 1px solid #d8dee9;
+  border-radius: 8px;
+  padding: 6px 8px;
+  selection-background-color: #667eea;
+}
+QWidget#profileCard QLineEdit:focus,
+QWidget#profileCard QTextEdit:focus,
+QWidget#profileCard QTimeEdit:focus,
+QWidget#profileCard QDoubleSpinBox:focus,
+QWidget#profileCard QSpinBox:focus {
+  border-color: #667eea;
+  background: #ffffff;
+}
+
+/* photo */
+/* 外层边框容器，负责真正的可见边框 */
+QWidget#photoFrame {
+  background: #ffffff;
+  border: 2px solid #4f63dd;
+  border-radius: 10px;
+}
+
+/* 内层图片预览区域 */
+QLabel#photoPreview {
+  background: #f5f7fb;
+  border: none;
+  border-radius: 6px;
+}
+
+QWidget#photoFrame:hover { border-color: #3b54cf; }
+QLabel#photoPreview:hover { background: #eef2ff; }
+
+/* buttons */
+QPushButton#choosePhotoBtn,
+QPushButton#refreshBtn,
+QPushButton#saveBtn {
+  background: #667eea;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+}
+QPushButton#choosePhotoBtn:hover,
+QPushButton#refreshBtn:hover,
+QPushButton#saveBtn:hover {
+  background: #5a6de3;
+}
+QPushButton#choosePhotoBtn:pressed,
+QPushButton#refreshBtn:pressed,
+QPushButton#saveBtn:pressed {
+  background: #4f63dd;
+}
+
+/* secondary/outline style for refresh */
+QPushButton#refreshBtn {
+  background: #ffffff;
+  color: #4f63dd;
+  border: 1px solid #4f63dd;
+}
+QPushButton#refreshBtn:hover { background: #eef2ff; }
+QPushButton#refreshBtn:pressed { background: #e0e7ff; }
+
+/* actions bar spacing */
+QWidget#profileActions { margin-top: 8px; }

@@ -3,8 +3,8 @@
 /* 根容器留白 */
 [class="AttendanceRoot"] { background: #ffffff; }
 
-/* 顶部操作条：右对齐按钮组 */
-#attTopBar { background: #ffffff; border-bottom: 1px solid #eef0f3; padding: 8px 8px; }
+/* 顶部操作条：右对齐按钮组（保持白底，与全局卡片风格一致） */
+#attTopBar { background: #ffffff; border-bottom: 1px solid #e8ecf4; padding: 8px 8px; }
 #attTopBar QPushButton { padding: 10px 16px; font-weight: 600; font-size: 16px; }
 
 /* 页面内所有标签背景透明，避免灰底块 */
@@ -14,40 +14,56 @@
 
 /* 胶囊容器外观 */
 #attTopBar #segGroup {
-	background: #f6f7f9;
-	border: 1px solid #e4e6eb;
+	background: #eef2ff; /* 与其他页面浅色卡片一致 */
+	border: 1px solid #d9e6fb; /* 与 outline 按钮边框一致 */
 	border-radius: 9999px; /* 更圆 */
-	/* 让容器看起来铺满区域（实际是随布局拉伸）*/
 }
 
 /* 分段切换按钮（仅作用于顶部三个按钮） */
 #attTopBar QPushButton[class="SegBtn"] {
-	background: transparent; color: #5c6b82; border: none; border-radius: 9999px; padding: 10px 20px; /* 更高更圆 */
+	background: transparent; color: #4f63dd; border: none; border-radius: 9999px; padding: 10px 20px;
 	text-align: center;
 }
-#attTopBar QPushButton[class="SegBtn"]:hover { background: rgba(45, 140, 240, 0.10); }
+#attTopBar QPushButton[class="SegBtn"]:hover { background: rgba(102, 126, 234, 0.12); }
 #attTopBar QPushButton[class="SegBtn"]:checked {
-	background: #2d8cf0; color: #ffffff; border: 1px solid #2d8cf0; border-radius: 9999px;
+	background: #667eea; color: #ffffff; border: 1px solid #667eea; border-radius: 9999px;
+}
+/* 选中后悬浮外观保持不变 */
+#attTopBar QPushButton[class="SegBtn"]:checked:hover {
+	background: #667eea; color: #ffffff; border: 1px solid #667eea; border-radius: 9999px;
 }
 
 /* 通用卡片容器 */
-[class="Card"] { background: #ffffff; border: 1px solid #e7ebf0; border-radius: 8px; }
-QLabel[class="CardTitle"] { font-size: 16px; font-weight: 700; color: #1f2d3d; padding: 8px 0 4px; }
+[class="Card"] { background: #ffffff; border: 1px solid #e8ecf4; border-radius: 8px; }
+QLabel[class="CardTitle"] { font-size: 16px; font-weight: 700; color: #334155; padding: 8px 0 4px; }
 [class="CardBody"] { padding: 12px; }
 
 /* 表单控件统一风格 */
 QLineEdit, QTextEdit, QDateEdit, QTimeEdit {
-	border: 1px solid #cfd6de; border-radius: 6px; padding: 6px 8px; background: #fff; color: #1f2d3d;
+	border: 1px solid #e8ecf4; border-radius: 6px; padding: 6px 8px; background: #fff; color: #1f2d3d;
 }
 QLineEdit:focus, QTextEdit:focus, QDateEdit:focus, QTimeEdit:focus {
-	border-color: #2d8cf0; /* box-shadow 在部分平台不生效，仍可保留边框高亮 */
+	border: 2px solid #667eea; /* 与全局页面一致的焦点高亮 */
 }
 
 /* 次按钮（历史/刷新） */
-QPushButton[class="SecondaryBtn"] { background: #f4f7fb; color: #2d8cf0; border: 1px solid #d9e6fb; }
-QPushButton[class="SecondaryBtn"]:hover { background: #e9f2ff; }
+QPushButton[class="SecondaryBtn"] { background: #ffffff; color: #4f63dd; border: 1px solid #d9e6fb; border-radius: 8px; }
+QPushButton[class="SecondaryBtn"]:hover { background: #eef2ff; }
+
+/* 页面内主按钮与警告按钮（显式 class 控制，避免误匹配） */
+[class="AttendanceRoot"] QPushButton[class="PrimaryBtn"] {
+	background: #667eea; color: #ffffff; border: 1px solid #667eea; border-radius: 8px; padding: 8px 14px; font-weight: 600;
+}
+[class="AttendanceRoot"] QPushButton[class="PrimaryBtn"]:hover { background: #5a67d8; border-color: #5a67d8; }
+[class="AttendanceRoot"] QPushButton[class="PrimaryBtn"]:pressed { background: #4c51bf; border-color: #4c51bf; }
+
+[class="AttendanceRoot"] QPushButton[class="DangerBtn"] {
+	background: #ef4444; color: #ffffff; border: 1px solid #ef4444; border-radius: 8px; padding: 8px 14px; font-weight: 600;
+}
+[class="AttendanceRoot"] QPushButton[class="DangerBtn"]:hover { background: #dc2626; border-color: #dc2626; }
+[class="AttendanceRoot"] QPushButton[class="DangerBtn"]:pressed { background: #b91c1c; border-color: #b91c1c; }
 
 /* 表格美化 */
-QTableWidget { gridline-color: #e6e9ef; }
-QHeaderView::section { background: #f7f9fc; padding: 8px; border: 1px solid #e6e9ef; font-weight: 600; }
-QTableWidget QTableCornerButton::section { background: #f7f9fc; border: 1px solid #e6e9ef; }
+QTableWidget { gridline-color: #e8ecf4; }
+QHeaderView::section { background: #f7f9fc; padding: 8px; border: 1px solid #e8ecf4; font-weight: 600; }
+QTableWidget QTableCornerButton::section { background: #f7f9fc; border: 1px solid #e8ecf4; }

@@ -17,12 +17,20 @@
 #include <QDateTime>
 #include <QRandomGenerator>
 #include <QTextStream>
+#include <QFile>
+#include <QSplitter>
 
 RemoteDataWidget::RemoteDataWidget(const QString& doctorName, QWidget* parent)
     : QWidget(parent), doctorName_(doctorName), isCollecting_(false), dataCount_(0) {
     setupUI();
     dataTimer_ = new QTimer(this);
     connect(dataTimer_, &QTimer::timeout, this, &RemoteDataWidget::onDataReceived);
+
+    // 加载专用样式
+    QFile qss(":/doctor_remotedata.qss");
+    if (qss.open(QFile::ReadOnly)) {
+        this->setStyleSheet(QString::fromLatin1(qss.readAll()));
+    }
 }
 
 RemoteDataWidget::~RemoteDataWidget() = default;
@@ -31,6 +39,26 @@ void RemoteDataWidget::setupUI() {
     setWindowTitle("远程数据采集分析 - " + doctorName_);
     
     mainLayout_ = new QVBoxLayout(this);
+    mainLayout_->setContentsMargins(10, 8, 10, 8); // 更紧凑的页面边距
+    mainLayout_->setSpacing(8); // 缩小区块间距
+
+    // 顶部栏
+    QWidget* topBar = new QWidget(this);
+    topBar->setObjectName("remoteTopBar");
+    topBar->setAttribute(Qt::WA_StyledBackground, true);
+    QHBoxLayout* tb = new QHBoxLayout(topBar);
+    tb->setContentsMargins(12, 8, 12, 8); // 顶部栏更紧凑
+    QVBoxLayout* tcol = new QVBoxLayout();
+    tcol->setContentsMargins(0,0,0,0);
+    QLabel* title = new QLabel("远程数据采集", topBar);
+    title->setObjectName("remoteTitle");
+    QLabel* sub = new QLabel("设备控制与数据分析", topBar);
+    sub->setObjectName("remoteSubTitle");
+    tcol->addWidget(title);
+    tcol->addWidget(sub);
+    tb->addLayout(tcol);
+    tb->addStretch();
+    mainLayout_->addWidget(topBar);
     
     setupDeviceInfo();
     setupDataDisplay();
@@ -41,11 +69,19 @@ void RemoteDataWidget::setupUI() {
 
 void RemoteDataWidget::setupDeviceInfo() {
     deviceGroup_ = new QGroupBox("智能心电仪设备控制");
+    deviceGroup_->setObjectName("deviceCard");
+    deviceGroup_->setAttribute(Qt::WA_StyledBackground, true);
     auto deviceLayout = new QVBoxLayout(deviceGroup_);
+    deviceLayout->setContentsMargins(14, 12, 14, 12);
+    deviceLayout->setSpacing(8);
     
     // 设备选择和连接
     auto deviceSelectLayout = new QHBoxLayout();
-    deviceSelectLayout->addWidget(new QLabel("设备选择:"));
+    {
+        QLabel* lbl = new QLabel("设备选择:");
+        lbl->setObjectName("formLabel");
+        deviceSelectLayout->addWidget(lbl);
+    }
     
     deviceCombo_ = new QComboBox();
     deviceCombo_->addItems({"心电仪-001 (192.168.1.100)", 
@@ -54,6 +90,7 @@ void RemoteDataWidget::setupDeviceInfo() {
     deviceSelectLayout->addWidget(deviceCombo_);
     
     refreshDeviceBtn_ = new QPushButton("刷新设备");
+    refreshDeviceBtn_->setObjectName("outlineBtn");
     connect(refreshDeviceBtn_, &QPushButton::clicked, this, &RemoteDataWidget::refreshDeviceList);
     deviceSelectLayout->addWidget(refreshDeviceBtn_);
     
@@ -62,13 +99,21 @@ void RemoteDataWidget::setupDeviceInfo() {
     
     // 设备IP和采样率设置
     auto settingsLayout = new QHBoxLayout();
-    settingsLayout->addWidget(new QLabel("设备IP:"));
+    {
+        QLabel* lbl = new QLabel("设备IP:");
+        lbl->setObjectName("formLabel");
+        settingsLayout->addWidget(lbl);
+    }
     
     deviceIPEdit_ = new QLineEdit("192.168.1.100");
     deviceIPEdit_->setMaximumWidth(120);
     settingsLayout->addWidget(deviceIPEdit_);
     
-    settingsLayout->addWidget(new QLabel("采样率(Hz):"));
+    {
+        QLabel* lbl = new QLabel("采样率(Hz):");
+        lbl->setObjectName("formLabel");
+        settingsLayout->addWidget(lbl);
+    }
     sampleRateSpinBox_ = new QSpinBox();
     sampleRateSpinBox_->setRange(100, 1000);
     sampleRateSpinBox_->setValue(250);
@@ -82,25 +127,26 @@ void RemoteDataWidget::setupDeviceInfo() {
     auto controlLayout = new QHBoxLayout();
     
     startBtn_ = new QPushButton("开始采集");
-    startBtn_->setStyleSheet("QPushButton { background-color: #4CAF50; color: white; font-weight: bold; padding: 8px; }");
+    startBtn_->setObjectName("primaryBtn");
     connect(startBtn_, &QPushButton::clicked, this, &RemoteDataWidget::startDataCollection);
     controlLayout->addWidget(startBtn_);
     
     stopBtn_ = new QPushButton("停止采集");
-    stopBtn_->setStyleSheet("QPushButton { background-color: #f44336; color: white; font-weight: bold; padding: 8px; }");
+    stopBtn_->setObjectName("dangerBtn");
     stopBtn_->setEnabled(false);
     connect(stopBtn_, &QPushButton::clicked, this, &RemoteDataWidget::stopDataCollection);
     controlLayout->addWidget(stopBtn_);
     
     deviceStatusLabel_ = new QLabel("设备未连接");
-    deviceStatusLabel_->setStyleSheet("color: red; font-weight: bold;");
+    deviceStatusLabel_->setObjectName("statusLabel");
+    deviceStatusLabel_->setProperty("status", "err");
     controlLayout->addWidget(deviceStatusLabel_);
     
     controlLayout->addStretch();
     
     connectionProgress_ = new QProgressBar();
     connectionProgress_->setVisible(false);
-    connectionProgress_->setMaximumWidth(200);
+    connectionProgress_->setMaximumWidth(160);
     controlLayout->addWidget(connectionProgress_);
     
     deviceLayout->addLayout(controlLayout);
@@ -110,12 +156,16 @@ void RemoteDataWidget::setupDeviceInfo() {
 
 void RemoteDataWidget::setupDataDisplay() {
     dataGroup_ = new QGroupBox("实时数据监控");
+    dataGroup_->setObjectName("dataCard");
+    dataGroup_->setAttribute(Qt::WA_StyledBackground, true);
     auto dataLayout = new QVBoxLayout(dataGroup_);
+    dataLayout->setContentsMargins(14, 12, 14, 12);
+    dataLayout->setSpacing(6);
     
     // 数据统计信息
     auto statsLayout = new QHBoxLayout();
     dataCountLabel_ = new QLabel("采集数据量: 0 条");
-    dataCountLabel_->setStyleSheet("font-weight: bold; color: #2196F3;");
+    dataCountLabel_->setObjectName("infoLabel");
     statsLayout->addWidget(dataCountLabel_);
     statsLayout->addStretch();
     
@@ -123,9 +173,9 @@ void RemoteDataWidget::setupDataDisplay() {
     
     // 原始数据显示
     rawDataEdit_ = new QTextEdit();
-    rawDataEdit_->setMaximumHeight(150);
+    rawDataEdit_->setObjectName("rawData");
+    rawDataEdit_->setMaximumHeight(110); // 适度压缩，但保留可读性
     rawDataEdit_->setPlaceholderText("心电数据将在这里实时显示...");
-    rawDataEdit_->setStyleSheet("QTextEdit { font-family: 'Courier New'; font-size: 10px; }");
     dataLayout->addWidget(rawDataEdit_);
     
     mainLayout_->addWidget(dataGroup_);
@@ -133,40 +183,57 @@ void RemoteDataWidget::setupDataDisplay() {
 
 void RemoteDataWidget::setupAnalysisPanel() {
     analysisGroup_ = new QGroupBox("数据分析结果");
+    analysisGroup_->setObjectName("analysisCard");
+    analysisGroup_->setAttribute(Qt::WA_StyledBackground, true);
     auto analysisLayout = new QVBoxLayout(analysisGroup_);
+    analysisLayout->setContentsMargins(14, 12, 14, 12);
+    analysisLayout->setSpacing(8);
     
     // 分析控制按钮
     auto analysisControlLayout = new QHBoxLayout();
     
     analyzeBtn_ = new QPushButton("开始分析");
-    analyzeBtn_->setStyleSheet("QPushButton { background-color: #2196F3; color: white; font-weight: bold; padding: 8px; }");
+    analyzeBtn_->setObjectName("primaryBtn");
     connect(analyzeBtn_, &QPushButton::clicked, this, &RemoteDataWidget::analyzeData);
     analysisControlLayout->addWidget(analyzeBtn_);
     
     exportBtn_ = new QPushButton("导出报告");
+    exportBtn_->setObjectName("exportBtn");
     connect(exportBtn_, &QPushButton::clicked, this, &RemoteDataWidget::exportAnalysisReport);
     analysisControlLayout->addWidget(exportBtn_);
     
     clearBtn_ = new QPushButton("清空历史");
+    clearBtn_->setObjectName("dangerBtn");
     connect(clearBtn_, &QPushButton::clicked, this, &RemoteDataWidget::clearHistory);
     analysisControlLayout->addWidget(clearBtn_);
     
     analysisControlLayout->addStretch();
     analysisLayout->addLayout(analysisControlLayout);
     
-    // 分析结果表格
+    // 分析结果区域：左右排列（可拖拽调整）
+    QSplitter* splitter = new QSplitter(Qt::Horizontal, analysisGroup_);
+
+    // 左侧：分析结果表格
     analysisTable_ = new QTableWidget(0, 4);
+    analysisTable_->setObjectName("analysisTable");
     analysisTable_->setHorizontalHeaderLabels({"时间", "心率(BPM)", "状态", "异常标记"});
     analysisTable_->horizontalHeader()->setStretchLastSection(true);
-    analysisTable_->setMaximumHeight(150);
+    analysisTable_->verticalHeader()->setVisible(false); // 隐藏行号减少占高
+    analysisTable_->verticalHeader()->setDefaultSectionSize(20); // 降低行高
     analysisTable_->setAlternatingRowColors(true);
-    analysisLayout->addWidget(analysisTable_);
-    
-    // 详细分析结果
+    analysisTable_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    splitter->addWidget(analysisTable_);
+
+    // 右侧：详细分析报告
     analysisResultEdit_ = new QTextEdit();
-    analysisResultEdit_->setMaximumHeight(120);
     analysisResultEdit_->setPlaceholderText("详细的心电分析报告将在这里显示...");
-    analysisLayout->addWidget(analysisResultEdit_);
+    analysisResultEdit_->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
+    splitter->addWidget(analysisResultEdit_);
+
+    // 初始比例：表格略宽
+    splitter->setStretchFactor(0, 3);
+    splitter->setStretchFactor(1, 2);
+    analysisLayout->addWidget(splitter);
     
     mainLayout_->addWidget(analysisGroup_);
 }
@@ -177,7 +244,7 @@ void RemoteDataWidget::startDataCollection() {
     stopBtn_->setEnabled(true);
     
     deviceStatusLabel_->setText("正在连接设备...");
-    deviceStatusLabel_->setStyleSheet("color: orange; font-weight: bold;");
+    deviceStatusLabel_->setProperty("status", "warn");
     
     connectionProgress_->setVisible(true);
     connectionProgress_->setRange(0, 100);
@@ -195,7 +262,7 @@ void RemoteDataWidget::startDataCollection() {
             connectionProgress_->setVisible(false);
             
             deviceStatusLabel_->setText("设备已连接，正在采集数据");
-            deviceStatusLabel_->setStyleSheet("color: green; font-weight: bold;");
+            deviceStatusLabel_->setProperty("status", "ok");
             
             // 开始模拟数据采集
             dataTimer_->start(500); // 每500ms接收一次数据
@@ -212,7 +279,7 @@ void RemoteDataWidget::stopDataCollection() {
     stopBtn_->setEnabled(false);
     
     deviceStatusLabel_->setText("数据采集已停止");
-    deviceStatusLabel_->setStyleSheet("color: red; font-weight: bold;");
+    deviceStatusLabel_->setProperty("status", "err");
     
     QMessageBox::information(this, "信息", QString("数据采集已停止。共采集了 %1 条数据。").arg(dataCount_));
 }
@@ -357,7 +424,7 @@ void RemoteDataWidget::performDataAnalysis() {
 void RemoteDataWidget::refreshDeviceList() {
     deviceCombo_->clear();
     deviceStatusLabel_->setText("正在搜索设备...");
-    deviceStatusLabel_->setStyleSheet("color: orange; font-weight: bold;");
+    deviceStatusLabel_->setProperty("status", "warn");
     
     // 模拟设备搜索
     QTimer::singleShot(2000, [this]() {
@@ -368,12 +435,12 @@ void RemoteDataWidget::refreshDeviceList() {
             "心电仪-004 (192.168.1.103)"
         });
         
-        deviceStatusLabel_->setText("设备列表已更新");
-        deviceStatusLabel_->setStyleSheet("color: blue; font-weight: bold;");
+    deviceStatusLabel_->setText("设备列表已更新");
+    deviceStatusLabel_->setProperty("status", "info");
         
         QTimer::singleShot(3000, [this]() {
             deviceStatusLabel_->setText("设备未连接");
-            deviceStatusLabel_->setStyleSheet("color: red; font-weight: bold;");
+            deviceStatusLabel_->setProperty("status", "err");
         });
     });
 }

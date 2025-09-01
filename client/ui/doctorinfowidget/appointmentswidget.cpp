@@ -25,6 +25,9 @@
 AppointmentsWidget::AppointmentsWidget(const QString& doctorName, CommunicationClient* client, QWidget* parent)
     : QWidget(parent), doctorName_(doctorName), client_(client), ownsClient_(false) {
     setupUI();
+    // 加载专用样式
+    QFile f(":/doctor_appointment.qss");
+    if (f.open(QIODevice::ReadOnly)) setStyleSheet(QString::fromUtf8(f.readAll()));
     
     // 不再依赖外部分发：使用服务自己监听
     connect(refreshBtn_, &QPushButton::clicked, this, &AppointmentsWidget::onRefresh);
@@ -38,28 +41,40 @@ AppointmentsWidget::AppointmentsWidget(const QString& doctorName, CommunicationC
 
 void AppointmentsWidget::setupUI() {
     auto* root = new QVBoxLayout(this);
+    root->setContentsMargins(0,0,0,0);
+    root->setSpacing(12);
 
-    auto* topBar = new QHBoxLayout();
+    // 顶部条
+    auto* topBarW = new QWidget(this);
+    topBarW->setObjectName("apptTopBar");
+    topBarW->setAttribute(Qt::WA_StyledBackground, true);
+    auto* topBar = new QHBoxLayout(topBarW);
+    topBar->setContentsMargins(12,8,12,8);
+    auto* title = new QLabel(tr("医生预约管理"), topBarW);
+    title->setObjectName("apptTitle");
     refreshBtn_ = new QPushButton(tr("刷新"), this);
     auto* filterBtn = new QPushButton(tr("筛选"), this);
     auto* exportBtn = new QPushButton(tr("导出"), this);
     auto* statsBtn = new QPushButton(tr("统计"), this);
-    
-    topBar->addWidget(new QLabel(tr("医生预约管理")));
+    // 标记为次按钮风格
+    for (auto* b : {filterBtn, exportBtn, statsBtn, refreshBtn_}) b->setProperty("class", "ApptSecondary");
+    topBar->addWidget(title);
     topBar->addStretch();
     topBar->addWidget(filterBtn);
     topBar->addWidget(exportBtn);
     topBar->addWidget(statsBtn);
     topBar->addWidget(refreshBtn_);
-    root->addLayout(topBar);
+    root->addWidget(topBarW);
     
     // 添加统计信息区域
     auto* statsFrame = new QFrame(this);
-    statsFrame->setFrameStyle(QFrame::StyledPanel);
-    statsFrame->setStyleSheet("QFrame { background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 5px; margin: 5px; }");
+    statsFrame->setObjectName("statsCard");
+    statsFrame->setFrameStyle(QFrame::NoFrame);
     statsFrame->setMinimumHeight(60);
     
     auto* statsLayout = new QHBoxLayout(statsFrame);
+    statsLayout->setContentsMargins(16, 12, 16, 12);
+    statsLayout->setSpacing(12);
     auto* todayLabel = new QLabel(tr("今日预约: 0"), this);
     auto* pendingLabel = new QLabel(tr("待确认: 0"), this);
     auto* confirmedLabel = new QLabel(tr("已确认: 0"), this);
@@ -81,6 +96,7 @@ void AppointmentsWidget::setupUI() {
     root->addWidget(statsFrame);
 
     table_ = new QTableWidget(this);
+    table_->setObjectName("apptTable");
     table_->setColumnCount(8);
     QStringList headers{tr("预约ID"), tr("患者姓名"), tr("预约日期"), tr("预约时间"), tr("科室"), tr("状态"), tr("费用"), tr("操作")};
     table_->setHorizontalHeaderLabels(headers);
@@ -96,7 +112,20 @@ void AppointmentsWidget::setupUI() {
     table_->setEditTriggers(QAbstractItemView::NoEditTriggers);
     table_->setSelectionBehavior(QAbstractItemView::SelectRows);
     table_->setSelectionMode(QAbstractItemView::SingleSelection);
-    root->addWidget(table_);
+    table_->setAlternatingRowColors(true);
+    table_->verticalHeader()->setVisible(false);
+    table_->verticalHeader()->setDefaultSectionSize(36);
+    table_->horizontalHeader()->setDefaultAlignment(Qt::AlignCenter);
+
+    // 表格外层卡片容器
+    auto* tableCard = new QWidget(this);
+    tableCard->setObjectName("apptTableCard");
+    tableCard->setAttribute(Qt::WA_StyledBackground, true);
+    auto* tableCardLy = new QVBoxLayout(tableCard);
+    tableCardLy->setContentsMargins(12, 12, 12, 12);
+    tableCardLy->setSpacing(0);
+    tableCardLy->addWidget(table_);
+    root->addWidget(tableCard);
 }
 
 void AppointmentsWidget::onConnected() {
@@ -112,7 +141,7 @@ void AppointmentsWidget::requestAppointments() {
 }
 
 void AppointmentsWidget::renderAppointments(const QJsonArray& arr) {
-    qDebug() << "[ AppointmentsWidget ] 预约数据数量:" << arr.size();
+    qDebug() << "[AppointmentsWidget] 预约数据数量:" << arr.size();
     table_->setRowCount(arr.size());
     int totalCount = arr.size();
     int todayCount = 0;
@@ -133,13 +162,21 @@ void AppointmentsWidget::renderAppointments(const QJsonArray& arr) {
     if (date == today) todayCount++;
     if (status == "pending") pendingCount++; else if (status == "confirmed" || status == "completed") confirmedCount++;
 
-        auto* idItem = new QTableWidgetItem(QString::number(appointmentId));
-        auto* nameItem = new QTableWidgetItem(patientName);
-        auto* dateItem = new QTableWidgetItem(date);
-        auto* timeItem = new QTableWidgetItem(time);
-        auto* deptItem = new QTableWidgetItem(department);
-        auto* statusItem = new QTableWidgetItem(status);
-        auto* feeItem = new QTableWidgetItem(QString::number(fee, 'f', 2));
+    auto* idItem = new QTableWidgetItem(QString::number(appointmentId));
+    auto* nameItem = new QTableWidgetItem(patientName);
+    auto* dateItem = new QTableWidgetItem(date);
+    auto* timeItem = new QTableWidgetItem(time);
+    auto* deptItem = new QTableWidgetItem(department);
+    auto* statusItem = new QTableWidgetItem(status);
+    auto* feeItem = new QTableWidgetItem(QString::number(fee, 'f', 2));
+    // 居中显示
+    idItem->setTextAlignment(Qt::AlignCenter);
+    nameItem->setTextAlignment(Qt::AlignCenter);
+    dateItem->setTextAlignment(Qt::AlignCenter);
+    timeItem->setTextAlignment(Qt::AlignCenter);
+    deptItem->setTextAlignment(Qt::AlignCenter);
+    statusItem->setTextAlignment(Qt::AlignCenter);
+    feeItem->setTextAlignment(Qt::AlignCenter);
 
     if (status == "confirmed" || status == "completed") statusItem->setBackground(QBrush(QColor(144, 238, 144)));
         else if (status == "pending") statusItem->setBackground(QBrush(QColor(255, 255, 224)));
@@ -173,10 +210,18 @@ void AppointmentsWidget::renderAppointments(const QJsonArray& arr) {
         table_->setItem(row, 5, statusItem);
         table_->setItem(row, 6, feeItem);
 
-        auto* btn = new QPushButton(tr("详情"), table_);
-        btn->setProperty("appt", appt);
-        connect(btn, &QPushButton::clicked, this, &AppointmentsWidget::onRowDetailClicked);
-        table_->setCellWidget(row, 7, btn);
+    // 操作列：按钮居中
+    auto* btn = new QPushButton(tr("详情"), table_);
+    btn->setProperty("appt", appt);
+    connect(btn, &QPushButton::clicked, this, &AppointmentsWidget::onRowDetailClicked);
+    auto* actionCell = new QWidget(table_);
+    auto* actionLy = new QHBoxLayout(actionCell);
+    actionLy->setContentsMargins(0,0,0,0);
+    actionLy->setSpacing(0);
+    actionLy->addStretch();
+    actionLy->addWidget(btn);
+    actionLy->addStretch();
+    table_->setCellWidget(row, 7, actionCell);
         ++row;
     }
 
@@ -191,7 +236,7 @@ void AppointmentsWidget::renderAppointments(const QJsonArray& arr) {
 }
 
 void AppointmentsWidget::showFetchError(const QString& message) {
-    qDebug() << "[ AppointmentsWidget ] 预约查询失败:" << message;
+    qDebug() << "[AppointmentsWidget] 预约查询失败:" << message;
 }
 
 void AppointmentsWidget::onRowDetailClicked() {

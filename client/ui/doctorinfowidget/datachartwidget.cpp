@@ -7,6 +7,7 @@
 #include <QLabel>
 #include <QMessageBox>
 #include <QFileDialog>
+#include <QFile>
 #include <QDate>
 #include <QDateTime>
 #include <QRandomGenerator>
@@ -21,6 +22,11 @@
 DataChartWidget::DataChartWidget(const QString& doctorName, QWidget* parent)
     : QWidget(parent), doctorName_(doctorName), maxValue_(0), minValue_(0) {
     setupUI();
+    // 加载专用样式
+    QFile qss(":/doctor_datachart.qss");
+    if (qss.open(QFile::ReadOnly)) {
+        this->setStyleSheet(QString::fromLatin1(qss.readAll()));
+    }
     loadSampleData();
 }
 
@@ -28,83 +34,104 @@ DataChartWidget::~DataChartWidget() = default;
 
 void DataChartWidget::setupUI() {
     setWindowTitle("基础数据图表 - " + doctorName_);
-    
+
     mainLayout_ = new QVBoxLayout(this);
-    
-    // 控制面板 - 分成两行以节省垂直空间
-    QVBoxLayout* controlVLayout = new QVBoxLayout();
-    
+    mainLayout_->setContentsMargins(8, 8, 8, 8);
+    mainLayout_->setSpacing(12);
+
+    // 顶部栏
+    QWidget* topBar = new QWidget(this);
+    topBar->setObjectName("dataTopBar");
+    topBar->setAttribute(Qt::WA_StyledBackground, true);
+    QHBoxLayout* topBarLayout = new QHBoxLayout(topBar);
+    topBarLayout->setContentsMargins(16, 12, 16, 12);
+    QLabel* title = new QLabel("数据图表", topBar);
+    title->setObjectName("dataTitle");
+    QLabel* subTitle = new QLabel("统计与可视化", topBar);
+    subTitle->setObjectName("dataSubTitle");
+    QVBoxLayout* titleV = new QVBoxLayout();
+    titleV->setContentsMargins(0,0,0,0);
+    titleV->addWidget(title);
+    titleV->addWidget(subTitle);
+    topBarLayout->addLayout(titleV);
+    topBarLayout->addStretch();
+    mainLayout_->addWidget(topBar);
+
+    // 控制卡片
+    QFrame* controlCard = new QFrame(this);
+    controlCard->setObjectName("controlCard");
+    controlCard->setAttribute(Qt::WA_StyledBackground, true);
+    controlCard->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    QVBoxLayout* controlVLayout = new QVBoxLayout(controlCard);
+    controlVLayout->setContentsMargins(12, 12, 12, 12);
+    controlVLayout->setSpacing(8);
+
     // 第一行：数据类型和时间选择
     QHBoxLayout* firstRowLayout = new QHBoxLayout();
-    
-    // 数据类型选择
-    firstRowLayout->addWidget(new QLabel("数据类型:"));
+    firstRowLayout->setSpacing(8);
+
+    QLabel* dataTypeLabel = new QLabel("数据类型:");
+    firstRowLayout->addWidget(dataTypeLabel);
     dataTypeCombo_ = new QComboBox();
     dataTypeCombo_->addItems({"患者数量", "诊疗次数", "药品使用量", "收入统计", "满意度评分"});
-    connect(dataTypeCombo_, QOverload<int>::of(&QComboBox::currentIndexChanged), 
-            this, &DataChartWidget::onDataTypeChanged);
+    connect(dataTypeCombo_, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &DataChartWidget::onDataTypeChanged);
     firstRowLayout->addWidget(dataTypeCombo_);
-    
-    firstRowLayout->addSpacing(20); // 添加一些间距
-    
-    // 时间范围
-    firstRowLayout->addWidget(new QLabel("开始日期:"));
+
+    firstRowLayout->addSpacing(20);
+
+    QLabel* startLabel = new QLabel("开始日期:");
+    firstRowLayout->addWidget(startLabel);
     startDateEdit_ = new QDateEdit(QDate::currentDate().addDays(-30));
+    startDateEdit_->setDisplayFormat("yyyy-MM-dd");
     startDateEdit_->setCalendarPopup(true);
-    startDateEdit_->setMaximumWidth(120);
+    startDateEdit_->setFixedWidth(120);
     firstRowLayout->addWidget(startDateEdit_);
-    
-    firstRowLayout->addWidget(new QLabel("结束日期:"));
+
+    QLabel* endLabel = new QLabel("结束日期:");
+    firstRowLayout->addWidget(endLabel);
     endDateEdit_ = new QDateEdit(QDate::currentDate());
+    endDateEdit_->setDisplayFormat("yyyy-MM-dd");
     endDateEdit_->setCalendarPopup(true);
-    endDateEdit_->setMaximumWidth(120);
+    endDateEdit_->setFixedWidth(120);
     firstRowLayout->addWidget(endDateEdit_);
-    
+
     firstRowLayout->addStretch();
     controlVLayout->addLayout(firstRowLayout);
-    
+
     // 第二行：按钮和状态
     QHBoxLayout* secondRowLayout = new QHBoxLayout();
-    
-    // 按钮
+    secondRowLayout->setSpacing(8);
+
     generateBtn_ = new QPushButton("生成图表");
-    generateBtn_->setStyleSheet("QPushButton { background-color: #4CAF50; color: white; font-weight: bold; padding: 6px 12px; }");
+    generateBtn_->setObjectName("primaryBtn");
     connect(generateBtn_, &QPushButton::clicked, this, &DataChartWidget::generateChart);
     secondRowLayout->addWidget(generateBtn_);
-    
+
     refreshBtn_ = new QPushButton("刷新数据");
-    refreshBtn_->setStyleSheet("QPushButton { background-color: #2196F3; color: white; font-weight: bold; padding: 6px 12px; }");
+    refreshBtn_->setObjectName("outlineBtn");
     connect(refreshBtn_, &QPushButton::clicked, this, &DataChartWidget::refreshData);
     secondRowLayout->addWidget(refreshBtn_);
-    
+
     exportBtn_ = new QPushButton("导出图表");
-    exportBtn_->setStyleSheet("QPushButton { background-color: #FF9800; color: white; font-weight: bold; padding: 6px 12px; }");
+    exportBtn_->setObjectName("exportBtn");
     connect(exportBtn_, &QPushButton::clicked, this, &DataChartWidget::exportChart);
     secondRowLayout->addWidget(exportBtn_);
-    
+
     secondRowLayout->addStretch();
-    
-    // 状态标签
+
     statusLabel_ = new QLabel("就绪");
-    statusLabel_->setStyleSheet("color: green; font-weight: bold; font-size: 12px;");
+    statusLabel_->setObjectName("statusLabel");
+    statusLabel_->setProperty("status", "ok");
     secondRowLayout->addWidget(statusLabel_);
-    
+
     controlVLayout->addLayout(secondRowLayout);
-    mainLayout_->addLayout(controlVLayout);
-    
-    // 添加一个分隔线
-    QFrame* line = new QFrame();
-    line->setFrameShape(QFrame::HLine);
-    line->setFrameShadow(QFrame::Sunken);
-    line->setStyleSheet("color: #cccccc;");
-    mainLayout_->addWidget(line);
-    
-    // 为图表绘制留出空间
+    mainLayout_->addWidget(controlCard);
+
+    // 占位：为绘图留白（paintEvent 内根据固定偏移绘制）
     mainLayout_->addStretch();
-    
-    // 添加一个固定大小的绘图区域
-    setMinimumSize(800, 650);
-    
+
+    setMinimumSize(900, 680);
     setLayout(mainLayout_);
 }
 
@@ -126,27 +153,32 @@ void DataChartWidget::paintEvent(QPaintEvent* event) {
 void DataChartWidget::drawChart(QPainter* painter) {
     if (chartData_.isEmpty()) return;
     
-    // 图表区域设置 - 调整为更合适的上边距
-    QRect chartRect = rect().adjusted(80, 150, -50, -80);
+    // 图表区域设置 - 适配顶部栏与控制卡片高度，并为底部标签留足空间
+    const int leftMargin = 80;
+    const int rightMargin = 50;
+    const int topMargin = 220;
+    // 先设定较大的底边距，避免旋转后的标签被截断
+    int bottomMargin = 120;
+    QRect chartRect = rect().adjusted(leftMargin, topMargin, -rightMargin, -bottomMargin);
     
     // 绘制背景
-    painter->fillRect(chartRect, QColor(250, 250, 250));
-    painter->setPen(QPen(QColor(200, 200, 200), 1));
+    painter->fillRect(chartRect, QColor(255, 255, 255));
+    painter->setPen(QPen(QColor(232, 236, 244), 1));
     painter->drawRect(chartRect);
     
     // 绘制标题 - 调整标题位置到控制面板和图表之间
     painter->setPen(QPen(Qt::black, 1));
     QFont titleFont = painter->font();
-    titleFont.setPointSize(14);
+    titleFont.setPointSize(13);
     titleFont.setBold(true);
     painter->setFont(titleFont);
     QString title = QString("医疗数据统计 - %1 (%2)").arg(currentDataType_, doctorName_);
-    painter->drawText(rect().adjusted(0, 110, 0, 0), Qt::AlignTop | Qt::AlignHCenter, title);
+    painter->drawText(rect().adjusted(0, 170, 0, 0), Qt::AlignTop | Qt::AlignHCenter, title);
     
     // 绘制网格线和Y轴标签
     painter->setPen(QPen(QColor(220, 220, 220), 1));
     QFont labelFont = painter->font();
-    labelFont.setPointSize(9);
+    labelFont.setPointSize(8);
     painter->setFont(labelFont);
     
     int gridLines = 5;
@@ -164,7 +196,7 @@ void DataChartWidget::drawChart(QPainter* painter) {
     
     // 绘制数据线
     if (chartData_.size() > 1) {
-        painter->setPen(QPen(QColor(33, 150, 243), 2));
+        painter->setPen(QPen(QColor(33, 150, 243), 1.8));
         
         QVector<QPointF> points;
         for (int i = 0; i < chartData_.size(); i++) {
@@ -182,19 +214,28 @@ void DataChartWidget::drawChart(QPainter* painter) {
         painter->setPen(QPen(QColor(255, 87, 34), 1));
         painter->setBrush(QBrush(QColor(255, 152, 0)));
         for (const QPointF& point : points) {
-            painter->drawEllipse(point, 3, 3);
+            painter->drawEllipse(point, 2.5, 2.5);
         }
     }
     
-    // 绘制X轴标签
+    // 绘制X轴标签（每周显示一次，包含首尾）
     painter->setPen(QPen(Qt::black, 1));
-    if (chartLabels_.size() > 0) {
-        int labelStep = qMax(1, chartLabels_.size() / 10); // 最多显示10个标签
-        for (int i = 0; i < chartLabels_.size(); i += labelStep) {
+    if (!chartLabels_.isEmpty()) {
+        const int total = chartLabels_.size();
+        const int weeklyStep = 7; // 每 7 天一个刻度
+        QVector<int> tickIdx;
+        tickIdx.reserve(total / weeklyStep + 2);
+        tickIdx.push_back(0);
+        for (int i = weeklyStep; i < total - 1; i += weeklyStep) {
+            tickIdx.push_back(i);
+        }
+        if (total - 1 > 0) tickIdx.push_back(total - 1);
+
+        for (int i : tickIdx) {
             double x = chartRect.left() + (double)i / (chartData_.size() - 1) * chartRect.width();
             painter->save();
-            painter->translate(x, chartRect.bottom() + 20);
-            painter->rotate(-45);
+            painter->translate(x, chartRect.bottom() + 14);
+            painter->rotate(-20);
             painter->drawText(0, 0, chartLabels_[i]);
             painter->restore();
         }
@@ -203,7 +244,7 @@ void DataChartWidget::drawChart(QPainter* painter) {
     // 绘制轴标题
     painter->setPen(QPen(Qt::black, 1));
     QFont axisFont = painter->font();
-    axisFont.setPointSize(10);
+    axisFont.setPointSize(9);
     axisFont.setBold(true);
     painter->setFont(axisFont);
     
@@ -215,12 +256,12 @@ void DataChartWidget::drawChart(QPainter* painter) {
     painter->restore();
     
     // X轴标题
-    painter->drawText(chartRect.center().x() - 20, chartRect.bottom() + 60, "日期");
+    painter->drawText(chartRect.center().x() - 20, chartRect.bottom() + 42, "日期");
 }
 
 void DataChartWidget::updateChart(const QString& dataType) {
     statusLabel_->setText("正在生成图表...");
-    statusLabel_->setStyleSheet("color: orange; font-weight: bold;");
+    statusLabel_->setProperty("status", "warn");
     
     currentDataType_ = dataType;
     chartData_.clear();
@@ -233,8 +274,8 @@ void DataChartWidget::updateChart(const QString& dataType) {
     
     if (days <= 0) {
         QMessageBox::warning(this, "警告", "结束日期必须大于开始日期！");
-        statusLabel_->setText("数据错误");
-        statusLabel_->setStyleSheet("color: red; font-weight: bold;");
+    statusLabel_->setText("数据错误");
+    statusLabel_->setProperty("status", "err");
         return;
     }
     
@@ -282,7 +323,7 @@ void DataChartWidget::updateChart(const QString& dataType) {
     minValue_ -= range * 0.1;
     
     statusLabel_->setText("图表生成完成");
-    statusLabel_->setStyleSheet("color: green; font-weight: bold;");
+    statusLabel_->setProperty("status", "ok");
     
     // 触发重绘
     update();
@@ -294,7 +335,7 @@ void DataChartWidget::generateChart() {
 
 void DataChartWidget::refreshData() {
     statusLabel_->setText("正在刷新数据...");
-    statusLabel_->setStyleSheet("color: blue; font-weight: bold;");
+    statusLabel_->setProperty("status", "warn");
     
     // 模拟数据刷新延迟
     QTimer::singleShot(1000, [this]() {
@@ -334,11 +375,11 @@ void DataChartWidget::exportChart() {
         
         if (pixmap.save(fileName)) {
             statusLabel_->setText("图表导出成功");
-            statusLabel_->setStyleSheet("color: green; font-weight: bold;");
+            statusLabel_->setProperty("status", "ok");
             QMessageBox::information(this, "成功", "图表已成功导出到：" + fileName);
         } else {
             statusLabel_->setText("图表导出失败");
-            statusLabel_->setStyleSheet("color: red; font-weight: bold;");
+            statusLabel_->setProperty("status", "err");
             QMessageBox::critical(this, "错误", "图表导出失败！");
         }
     }
