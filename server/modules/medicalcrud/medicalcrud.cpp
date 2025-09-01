@@ -64,9 +64,90 @@ void MedicalCrudModule::handleCreateAdvice(const QJsonObject &payload) {
 
 void MedicalCrudModule::handleCreatePrescription(const QJsonObject &payload) {
     DBManager db(DatabaseConfig::getDatabasePath());
-    bool ok = db.createPrescription(payload.value("data").toObject());
-    QJsonObject out; out["type"] = "create_prescription_response"; out["success"] = ok; if (!ok) out["message"] = "Failed to create prescription";
-    Log::result("MedicalCrud", ok, "create_prescription");
+    
+    QJsonObject prescriptionData = payload.value("data").toObject();
+    QJsonArray items = prescriptionData.value("items").toArray();
+    
+    qDebug() << "=== 处方创建调试 ===";
+    qDebug() << "处方数据:" << prescriptionData;
+    qDebug() << "处方项数量:" << items.size();
+    
+    // 验证处方数据
+    if (items.isEmpty()) {
+        qDebug() << "错误: 处方中没有药品项";
+        QJsonObject out;
+        out["type"] = "create_prescription_response";
+        out["success"] = false;
+        out["message"] = "处方中没有药品项";
+        Log::result("MedicalCrud", false, "create_prescription - no items");
+        reply(out, payload);
+        return;
+    }
+    
+    // 直接创建处方并获取ID
+    int prescriptionId = db.createPrescriptionAndGetId(prescriptionData);
+    bool ok = (prescriptionId > 0);
+    qDebug() << "创建处方记录结果:" << ok << "处方ID:" << prescriptionId;
+    
+    QJsonObject out; 
+    out["type"] = "create_prescription_response"; 
+    out["success"] = ok;
+    
+    if (ok) {
+        qDebug() << "新处方ID:" << prescriptionId;
+        out["prescription_id"] = prescriptionId;
+        
+        // 添加处方项
+        bool itemsOk = true;
+        double totalAmount = 0.0;
+        QString errorMsg;
+        
+        for (int i = 0; i < items.size(); ++i) {
+            QJsonObject itemData = items[i].toObject();
+            itemData["prescription_id"] = prescriptionId;
+            
+            qDebug() << "处理处方项" << (i+1) << ":" << itemData;
+            
+            // 计算总价
+            double unitPrice = itemData.value("unit_price").toDouble();
+            int quantity = itemData.value("quantity").toInt();
+            double totalPrice = unitPrice * quantity;
+            itemData["total_price"] = totalPrice;
+            totalAmount += totalPrice;
+            
+            qDebug() << "单价:" << unitPrice << "数量:" << quantity << "小计:" << totalPrice;
+            
+            if (!db.addPrescriptionItem(itemData)) {
+                itemsOk = false;
+                errorMsg = QString("添加药品项失败: %1").arg(itemData.value("medication_name").toString());
+                qDebug() << "添加处方项失败:" << errorMsg;
+                break;
+            } else {
+                qDebug() << "成功添加处方项:" << itemData.value("medication_name").toString();
+            }
+        }
+        
+        qDebug() << "所有处方项添加结果:" << itemsOk << "总金额:" << totalAmount;
+        
+        if (!itemsOk) {
+            out["success"] = false;
+            out["message"] = errorMsg;
+        } else {
+            // 成功添加所有处方项，将状态更新为"已配药"
+            bool statusUpdated = db.updatePrescriptionStatus(prescriptionId, "dispensed");
+            qDebug() << "成功添加所有处方项，总金额:" << totalAmount << "状态更新结果:" << statusUpdated;
+            out["message"] = "处方创建成功";
+        }
+        
+        out["items_added"] = itemsOk;
+        out["total_amount"] = totalAmount;
+    } else {
+        qDebug() << "创建处方记录失败";
+        out["message"] = "创建处方记录失败";
+    }
+    
+    qDebug() << "最终响应:" << out;
+    Log::result("MedicalCrud", out["success"].toBool(), "create_prescription");
     reply(out, payload);
 }
 

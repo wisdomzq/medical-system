@@ -232,10 +232,32 @@ void PrescriptionPage::showPrescriptionDetails(const QJsonObject &details) {
         }
     }
     
+    // 设置表格占满容器宽度
     itemsTable->horizontalHeader()->setStretchLastSection(true);
-    itemsTable->resizeColumnsToContents();
+    
+    // 设置各列的相对宽度比例
+    QHeaderView* header = itemsTable->horizontalHeader();
+    header->setSectionResizeMode(0, QHeaderView::Stretch);      // 药品名称 - 自适应剩余空间
+    header->setSectionResizeMode(1, QHeaderView::ResizeToContents); // 数量 - 根据内容调整
+    header->setSectionResizeMode(2, QHeaderView::ResizeToContents); // 剂量 - 根据内容调整  
+    header->setSectionResizeMode(3, QHeaderView::Fixed);        // 用法 - 固定宽度
+    header->setSectionResizeMode(4, QHeaderView::ResizeToContents); // 疗程 - 根据内容调整
+    header->setSectionResizeMode(5, QHeaderView::Fixed);        // 单价 - 固定宽度
+    header->setSectionResizeMode(6, QHeaderView::Fixed);        // 小计 - 固定宽度
+    
+    // 为固定宽度的列设置合适的宽度
+    itemsTable->setColumnWidth(3, 120); // 用法列
+    itemsTable->setColumnWidth(5, 100); // 单价列
+    itemsTable->setColumnWidth(6, 100); // 小计列
+    
     itemsTable->setAlternatingRowColors(true);
     itemsTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    itemsTable->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+    itemsTable->setMinimumHeight(150);
+    
+    // 确保表格水平填充整个容器
+    itemsTable->horizontalHeader()->setDefaultAlignment(Qt::AlignCenter);
+    itemsTable->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     
     itemsLayout->addWidget(itemsTable);
     layout->addWidget(itemsGroup);

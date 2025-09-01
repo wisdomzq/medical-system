@@ -1,4 +1,5 @@
 #include "appointmentdetailsdialog.h"
+#include "medicationselectiondialog.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QFormLayout>
@@ -6,6 +7,8 @@
 #include <QTextEdit>
 #include <QPushButton>
 #include <QListWidget>
+#include <QTableWidget>
+#include <QHeaderView>
 #include <QLabel>
 #include <QJsonArray>
 #include <QGroupBox>
@@ -13,6 +16,9 @@
 #include <QDateTime>
 #include <QButtonGroup>
 #include <QRadioButton>
+#include <QDialog>
+#include <QSpinBox>
+#include <QComboBox>
 #include <functional>
 #include <QDate>
 #include <QDateEdit>
@@ -130,6 +136,21 @@ AppointmentDetailsDialog::AppointmentDetailsDialog(const QString& doctorUsername
     prescriptionsList_->setStyleSheet("background: transparent; margin: 0; padding: 0;");
     prescriptionsList_->setVisible(false); // 始终隐藏
     prescriptionLay->addWidget(prescriptionsList_);
+    
+    // 处方药品表格
+    setupPrescriptionItemsTable();
+    prescriptionLay->addWidget(prescriptionItemsTable_);
+    
+    // 药品操作按钮
+    auto* medicationBtnLayout = new QHBoxLayout();
+    addMedicationBtn_ = new QPushButton(tr("添加药品"), prescriptionBox);
+    removeMedicationBtn_ = new QPushButton(tr("删除药品"), prescriptionBox);
+    removeMedicationBtn_->setEnabled(false);
+    medicationBtnLayout->addWidget(addMedicationBtn_);
+    medicationBtnLayout->addWidget(removeMedicationBtn_);
+    medicationBtnLayout->addStretch();
+    prescriptionLay->addLayout(medicationBtnLayout);
+    
     auto* prescriptionForm = new QHBoxLayout();
     prescriptionNotesEdit_ = new QLineEdit(prescriptionBox);
     prescriptionNotesEdit_->setPlaceholderText(tr("处方备注"));
@@ -216,6 +237,10 @@ AppointmentDetailsDialog::AppointmentDetailsDialog(const QString& doctorUsername
     connect(adviceAddBtn_, &QPushButton::clicked, this, &AppointmentDetailsDialog::onAddAdvice);
     connect(prescriptionAddBtn_, &QPushButton::clicked, this, &AppointmentDetailsDialog::onAddPrescription);
     connect(completeBtn_, &QPushButton::clicked, this, &AppointmentDetailsDialog::onCompleteDiagnosis);
+    
+    // 处方药品相关连接
+    connect(addMedicationBtn_, &QPushButton::clicked, this, &AppointmentDetailsDialog::onAddMedication);
+    connect(removeMedicationBtn_, &QPushButton::clicked, this, &AppointmentDetailsDialog::onRemoveMedication);
 
     service_ = new MedicalCrudService(client_, this);
     apptService_ = new AppointmentService(client_, this);
@@ -321,13 +346,15 @@ AppointmentDetailsDialog::AppointmentDetailsDialog(const QString& doctorUsername
         }
     });
     connect(service_, &MedicalCrudService::prescriptionCreated, this, [this](bool ok, const QString& msg){
+        qDebug() << "处方创建结果:" << ok << "消息:" << msg;
         if (ok) {
             QMessageBox::information(this, tr("保存成功"), tr("处方已成功开具！"));
             requestPrescriptions();
-            // 保留输入内容，不清空
+            // 像医嘱一样，保留输入内容，不清空
             if (completeBtn_) completeBtn_->setEnabled(true); // 处方已开具后允许完成诊断
         } else {
-            QMessageBox::warning(this, tr("保存失败"), tr("处方开具失败：%1").arg(msg));
+            QString errorMsg = msg.isEmpty() ? tr("未知错误") : msg;
+            QMessageBox::warning(this, tr("保存失败"), tr("处方开具失败：%1").arg(errorMsg));
         }
     });
 }
@@ -417,14 +444,31 @@ void AppointmentDetailsDialog::onAddPrescription() {
         return;
     }
     
+    // 检查是否有处方项
+    if (prescriptionItems_.isEmpty()) {
+        QMessageBox::warning(this, "提示", "请先添加药品才能开具处方！");
+        return;
+    }
+    
+    // 计算总金额
+    double totalAmount = 0.0;
+    for (const auto& itemValue : prescriptionItems_) {
+        QJsonObject item = itemValue.toObject();
+        totalAmount += item.value("total_price").toDouble();
+    }
+    
+    qDebug() << "处方项数量:" << prescriptionItems_.size();
+    qDebug() << "总金额:" << totalAmount;
+    
     QJsonObject data{
         {"record_id", recordId_},
         {"patient_username", appt_.value("patient_username").toString()},
         {"doctor_username", doctorUsername_},
         {"prescription_date", QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss")},
-        {"total_amount", 0.0},
+        {"total_amount", totalAmount},
         {"status", "pending"},
-        {"notes", prescriptionNotesEdit_->text()}
+        {"notes", prescriptionNotesEdit_->text()},
+        {"items", prescriptionItems_}
     };
     
     qDebug() << "Sending create_prescription with data:" << data;
@@ -440,5 +484,60 @@ void AppointmentDetailsDialog::onCompleteDiagnosis() {
     if (QMessageBox::question(this, tr("确认"), tr("确认将该预约标记为已完成吗？")) != QMessageBox::Yes) return;
     if (apptService_) {
         apptService_->updateStatus(apptId, "completed");
+    }
+}
+
+void AppointmentDetailsDialog::setupPrescriptionItemsTable() {
+    prescriptionItemsTable_ = new QTableWidget(0, 6, this);
+    QStringList headers = {tr("药品名称"), tr("数量"), tr("剂量"), tr("用法"), tr("疗程"), tr("单价")};
+    prescriptionItemsTable_->setHorizontalHeaderLabels(headers);
+    prescriptionItemsTable_->horizontalHeader()->setStretchLastSection(true);
+    prescriptionItemsTable_->setSelectionBehavior(QAbstractItemView::SelectRows);
+    prescriptionItemsTable_->setAlternatingRowColors(true);
+    
+    // 设置表格选择变化的信号
+    connect(prescriptionItemsTable_->selectionModel(), &QItemSelectionModel::selectionChanged,
+            this, &AppointmentDetailsDialog::onMedicationSelectionChanged);
+}
+
+void AppointmentDetailsDialog::updatePrescriptionItemsTable() {
+    prescriptionItemsTable_->setRowCount(prescriptionItems_.size());
+    
+    for (int i = 0; i < prescriptionItems_.size(); ++i) {
+        QJsonObject item = prescriptionItems_[i].toObject();
+        
+        prescriptionItemsTable_->setItem(i, 0, new QTableWidgetItem(item.value("medication_name").toString()));
+        QString quantityText = QString("%1 %2").arg(item.value("quantity").toInt()).arg(item.value("unit").toString());
+        prescriptionItemsTable_->setItem(i, 1, new QTableWidgetItem(quantityText));
+        prescriptionItemsTable_->setItem(i, 2, new QTableWidgetItem(item.value("dosage").toString()));
+        prescriptionItemsTable_->setItem(i, 3, new QTableWidgetItem(item.value("frequency").toString()));
+        prescriptionItemsTable_->setItem(i, 4, new QTableWidgetItem(item.value("duration").toString()));
+        prescriptionItemsTable_->setItem(i, 5, new QTableWidgetItem(QString("¥%1").arg(QString::number(item.value("unit_price").toDouble(), 'f', 2))));
+    }
+}
+
+void AppointmentDetailsDialog::onMedicationSelectionChanged() {
+    bool hasSelection = prescriptionItemsTable_->selectionModel()->hasSelection();
+    removeMedicationBtn_->setEnabled(hasSelection);
+}
+
+void AppointmentDetailsDialog::onAddMedication() {
+    showMedicationSelectionDialog();
+}
+
+void AppointmentDetailsDialog::onRemoveMedication() {
+    int currentRow = prescriptionItemsTable_->currentRow();
+    if (currentRow >= 0 && currentRow < prescriptionItems_.size()) {
+        prescriptionItems_.removeAt(currentRow);
+        updatePrescriptionItemsTable();
+    }
+}
+
+void AppointmentDetailsDialog::showMedicationSelectionDialog() {
+    MedicationSelectionDialog dialog(client_, this);
+    if (dialog.exec() == QDialog::Accepted) {
+        QJsonObject selectedMedication = dialog.getSelectedMedication();
+        prescriptionItems_.append(selectedMedication);
+        updatePrescriptionItemsTable();
     }
 }
