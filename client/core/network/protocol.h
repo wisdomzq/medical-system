@@ -31,6 +31,14 @@ enum class MessageType : quint16 {
     ErrorResponse = 3,
     HeartbeatPing = 4,
     HeartbeatPong = 5,
+    // 文件传输（保留 100+ 区间）
+    FileUploadMeta = 100,      // payload: JSON { name, size }
+    FileUploadChunk = 101,     // payload: binary chunk
+    FileUploadComplete = 102,  // payload: JSON { name, size, path }
+    FileDownloadRequest = 110, // payload: JSON { name }
+    FileDownloadChunk = 111,   // payload: binary chunk
+    FileDownloadComplete = 112,// payload: JSON { name, size }
+    FileTransferError = 199    // payload: JSON { code, message }
 };
 
 // 头部结构（大端序）
@@ -42,6 +50,7 @@ struct Header {
 };
 
 static constexpr int FIXED_HEADER_SIZE = sizeof(quint32) + sizeof(quint8) + sizeof(quint16) + sizeof(quint32);
+static constexpr int FILE_CHUNK_SIZE = 64 * 1024; // 64KB
 
 // 将消息打包为协议帧：固定头 + payload
 inline QByteArray pack(MessageType type, const QByteArray& payload)

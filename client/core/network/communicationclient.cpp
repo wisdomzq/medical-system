@@ -37,6 +37,20 @@ CommunicationClient::CommunicationClient(QObject* parent)
         if (m_pongTimeoutTimer.isActive())
             m_pongTimeoutTimer.stop();
     });
+    // 文件下载接收
+    connect(m_dispatcher, &ResponseDispatcher::fileChunkReceived, this, [this](const QByteArray& data) {
+        if (!m_downloadFile || !m_downloadFile->isOpen()) return;
+        m_downloadFile->write(data);
+    });
+    connect(m_dispatcher, &ResponseDispatcher::fileDownloadCompleted, this, [this](const QJsonObject& meta) {
+        Q_UNUSED(meta);
+        if (m_downloadFile) {
+            m_downloadFile->flush();
+            m_downloadFile->close();
+            m_downloadFile.reset(nullptr);
+        }
+        qInfo() << "[Client] 文件下载完成";
+    });
 }
 
 void CommunicationClient::connectToServer(const QString& host, quint16 port)
@@ -102,4 +116,39 @@ void CommunicationClient::onHeartbeatTimeout()
 {
     qWarning() << "[Client] 心跳超时，主动断开触发重连";
     m_socket.abort(); // 触发重连
+}
+
+bool CommunicationClient::uploadFile(const QString& localPath, const QString& serverPath)
+{
+    QFile file(localPath);
+    if (!file.open(QIODevice::ReadOnly)) {
+        qWarning() << "[Client] 打开文件失败:" << localPath;
+        return false;
+    }
+    const QString name = serverPath.isEmpty() ? QFileInfo(file).fileName() : serverPath;
+    const qint64 size = file.size();
+    // 1) 发送 meta
+    m_socket.write(pack(MessageType::FileUploadMeta, toJsonPayload(QJsonObject{{"name", name}, {"size", size}})));
+    // 2) 发送所有数据块
+    while (!file.atEnd()) {
+        QByteArray chunk = file.read(Protocol::FILE_CHUNK_SIZE);
+        m_socket.write(pack(MessageType::FileUploadChunk, chunk));
+    }
+    file.close();
+    // 3) 完成
+    m_socket.write(pack(MessageType::FileUploadComplete, toJsonPayload(QJsonObject{{"name", name}, {"size", size}})));
+    return true;
+}
+
+bool CommunicationClient::downloadFile(const QString& serverPath, const QString& localPath)
+{
+    m_downloadFile.reset(new QFile(localPath));
+    if (!m_downloadFile->open(QIODevice::WriteOnly)) {
+        qWarning() << "[Client] 无法创建下载文件:" << localPath;
+        m_downloadFile.reset(nullptr);
+        return false;
+    }
+    // 请求下载
+    m_socket.write(pack(MessageType::FileDownloadRequest, toJsonPayload(QJsonObject{{"name", serverPath}})));
+    return true;
 }

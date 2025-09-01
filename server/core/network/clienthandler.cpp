@@ -1,11 +1,16 @@
 #include "core/network/clienthandler.h"
 #include "core/logging/logging.h"
+#include "core/network/filetransferprocessor.h"
+#include "core/network/streamparser.h"
+#include <QDir>
+#include <QFile>
 
 using namespace Protocol;
 
 ClientHandler::ClientHandler(QObject* parent)
     : QObject(parent)
 {
+    m_file = new FileTransferProcessor("files");
 }
 
 ClientHandler::~ClientHandler()
@@ -24,6 +29,68 @@ void ClientHandler::initialize(qintptr socketDescriptor)
     if (!connect(m_socket, &QTcpSocket::readyRead, this, &ClientHandler::onReadyRead)) {
         Log::error("ClientHandler", "Failed to connect QTcpSocket::readyRead to ClientHandler::onReadyRead");
     }
+    // 初始化解析器
+    m_parser = new StreamFrameParser(this);
+    connect(m_parser, &StreamFrameParser::frameReady, this, [this](Header header, QByteArray payload) {
+        this->m_currentHeader = header;
+        // 复用原有帧处理逻辑
+        QJsonObject obj = (header.type == MessageType::JsonRequest || header.type == MessageType::ErrorResponse || header.type == MessageType::JsonResponse)
+                              ? fromJsonPayload(payload)
+                              : QJsonObject{};
+
+        switch (header.type) {
+        case MessageType::JsonRequest:
+            emit requestJsonReady(this, obj);
+            break;
+        case MessageType::HeartbeatPing:
+            sendMessage(MessageType::HeartbeatPong, QJsonObject());
+            break;
+        case MessageType::FileUploadMeta: {
+            QJsonObject out;
+            if (!m_file->beginUpload(obj, out)) {
+                sendMessage(MessageType::FileTransferError, out);
+            } else {
+                sendMessage(MessageType::JsonResponse, out);
+            }
+            break;
+        }
+        case MessageType::FileUploadChunk: {
+            QJsonObject err;
+            if (!m_file->appendChunk(payload, err)) {
+                sendMessage(MessageType::FileTransferError, err);
+            }
+            break;
+        }
+        case MessageType::FileUploadComplete: {
+            QJsonObject result;
+            if (!m_file->finishUpload(result)) {
+                sendMessage(MessageType::FileTransferError, result);
+            } else {
+                sendMessage(MessageType::JsonResponse, result);
+            }
+            break;
+        }
+        case MessageType::FileDownloadRequest: {
+            QJsonObject complete;
+            bool ok = m_file->downloadWhole(obj, [this](const QByteArray& data) {
+                this->sendBinary(MessageType::FileDownloadChunk, data);
+            }, complete);
+            if (!ok) {
+                sendMessage(MessageType::FileTransferError, complete);
+            } else {
+                sendMessage(MessageType::FileDownloadComplete, complete);
+            }
+            break;
+        }
+        default:
+            sendMessage(MessageType::ErrorResponse, QJsonObject{{"errorCode", 400}, {"errorMessage", QStringLiteral("Unsupported message type")}});
+            break;
+        }
+    });
+    connect(m_parser, &StreamFrameParser::protocolError, this, [this](const QString& msg) {
+        qWarning() << "[Handler] 协议错误:" << msg << ", 断开连接";
+        if (m_socket) m_socket->disconnectFromHost();
+    });
     if (!connect(m_socket, &QTcpSocket::disconnected, this, &ClientHandler::onDisconnected)) {
         Log::error("ClientHandler", "Failed to connect QTcpSocket::disconnected to ClientHandler::onDisconnected");
     }
@@ -39,46 +106,23 @@ void ClientHandler::sendMessage(MessageType type, const QJsonObject& obj)
     m_socket->write(data);
 }
 
+void ClientHandler::sendMessage(MessageType type)
+{
+    if (!m_socket) return;
+    QByteArray data = pack(type, QByteArray());
+    m_socket->write(data);
+}
+
+void ClientHandler::sendBinary(MessageType type, const QByteArray& bytes)
+{
+    if (!m_socket) return;
+    QByteArray frame = pack(type, bytes);
+    m_socket->write(frame);
+}
+
 void ClientHandler::onJsonResponseReady(const QJsonObject& obj)
 {
     sendMessage(MessageType::JsonResponse, obj);
-}
-
-bool ClientHandler::parseFixedHeader(Header& out, int& headerBytesConsumed)
-{
-    if (!ensureBytesAvailable(FIXED_HEADER_SIZE))
-        return false;
-
-    QDataStream ds(m_buffer);
-    ds.setByteOrder(QDataStream::BigEndian);
-    ds.setVersion(QDataStream::Qt_5_15);
-
-    quint32 magic;
-    quint8 version;
-    quint16 type;
-    quint32 payloadSize;
-    ds >> magic >> version >> type >> payloadSize;
-
-    if (magic != MAGIC || version != VERSION) {
-        qWarning() << "[Handler] 非法协议头，断开连接。magic/version=" << Qt::hex << magic << version;
-        if (m_socket)
-            m_socket->disconnectFromHost();
-        return false;
-    }
-    if ((quint64)payloadSize > (quint64)MAX_PACKET_SIZE) {
-        qWarning() << "[Handler] 报文过大，payload 超过上限，断开。大小=" << payloadSize;
-        if (m_socket)
-            m_socket->disconnectFromHost();
-        return false;
-    }
-
-    out.magic = magic;
-    out.version = version;
-    out.type = (MessageType)type;
-    out.payloadSize = payloadSize;
-
-    headerBytesConsumed = FIXED_HEADER_SIZE;
-    return true;
 }
 
 void ClientHandler::onReadyRead()
@@ -86,51 +130,7 @@ void ClientHandler::onReadyRead()
     if (!m_socket)
         return;
     QByteArray chunk = m_socket->readAll();
-    // qInfo() << "[Handler] 收到数据块 长度=" << chunk.size();
-    m_buffer.append(chunk);
-
-    while (true) {
-        if (m_state == ParseState::WAITING_FOR_HEADER) {
-            int consumed = 0;
-            if (!parseFixedHeader(m_currentHeader, consumed))
-                break;
-            if (m_buffer.size() < consumed)
-                break;
-            m_buffer.remove(0, consumed);
-            m_state = ParseState::WAITING_FOR_PAYLOAD;
-            // qInfo() << "[Handler] 已解析头部 type=" << (quint16)m_currentHeader.type
-            //         << ", payloadSize=" << m_currentHeader.payloadSize;
-        }
-
-        if (m_state == ParseState::WAITING_FOR_PAYLOAD) {
-            if (!ensureBytesAvailable((int)m_currentHeader.payloadSize))
-                break;
-            QByteArray payload = m_buffer.left(m_currentHeader.payloadSize);
-            m_buffer.remove(0, m_currentHeader.payloadSize);
-
-            QJsonObject obj = fromJsonPayload(payload);
-
-            // 在 ClientHandler 内部完成基于类型的路由，仅向上层发送 JSON 请求
-            switch (m_currentHeader.type) {
-            case MessageType::JsonRequest:
-                emit requestJsonReady(this, obj);
-                break;
-            case MessageType::HeartbeatPing:
-                // 直接在 handler 层回 PONG，避免传递到上层
-                sendMessage(MessageType::HeartbeatPong, QJsonObject());
-                break;
-            default:
-                // 不支持的类型，在此返回错误响应，避免上层处理非 JSON
-                sendMessage(MessageType::ErrorResponse,
-                            QJsonObject{{"errorCode", 400}, {"errorMessage", QStringLiteral("Unsupported message type")}});
-                break;
-            }
-
-            // reset state
-            m_state = ParseState::WAITING_FOR_HEADER;
-            // qInfo() << "[Handler] 一条完整报文处理完成";
-        }
-    }
+    if (!chunk.isEmpty()) m_parser->append(chunk);
 }
 
 void ClientHandler::onDisconnected()

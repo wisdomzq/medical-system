@@ -12,6 +12,8 @@ set(srcs
     # core/database/dbterminal.cpp  # 文件不存在，暂时注释掉
     core/network/communicationserver.cpp
     core/network/clienthandler.cpp
+    core/network/filetransferprocessor.cpp
+    core/network/streamparser.cpp
     core/network/messagerouter.cpp
     modules/loginmodule/loginmodule.cpp
     modules/loginmodule/loginrouter.cpp

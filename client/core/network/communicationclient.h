@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QTcpSocket>
 #include <QTimer>
+#include <QFile>
 
 class StreamFrameParser;
 class ResponseDispatcher;
@@ -27,6 +28,9 @@ signals:
 
 public slots:
     void sendJson(const QJsonObject& obj);
+    // 最简文件上传/下载 API（无需鉴权）
+    bool uploadFile(const QString& localPath, const QString& serverPath);
+    bool downloadFile(const QString& serverPath, const QString& localPath);
 
 private slots:
     void onConnected();
@@ -46,4 +50,6 @@ private:
     int m_reconnectDelay = 1000; // ms
     QString m_host;
     quint16 m_port = 0;
+    // 下载临时文件句柄
+    QScopedPointer<QFile> m_downloadFile;
 };

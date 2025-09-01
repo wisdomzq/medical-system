@@ -17,6 +17,9 @@ signals:
     void jsonResponse(const QJsonObject& obj);
     void errorResponse(int code, const QString& msg);
     void heartbeatPong();
+    // 文件下载
+    void fileChunkReceived(const QByteArray& data);
+    void fileDownloadCompleted(const QJsonObject& meta);
 
 private:
     void handleJson(const QByteArray& payload);

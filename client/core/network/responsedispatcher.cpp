@@ -21,6 +21,12 @@ void ResponseDispatcher::onFrame(Header header, QByteArray payload)
     case MessageType::HeartbeatPong:
         emit heartbeatPong();
         break;
+    case MessageType::FileDownloadChunk:
+        emit fileChunkReceived(payload);
+        break;
+    case MessageType::FileDownloadComplete:
+        emit fileDownloadCompleted(fromJsonPayload(payload));
+        break;
     default:
         // 忽略非响应类（例如服务器误发的请求）
         break;
