@@ -4,11 +4,13 @@
 #include <QDialog>
 #include <QGroupBox>
 #include <QJsonObject>
+#include <QJsonArray>
 
 class QLineEdit;
 class QTextEdit;
 class QPushButton;
 class QListWidget;
+class QTableWidget;
 class QButtonGroup;
 class QGroupBox;
 class QDateEdit;
@@ -31,12 +33,18 @@ private slots:
     void onAddAdvice();
     void onAddPrescription();
     void onCompleteDiagnosis();
+    void onAddMedication();
+    void onRemoveMedication();
+    void onMedicationSelectionChanged();
 
 private:
     void requestExistingRecord();
     void requestAdvices();
     void requestPrescriptions();
     void populateFromRecord(const QJsonObject& record);
+    void setupPrescriptionItemsTable();
+    void updatePrescriptionItemsTable();
+    void showMedicationSelectionDialog();
 
     QString doctorUsername_;
     QJsonObject appt_;
@@ -60,6 +68,12 @@ private:
     QLineEdit* prescriptionNotesEdit_ {nullptr};
     QPushButton* prescriptionAddBtn_ {nullptr};
     QListWidget* prescriptionsList_ {nullptr};
+    
+    // 处方药品相关UI
+    QTableWidget* prescriptionItemsTable_ {nullptr};
+    QPushButton* addMedicationBtn_ {nullptr};
+    QPushButton* removeMedicationBtn_ {nullptr};
+    QJsonArray prescriptionItems_; // 当前处方中的药品项
 
     // hospitalization
     QGroupBox* hospBox_ {nullptr};

@@ -1,13 +1,20 @@
 /* 仅医生界面样式（作用于 DoctorInfoWidget 的子控件） */
 
 /* 左侧模块导航：侧边栏风格（作用于对象名为 leftNav 的 QListWidget） */
+#brandBar { background: transparent; border-right: 1px solid #e6e6e6; border-bottom: 1px solid #f0f0f0; min-height: 88px; }
+#brandTitle { color: #2c8ae9; background: transparent; font-size: 28px; }
+/* 品牌区内所有标签（包括图标 QLabel）背景强制透明，避免出现灰色底块 */
+#brandBar QLabel { background: transparent; }
+#leftPanel { background: #ffffff; }
 #leftNav {
-	min-width: 180px; max-width: 220px;
+	min-width: 240px; max-width: 300px;
 	border-right: 1px solid #e6e6e6;
 	background: #fbfcfe;
+	border-top: 1px solid #f0f0f0; /* 与品牌区分隔 */
+	font-size: 17px; /* 放大导航文字 */
 }
 #leftNav { outline: none; }
-#leftNav::item { height: 36px; color: #3a3a3a; padding: 6px 10px 6px 12px; border: none; }
+#leftNav::item { height: 72px; color: #3a3a3a; padding: 14px 16px 14px 22px; border: none; }
 #leftNav::item:selected { background: #eaf2ff; color: #2d8cf0; border-left: 3px solid #2d8cf0; font-weight: 600; }
 #leftNav::item:hover { background: #f2f6ff; }
 

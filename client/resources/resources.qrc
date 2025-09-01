@@ -2,6 +2,7 @@
     <qresource prefix="/">
         <file>style.qss</file>
     <file>doctorinfo.qss</file>
+    <file>doctor_attendance.qss</file>
     <file>patientinfo.qss</file>
     <file>login.qss</file>
     <file>background.jpeg</file>
@@ -30,5 +31,6 @@
     <file>icons/电话.svg</file>
     <file>icons/地址.svg</file>
     <file>icons/年龄.svg</file>
+    <file>icons/智慧医疗系统.svg</file>
     </qresource>
 </RCC>

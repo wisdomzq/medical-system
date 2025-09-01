@@ -24,12 +24,10 @@ DoctorInfoWidget::DoctorInfoWidget(const QString& doctorName, QWidget* parent)
     : QWidget(parent)
     , m_doctorName(doctorName)
 {
-    setWindowTitle("医生工作台 - " + m_doctorName);
-    setMinimumSize(1000, 700);
-
-    // 创建共享的通信客户端
+    // 使用内部创建的共享客户端
     m_sharedClient = new CommunicationClient(this);
     m_sharedClient->connectToServer("127.0.0.1", Protocol::SERVER_PORT);
+    initUi();
 
     // 仅对医生界面应用样式
     QFile f(":/doctorinfo.qss");
@@ -116,25 +114,56 @@ DoctorInfoWidget::DoctorInfoWidget(const QString& doctorName, CommunicationClien
     : QWidget(parent)
     , m_doctorName(doctorName)
 {
-    setWindowTitle("医生工作台 - " + m_doctorName);
-    setMinimumSize(1000, 700);
-
     // 使用外部共享客户端
     m_sharedClient = sharedClient;
     Q_ASSERT(m_sharedClient);
+    initUi();
+}
 
-    // 仅对医生界面应用样式
+DoctorInfoWidget::~DoctorInfoWidget() = default;
+
+void DoctorInfoWidget::initUi()
+{
+    setWindowTitle("医生工作台 - " + m_doctorName);
+    setMinimumSize(1000, 700);
+
     QFile f(":/doctorinfo.qss");
     if (f.open(QIODevice::ReadOnly)) {
         setStyleSheet(QString::fromUtf8(f.readAll()));
     }
 
-    // 左侧导航 + 右侧页面
-    navList = new QListWidget(this);
+    QWidget* leftPanel = new QWidget(this);
+    leftPanel->setObjectName("leftPanel");
+    QVBoxLayout* leftLayout = new QVBoxLayout(leftPanel);
+    leftLayout->setContentsMargins(0, 0, 0, 0);
+    leftLayout->setSpacing(0);
+
+    QWidget* brandBar = new QWidget(leftPanel);
+    brandBar->setObjectName("brandBar");
+    QHBoxLayout* brandLayout = new QHBoxLayout(brandBar);
+    brandLayout->setContentsMargins(12, 12, 12, 12);
+    brandLayout->setSpacing(8);
+    QLabel* brandIcon = new QLabel(brandBar);
+    brandIcon->setAttribute(Qt::WA_TranslucentBackground, true);
+    brandIcon->setStyleSheet("background: transparent;");
+    brandIcon->setPixmap(QIcon(":/icons/智慧医疗系统.svg").pixmap(28, 28));
+    QLabel* brandText = new QLabel(QStringLiteral("  智慧医疗系统"), brandBar);
+    brandText->setObjectName("brandTitle");
+    QFont brandFont = brandText->font();
+    brandFont.setPointSize(16);
+    brandFont.setBold(true);
+    brandText->setFont(brandFont);
+    brandLayout->addWidget(brandIcon);
+    brandLayout->addWidget(brandText);
+    brandLayout->addStretch();
+
+    navList = new QListWidget(leftPanel);
     navList->setObjectName("leftNav");
-    navList->setIconSize(QSize(18, 18));
+    navList->setIconSize(QSize(30, 30));
     navList->setUniformItemSizes(true);
     navList->setFocusPolicy(Qt::NoFocus);
+    leftLayout->addWidget(brandBar);
+    leftLayout->addWidget(navList);
 
     pages = new QStackedWidget(this);
 
@@ -154,7 +183,7 @@ DoctorInfoWidget::DoctorInfoWidget(const QString& doctorName, CommunicationClien
 
     auto addNav = [&](const QString& text, const QString& iconRes) {
         QListWidgetItem* it = new QListWidgetItem(QIcon(iconRes), text);
-        it->setSizeHint(QSize(160, 36));
+        it->setSizeHint(QSize(200, 72));
         navList->addItem(it);
     };
     addNav("考勤", ":/icons/考勤.svg");
@@ -188,11 +217,9 @@ DoctorInfoWidget::DoctorInfoWidget(const QString& doctorName, CommunicationClien
     connect(navList, &QListWidget::currentRowChanged, this, [updateBold](int) { updateBold(); });
 
     auto root = new QHBoxLayout(this);
-    root->addWidget(navList, 0);
+    root->addWidget(leftPanel, 0);
     root->addWidget(pages, 1);
     setLayout(root);
 }
-
-DoctorInfoWidget::~DoctorInfoWidget() = default;
 
 // 预约与医生个人信息均由各自 Service 监听网络并驱动 UI，此处无需集中分发

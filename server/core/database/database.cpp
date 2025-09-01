@@ -1488,6 +1488,37 @@ bool DBManager::createPrescription(const QJsonObject& prescriptionData) {
     return true;
 }
 
+// 新增方法：创建处方并返回ID
+int DBManager::createPrescriptionAndGetId(const QJsonObject& prescriptionData) {
+    QSqlQuery query(m_db);
+    QString sql = QString(R"(
+        INSERT INTO prescriptions (
+            record_id, patient_username, doctor_username, prescription_date,
+            total_amount, status, notes
+        ) VALUES (
+            %1, '%2', '%3', '%4', %5, '%6', '%7'
+        )
+    )").arg(prescriptionData["record_id"].toInt())
+       .arg(prescriptionData["patient_username"].toString())
+       .arg(prescriptionData["doctor_username"].toString())
+       .arg(prescriptionData["prescription_date"].toString())
+       .arg(prescriptionData["total_amount"].toDouble())
+       .arg(prescriptionData["status"].toString())
+       .arg(prescriptionData["notes"].toString());
+    
+    if (!query.exec(sql)) {
+        qDebug() << "createPrescriptionAndGetId error:" << query.lastError().text();
+        return -1;
+    }
+    
+    // 立即获取插入的ID，使用同一个查询对象
+    QVariant lastId = query.lastInsertId();
+    if (lastId.isValid()) {
+        return lastId.toInt();
+    }
+    return -1;
+}
+
 bool DBManager::addPrescriptionItem(const QJsonObject& itemData) {
     QSqlQuery query(m_db);
     QString sql = QString(R"(
@@ -1509,6 +1540,19 @@ bool DBManager::addPrescriptionItem(const QJsonObject& itemData) {
     
     if (!query.exec(sql)) {
         qDebug() << "addPrescriptionItem error:" << query.lastError().text();
+        return false;
+    }
+    return true;
+}
+
+bool DBManager::updatePrescriptionStatus(int prescriptionId, const QString& status) {
+    QSqlQuery query(m_db);
+    query.prepare("UPDATE prescriptions SET status = ? WHERE id = ?");
+    query.bindValue(0, status);
+    query.bindValue(1, prescriptionId);
+    
+    if (!query.exec()) {
+        qDebug() << "updatePrescriptionStatus error:" << query.lastError().text();
         return false;
     }
     return true;
@@ -2489,3 +2533,10 @@ bool DBManager::getAllDoctorsScheduleOverview(QJsonArray& doctorsSchedule) {
     return true;
 }
 
+int DBManager::getLastInsertId() {
+    QSqlQuery query(m_db);
+    if (query.exec("SELECT last_insert_rowid() AS id") && query.next()) {
+        return query.value("id").toInt();
+    }
+    return -1;  // 返回-1表示获取失败
+}

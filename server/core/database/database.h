@@ -57,7 +57,9 @@ public:
 
     // 处方管理
     bool createPrescription(const QJsonObject& prescriptionData);
+    int createPrescriptionAndGetId(const QJsonObject& prescriptionData);  // 创建处方并返回ID
     bool addPrescriptionItem(const QJsonObject& itemData);
+    bool updatePrescriptionStatus(int prescriptionId, const QString& status);  // 更新处方状态
     bool getPrescriptionsByPatient(const QString& patientUsername, QJsonArray& prescriptions);
     bool getPrescriptionsByDoctor(const QString& doctorUsername, QJsonArray& prescriptions);
     bool getPrescriptionDetails(int prescriptionId, QJsonObject& prescription);
@@ -99,6 +101,9 @@ public:
     bool cancelActiveLeaveForDoctor(const QString &doctorUsername); // 取消最近一条 active
     // 考勤查询
     bool getAttendanceByDoctor(const QString &doctorUsername, QJsonArray &records, int limit = 100);
+    
+    // 工具方法
+    int getLastInsertId();  // 获取最后插入记录的ID
 
     // 聊天相关（简化实现）
     bool addChatMessage(const QJsonObject &msg, int &insertedId, QString &errorMessage);
