@@ -80,8 +80,11 @@ void DoctorListPage::setupUI()
     // 医生列表表格
     m_doctorTable = new QTableWidget();
     m_doctorTable->setColumnCount(6);
-    QStringList headers = {"姓名", "科室", "职称", "专业", "挂号费", "操作"};
+    QStringList headers = {"姓名", "科室", "工作时间", "专业", "挂号费", "操作"};
     m_doctorTable->setHorizontalHeaderLabels(headers);
+    // 表头居中与高度
+    m_doctorTable->horizontalHeader()->setDefaultAlignment(Qt::AlignCenter);
+    m_doctorTable->horizontalHeader()->setFixedHeight(36);
     
     // 设置表格样式
     m_doctorTable->setAlternatingRowColors(true);
@@ -90,6 +93,40 @@ void DoctorListPage::setupUI()
     m_doctorTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     m_doctorTable->horizontalHeader()->setStretchLastSection(true);
     m_doctorTable->verticalHeader()->setVisible(false);
+    m_doctorTable->setFocusPolicy(Qt::NoFocus);
+    m_doctorTable->setWordWrap(false);
+    m_doctorTable->setStyleSheet(
+        "QTableWidget {"
+        "  background-color: #ffffff;"
+        "  border: 1px solid #e5e7eb;"
+        "  border-radius: 8px;"
+        "  gridline-color: #f1f5f9;"
+        "}"
+        "QTableWidget::item {"
+        "  padding: 6px;"
+        "}"
+        "QTableWidget::item:!selected:alternate {"
+        "  background: #f9fafb;"
+        "}"
+        "QTableWidget::item:selected {"
+        "  background-color: #eef2ff;"
+        "  color: #1f2937;"
+        "}"
+        "QHeaderView::section {"
+        "  background: #f8fafc;"
+        "  padding: 8px;"
+        "  border: none;"
+        "  border-right: 1px solid #e5e7eb;"
+        "  font-weight: 600;"
+        "}"
+        "QHeaderView::section:last {"
+        "  border-right: none;"
+        "}"
+        "QTableCornerButton::section {"
+        "  background: #f8fafc;"
+        "  border: none;"
+        "}"
+    );
     
     // 设置列宽
     m_doctorTable->setColumnWidth(0, 100); // 姓名
@@ -148,25 +185,53 @@ void DoctorListPage::displayDoctors(const QJsonArray& doctors)
         QJsonObject doctor = doctors[i].toObject();
         
         // 姓名
-        m_doctorTable->setItem(i, 0, new QTableWidgetItem(doctor.value("name").toString()));
+        {
+            auto* item = new QTableWidgetItem(doctor.value("name").toString());
+            item->setTextAlignment(Qt::AlignCenter);
+            m_doctorTable->setItem(i, 0, item);
+        }
         
         // 科室
-        m_doctorTable->setItem(i, 1, new QTableWidgetItem(doctor.value("department").toString()));
+        {
+            auto* item = new QTableWidgetItem(doctor.value("department").toString());
+            item->setTextAlignment(Qt::AlignCenter);
+            m_doctorTable->setItem(i, 1, item);
+        }
         
         // 职称
-        m_doctorTable->setItem(i, 2, new QTableWidgetItem(doctor.value("title").toString()));
+        {
+            auto* item = new QTableWidgetItem(doctor.value("title").toString());
+            item->setTextAlignment(Qt::AlignCenter);
+            m_doctorTable->setItem(i, 2, item);
+        }
         
         // 专业
-        m_doctorTable->setItem(i, 3, new QTableWidgetItem(doctor.value("specialization").toString()));
+        {
+            const auto spec = doctor.value("specialization").toString();
+            auto* item = new QTableWidgetItem(spec);
+            if (spec.length() > 50) item->setToolTip(spec);
+            item->setTextAlignment(Qt::AlignCenter);
+            m_doctorTable->setItem(i, 3, item);
+        }
         
         // 挂号费
         double fee = doctor.value("consultation_fee").toDouble();
-        m_doctorTable->setItem(i, 4, new QTableWidgetItem(QString("¥%1").arg(fee, 0, 'f', 2)));
+        {
+            auto* item = new QTableWidgetItem(QString("¥%1").arg(fee, 0, 'f', 2));
+            item->setTextAlignment(Qt::AlignCenter);
+            m_doctorTable->setItem(i, 4, item);
+        }
         
         // 操作列 - 存储医生用户名用于后续查询
-        QTableWidgetItem* actionItem = new QTableWidgetItem("查看详情");
-        actionItem->setData(Qt::UserRole, doctor.value("username").toString());
-        m_doctorTable->setItem(i, 5, actionItem);
+        {
+            auto* actionItem = new QTableWidgetItem("查看详情");
+            actionItem->setData(Qt::UserRole, doctor.value("username").toString());
+            actionItem->setTextAlignment(Qt::AlignCenter);
+            m_doctorTable->setItem(i, 5, actionItem);
+        }
+
+        // 行高
+        m_doctorTable->setRowHeight(i, 40);
     }
 }
 
