@@ -66,18 +66,7 @@ void DoctorListPage::setupUI()
     m_departmentCombo->addItem("皮肤科", "皮肤科");
     
     m_searchButton = new QPushButton("搜索");
-    m_searchButton->setStyleSheet(
-        "QPushButton {"
-        "    background-color: #3498db;"
-        "    color: white;"
-        "    border: none;"
-        "    padding: 8px 16px;"
-        "    border-radius: 4px;"
-        "}"
-        "QPushButton:hover {"
-        "    background-color: #2980b9;"
-        "}"
-    );
+    m_searchButton->setObjectName("primaryBtn");
     
     m_searchLayout->addWidget(searchLabel);
     m_searchLayout->addWidget(m_searchEdit);

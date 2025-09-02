@@ -70,7 +70,9 @@ void PrescriptionPage::setupUI() {
     // 操作按钮
     auto *buttonLayout = new QHBoxLayout();
     m_refreshBtn = new QPushButton("刷新列表");
+    m_refreshBtn->setObjectName("primaryBtn");
     m_detailsBtn = new QPushButton("查看详情");
+    m_detailsBtn->setObjectName("primaryBtn");
     m_detailsBtn->setEnabled(false);
     
     connect(m_refreshBtn, &QPushButton::clicked, this, &PrescriptionPage::refreshList);

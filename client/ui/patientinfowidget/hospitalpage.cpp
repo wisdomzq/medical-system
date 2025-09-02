@@ -41,8 +41,37 @@ HospitalPage::HospitalPage(CommunicationClient *c,const QString &patient,QWidget
     contentLayout->setContentsMargins(15, 15, 15, 15);
     contentLayout->setSpacing(10);
     
-    QHBoxLayout *bar=new QHBoxLayout; refreshBtn=new QPushButton("刷新"); filterDoctorEdit=new QLineEdit; filterDoctorEdit->setPlaceholderText("按医生过滤(可选)"); bar->addWidget(filterDoctorEdit); bar->addStretch(); bar->addWidget(refreshBtn); contentLayout->addLayout(bar);
-    table=new QTableWidget; table->setColumnCount(8); table->setHorizontalHeaderLabels({"ID","主治医生","病房","床号","就诊日期","入院日期","出院日期","状态"}); table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch); table->setEditTriggers(QAbstractItemView::NoEditTriggers); table->setSelectionBehavior(QAbstractItemView::SelectRows); contentLayout->addWidget(table); connect(refreshBtn,&QPushButton::clicked,this,&HospitalPage::refresh);
+    QHBoxLayout *bar=new QHBoxLayout; 
+    refreshBtn=new QPushButton("刷新"); 
+    refreshBtn->setObjectName("primaryBtn");
+    filterDoctorEdit=new QLineEdit; 
+    filterDoctorEdit->setPlaceholderText("按医生过滤(可选)"); 
+    bar->addWidget(filterDoctorEdit); 
+    bar->addStretch(); 
+    bar->addWidget(refreshBtn); 
+    contentLayout->addLayout(bar);
+    
+    // 创建表格卡片容器
+    QWidget* tableCard = new QWidget(this);
+    tableCard->setObjectName("hospitalTableCard");
+    QVBoxLayout* tableCardLayout = new QVBoxLayout(tableCard);
+    tableCardLayout->setContentsMargins(0, 0, 0, 0);
+    
+    table=new QTableWidget; 
+    table->setObjectName("hospitalTable");
+    table->setColumnCount(8); 
+    table->setHorizontalHeaderLabels({"ID","主治医生","病房","床号","就诊日期","入院日期","出院日期","状态"}); 
+    table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch); 
+    table->setEditTriggers(QAbstractItemView::NoEditTriggers); 
+    table->setSelectionBehavior(QAbstractItemView::SelectRows);
+    table->setAlternatingRowColors(true);
+    table->verticalHeader()->setVisible(false);
+    table->verticalHeader()->setDefaultSectionSize(36);
+    table->horizontalHeader()->setDefaultAlignment(Qt::AlignCenter);
+    
+    tableCardLayout->addWidget(table);
+    contentLayout->addWidget(tableCard); 
+    connect(refreshBtn,&QPushButton::clicked,this,&HospitalPage::refresh);
     
     layout->addWidget(contentWidget);
     // 服务化

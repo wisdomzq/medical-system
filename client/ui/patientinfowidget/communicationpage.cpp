@@ -50,7 +50,7 @@ CommunicationPage::CommunicationPage(CommunicationClient* c, const QString& p, Q
     title->setStyleSheet("background: transparent; border: none; margin: 0px; padding: 0px;");
     
     m_loadMoreBtn = new QPushButton("加载更多历史", topBar);
-    m_loadMoreBtn->setObjectName("loadMoreBtn");
+    m_loadMoreBtn->setObjectName("primaryBtn");
     topBarLayout->addWidget(title);
     topBarLayout->addStretch();
     topBarLayout->addWidget(m_loadMoreBtn);
@@ -112,6 +112,7 @@ CommunicationPage::CommunicationPage(CommunicationClient* c, const QString& p, Q
     m_input = new QLineEdit(this);
     m_input->setPlaceholderText("输入消息，回车发送");
     m_sendBtn = new QPushButton("发送", this);
+    m_sendBtn->setObjectName("primaryBtn");
     bottom->addWidget(m_input, 1);
     bottom->addWidget(m_sendBtn);
     root->addLayout(bottom);

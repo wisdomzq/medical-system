@@ -82,8 +82,11 @@ ProfilePage::ProfilePage(CommunicationClient *c,const QString &patient,QWidget *
     auto* btns = new QHBoxLayout();
     btns->addStretch();
     refreshBtn_ = new QPushButton("刷新", this);
+    refreshBtn_->setObjectName("primaryBtn");
     updateBtn_ = new QPushButton("保存", this);
+    updateBtn_->setObjectName("primaryBtn");
     QPushButton *backBtn = new QPushButton("返回登录", this);
+    backBtn->setObjectName("primaryBtn");
     btns->addWidget(refreshBtn_);
     btns->addWidget(updateBtn_);
     btns->addWidget(backBtn);

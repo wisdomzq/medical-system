@@ -49,7 +49,9 @@ MedicationSearchPage::MedicationSearchPage(CommunicationClient *c, const QString
     m_searchEdit = new QLineEdit(this);
     m_searchEdit->setPlaceholderText(QStringLiteral("输入药品名称/通用名/类别进行搜索(留空获取全部)"));
     m_searchBtn = new QPushButton(QStringLiteral("搜索"), this);
+    m_searchBtn->setObjectName("primaryBtn");
     m_remoteBtn = new QPushButton(QStringLiteral("远程搜索"), this);
+    m_remoteBtn->setObjectName("primaryBtn");
     hl->addWidget(m_searchEdit,1);
     hl->addWidget(m_searchBtn);
     hl->addWidget(m_remoteBtn);

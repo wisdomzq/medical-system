@@ -46,3 +46,72 @@ QLabel {
 #MainWindow {
     background-color: #e8e8e8;
 }
+
+/* 住院信息模块样式 */
+QPushButton#hospitalInfoButton {
+    background-color: #E6E6FA; /* 淡紫色 */
+    border: 2px solid #DDA0DD;
+    border-radius: 8px;
+    color: #2E3440;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: bold;
+    min-height: 30px;
+}
+
+QPushButton#hospitalInfoButton:hover {
+    background-color: #DDA0DD;
+    border-color: #BA55D3;
+}
+
+QPushButton#hospitalInfoButton:pressed {
+    background-color: #BA55D3;
+    border-color: #9370DB;
+}
+
+/* 住院信息表格样式 - 参考医生端样式 */
+QTableWidget#hospitalTable {
+    background-color: white;
+    border: 1px solid #DDA0DD;
+    border-radius: 5px;
+}
+
+QTableWidget#hospitalTable::item {
+    padding: 8px;
+    border-bottom: 1px solid #E6E6FA;
+}
+
+QTableWidget#hospitalTable::item:selected {
+    background-color: #DDA0DD;
+    color: white;
+}
+
+QHeaderView::section {
+    background-color: #E6E6FA;
+    color: #2E3440;
+    padding: 8px;
+    border: 1px solid #DDA0DD;
+    font-weight: bold;
+}
+
+/* 住院信息刷新按钮样式 - 淡紫色 */
+QPushButton#hospitalRefreshBtn {
+    background-color: #E6E6FA; /* 淡紫色 */
+    border: 2px solid #DDA0DD;
+    border-radius: 8px;
+    color: #2E3440;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: bold;
+    min-height: 30px;
+}
+
+QPushButton#hospitalRefreshBtn:hover {
+    background-color: #DDA0DD;
+    border-color: #BA55D3;
+}
+
+QPushButton#hospitalRefreshBtn:pressed {
+    background-color: #BA55D3;
+    border-color: #9370DB;
+}

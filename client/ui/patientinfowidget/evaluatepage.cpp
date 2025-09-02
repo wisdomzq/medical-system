@@ -63,6 +63,7 @@ EvaluatePage::EvaluatePage(CommunicationClient *c, const QString &patient, QWidg
     m_amountSpin->setDecimals(2); 
     m_amountSpin->setValue(10.0);
     m_rechargeBtn = new QPushButton(tr("充值"));
+    m_rechargeBtn->setObjectName("primaryBtn");
     connect(m_rechargeBtn, &QPushButton::clicked, this, &EvaluatePage::doRecharge);
     rechargeLay->addWidget(new QLabel(tr("金额:"))); 
     rechargeLay->addWidget(m_amountSpin); 
@@ -88,7 +89,9 @@ EvaluatePage::EvaluatePage(CommunicationClient *c, const QString &patient, QWidg
     // 控制按钮
     auto *btnLay = new QHBoxLayout();
     m_submitBtn = new QPushButton(tr("提交评估"));
+    m_submitBtn->setObjectName("primaryBtn");
     m_resetBtn = new QPushButton(tr("重新填写"));
+    m_resetBtn->setObjectName("primaryBtn");
     connect(m_submitBtn, &QPushButton::clicked, this, &EvaluatePage::submitScale);
     connect(m_resetBtn, &QPushButton::clicked, this, &EvaluatePage::resetScale);
     btnLay->addWidget(m_submitBtn);
@@ -111,6 +114,7 @@ EvaluatePage::EvaluatePage(CommunicationClient *c, const QString &patient, QWidg
 
     // 返回按钮
     m_backBtn = new QPushButton(tr("返回首页"));
+    m_backBtn->setObjectName("primaryBtn");
     connect(m_backBtn, &QPushButton::clicked, this, &EvaluatePage::goBack);
     contentLayout->addWidget(m_backBtn);
     

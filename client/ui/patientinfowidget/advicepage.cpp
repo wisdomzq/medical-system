@@ -82,8 +82,11 @@ void AdvicePage::setupUI() {
     // 操作按钮
     auto *buttonLayout = new QHBoxLayout();
     m_refreshBtn = new QPushButton("刷新列表");
+    m_refreshBtn->setObjectName("primaryBtn");
     m_detailsBtn = new QPushButton("查看详情");
+    m_detailsBtn->setObjectName("primaryBtn");
     m_prescriptionBtn = new QPushButton("查看处方");
+    m_prescriptionBtn->setObjectName("primaryBtn");
     m_detailsBtn->setEnabled(false);
     m_prescriptionBtn->setEnabled(false);
     
