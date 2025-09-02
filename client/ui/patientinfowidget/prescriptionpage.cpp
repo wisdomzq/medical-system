@@ -49,13 +49,56 @@ void PrescriptionPage::setupUI() {
     titleV->addWidget(title);
     titleV->addWidget(subTitle);
     topBarLayout->addLayout(titleV);
+    
+    // 操作按钮移到标题右侧
+    m_refreshBtn = new QPushButton("刷新列表");
+    m_refreshBtn->setStyleSheet(
+        "QPushButton {"
+        "    background-color: #ffffff;"
+        "    color: #4f63dd;"
+        "    border: 1px solid #d9e6fb;"
+        "    border-radius: 8px;"
+        "    padding: 8px 14px;"
+        "    font-size: 14px;"
+        "}"
+        "QPushButton:hover {"
+        "    background-color: #eef2ff;"
+        "}"
+        "QPushButton:pressed {"
+        "    background-color: #e0e7ff;"
+        "}"
+    );
+    m_detailsBtn = new QPushButton("查看详情");
+    m_detailsBtn->setStyleSheet(
+        "QPushButton {"
+        "    background-color: #ffffff;"
+        "    color: #4f63dd;"
+        "    border: 1px solid #d9e6fb;"
+        "    border-radius: 8px;"
+        "    padding: 8px 14px;"
+        "    font-size: 14px;"
+        "}"
+        "QPushButton:hover {"
+        "    background-color: #eef2ff;"
+        "}"
+        "QPushButton:pressed {"
+        "    background-color: #e0e7ff;"
+        "}"
+    );
+    m_detailsBtn->setEnabled(false);
+    
+    connect(m_refreshBtn, &QPushButton::clicked, this, &PrescriptionPage::refreshList);
+    connect(m_detailsBtn, &QPushButton::clicked, this, &PrescriptionPage::onDetailsClicked);
+    
     topBarLayout->addStretch();
+    topBarLayout->addWidget(m_refreshBtn);
+    topBarLayout->addWidget(m_detailsBtn);
     mainLayout->addWidget(topBar);
     
     // 内容区域
     QWidget* contentWidget = new QWidget(this);
     QVBoxLayout* contentLayout = new QVBoxLayout(contentWidget);
-    contentLayout->setContentsMargins(16, 16, 16, 16);
+    contentLayout->setContentsMargins(16, 8, 16, 16);
     contentLayout->setSpacing(12);
     
     // 统计信息
@@ -66,22 +109,6 @@ void PrescriptionPage::setupUI() {
     headerLayout->addStretch();
     headerLayout->addWidget(m_countLabel);
     contentLayout->addLayout(headerLayout);
-    
-    // 操作按钮
-    auto *buttonLayout = new QHBoxLayout();
-    m_refreshBtn = new QPushButton("刷新列表");
-    m_refreshBtn->setObjectName("primaryBtn");
-    m_detailsBtn = new QPushButton("查看详情");
-    m_detailsBtn->setObjectName("primaryBtn");
-    m_detailsBtn->setEnabled(false);
-    
-    connect(m_refreshBtn, &QPushButton::clicked, this, &PrescriptionPage::refreshList);
-    connect(m_detailsBtn, &QPushButton::clicked, this, &PrescriptionPage::onDetailsClicked);
-    
-    buttonLayout->addWidget(m_refreshBtn);
-    buttonLayout->addWidget(m_detailsBtn);
-    buttonLayout->addStretch();
-    contentLayout->addLayout(buttonLayout);
     
     // 处方列表表格
     m_table = new QTableWidget(this);

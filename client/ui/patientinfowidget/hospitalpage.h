@@ -13,7 +13,9 @@ signals:
     void requestDetail(int id); // 预留
 private slots:
     void refresh();
+    void searchByDoctor();
 private:
     QTableWidget *table=nullptr; QPushButton *refreshBtn=nullptr; QLineEdit *filterDoctorEdit=nullptr; 
+    QPushButton *searchBtn=nullptr;
     HospitalizationService* m_service = nullptr; // 非拥有
 };
