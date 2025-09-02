@@ -5,11 +5,8 @@ namespace ChatItemRoles {
     enum {
         RoleSender = Qt::UserRole + 1,
         RoleText,
-    RoleIsOutgoing,
-    RoleMessageId,
-    RoleMessageType,       // "text" | "image" | others
-    RoleImageServerName,   // 服务器保存名（用于比对下载完成）
-    RoleImageLocalPath     // 本地缓存路径（存在时用于渲染）
+        RoleIsOutgoing,
+        RoleMessageId
     };
 }
 

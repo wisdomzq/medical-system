@@ -4,7 +4,6 @@
 #include <QJsonArray>
 #include <QList>
 #include <QMap>
-#include <QHash>
 class CommunicationClient;
 
 class ChatService : public QObject {
@@ -15,8 +14,6 @@ public:
     void requestChat(const QString& doctorUser, const QString& patientUser, const QString& note = QString());
     void acceptChat(const QString& doctorUser, const QString& patientUser);
     void sendText(const QString& doctorUser, const QString& patientUser, const QString& text);
-    // 发送图片：先上传本地文件，再在上传完成回调中发送 image 消息
-    void sendImage(const QString& doctorUser, const QString& patientUser, const QString& localFilePath);
     void getHistory(const QString& doctorUser, const QString& patientUser, qint64 beforeId = 0, int limit = 20);
     void pollEvents(qint64 cursor, int timeoutSec = 1800, int limit = 50);
     void recentContacts(int limit = 20);
@@ -61,7 +58,4 @@ private:
     QMap<QString, QList<QJsonObject>> m_convMessages;
     // 会话 -> 最早 id（便于翻页）
     QMap<QString, qint64> m_earliestId;
-
-    // 待发送图片队列：key=服务器文件名，value=(doctor,patient)
-    QHash<QString, QPair<QString, QString>> m_pendingImageUploads;
 };

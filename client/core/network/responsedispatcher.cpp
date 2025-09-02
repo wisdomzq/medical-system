@@ -28,9 +28,6 @@ void ResponseDispatcher::onFrame(Header header, QByteArray payload)
     case MessageType::FileDownloadComplete:
         emit fileDownloadCompleted(fromJsonPayload(payload));
         break;
-    case MessageType::FileTransferError:
-        emit fileTransferError(fromJsonPayload(payload));
-        break;
     default:
         // 忽略非响应类（例如服务器误发的请求）
         break;

@@ -3,7 +3,6 @@
 #include "core/network/communicationclient.h"
 #include <QTimer>
 #include <QUuid>
-#include <QFileInfo>
 #include <algorithm>
 
 ChatService::ChatService(CommunicationClient* client, const QString& currentUser, QObject* parent)
@@ -13,10 +12,6 @@ ChatService::ChatService(CommunicationClient* client, const QString& currentUser
 {
     Q_ASSERT(m_client);
     connect(m_client, &CommunicationClient::jsonReceived, this, &ChatService::onJsonReceived);
-    // 监听文件下载完成（用于图片消息落地后刷新UI，可忽略此处）
-    connect(m_client, &CommunicationClient::fileDownloaded, this, [this](const QString& /*serverName*/, const QString& /*localPath*/){
-        // ChatService 当前不处理下载完成；由 UI 层处理
-    });
 }
 
 void ChatService::requestChat(const QString& doctorUser, const QString& patientUser, const QString& note)
@@ -43,23 +38,6 @@ void ChatService::sendText(const QString& doctorUser, const QString& patientUser
         { "message_type", "text" }, { "text_content", text }, { "file_metadata", QJsonValue() } };
     Log::request("ChatService", req, "action", "send_message");
     m_client->sendJson(req);
-}
-
-void ChatService::sendImage(const QString& doctorUser, const QString& patientUser, const QString& localFilePath)
-{
-    // 生成 uuid 作为服务器保存路径（文件名）
-    const QString suffix = QFileInfo(localFilePath).suffix();
-    const QString uuidName = suffix.isEmpty()
-        ? QUuid::createUuid().toString(QUuid::WithoutBraces)
-        : (QUuid::createUuid().toString(QUuid::WithoutBraces) + "." + suffix);
-    qInfo() << "[ ChatService ] 发送图片：uuidName=" << uuidName << ", local=" << localFilePath;
-    m_pendingImageUploads.insert(uuidName, qMakePair(doctorUser, patientUser));
-    // 直接走已有文件上传通道；服务器会存储在 files/uuidName 下
-    const bool ok = m_client->uploadFile(localFilePath, uuidName);
-    if (!ok) {
-        m_pendingImageUploads.remove(uuidName);
-        Log::error("ChatService", QString("upload file failed: %1").arg(localFilePath));
-    }
 }
 
 void ChatService::getHistory(const QString& doctorUser, const QString& patientUser, qint64 beforeId, int limit)
@@ -100,25 +78,6 @@ void ChatService::onJsonReceived(const QJsonObject& obj)
     if (type == "send_message_response") {
         emit sendMessageResult(obj.value("success").toBool(), obj.value("data").toObject());
         return;
-    }
-    // 文件上传完成的 JSON 响应（无 type 字段）：{"uploaded":true,"file":"<name>","size":N}
-    if (!obj.contains("type") && obj.value("uploaded").toBool() && obj.contains("file")) {
-        const QString serverName = obj.value("file").toString();
-        qInfo() << "[ ChatService ] 上传完成，准备发送 image 消息 file=" << serverName;
-        if (m_pendingImageUploads.contains(serverName)) {
-            auto pair = m_pendingImageUploads.take(serverName);
-            const QString doctor = pair.first;
-            const QString patient = pair.second;
-            QJsonObject req { { "action", "send_message" }, { "uuid", QUuid::createUuid().toString(QUuid::WithoutBraces) },
-                { "user", m_currentUser }, { "doctor_user", doctor }, { "patient_user", patient },
-                { "message_id", QUuid::createUuid().toString(QUuid::WithoutBraces) },
-                { "message_type", "image" }, { "text_content", QJsonValue() },
-                { "file_metadata", QJsonObject{{"path", serverName}} } };
-            Log::request("ChatService", req, "action", "send_message");
-            m_client->sendJson(req);
-            return;
-        }
-        qWarning() << "[ ChatService ] 未找到上传上下文，忽略 file=" << serverName;
     }
     if (type == "get_history_messages_response") {
         QJsonObject data = obj.value("data").toObject();

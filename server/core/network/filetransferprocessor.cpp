@@ -25,7 +25,6 @@ bool FileTransferProcessor::beginUpload(const QJsonObject& meta, QJsonObject& ac
     reset();
     m_name = meta.value("name").toString();
     m_expectedSize = meta.value("size").toVariant().toLongLong();
-    qInfo() << "[ Server ][FTP] beginUpload name=" << m_name << ", size=" << m_expectedSize << ", baseDir=" << m_baseDir;
     if (m_name.isEmpty() || m_expectedSize < 0) {
         ackOrErr = QJsonObject{{"code", 400}, {"message", "invalid meta"}};
         return false;
@@ -35,7 +34,6 @@ bool FileTransferProcessor::beginUpload(const QJsonObject& meta, QJsonObject& ac
     m_uploadFile.setFileName(path);
     if (!m_uploadFile.open(QIODevice::WriteOnly)) {
         ackOrErr = QJsonObject{{"code", 500}, {"message", "open failed"}};
-        qWarning() << "[ Server ][FTP] open failed path=" << path;
         reset();
         return false;
     }
@@ -52,14 +50,9 @@ bool FileTransferProcessor::appendChunk(const QByteArray& data, QJsonObject& err
     const qint64 written = m_uploadFile.write(data);
     if (written != data.size()) {
         err = QJsonObject{{"code", 500}, {"message", "write failed"}};
-        qWarning() << "[ Server ][FTP] write failed size=" << data.size() << ", written=" << written;
         return false;
     }
     m_received += written;
-    // 可选：大文件时减少日志
-    if ((m_received % (1024*1024)) < data.size()) {
-        qInfo() << "[ Server ][FTP] appendChunk received=" << m_received << "/" << m_expectedSize;
-    }
     return true;
 }
 
@@ -73,12 +66,10 @@ bool FileTransferProcessor::finishUpload(QJsonObject& resultOrErr)
     m_uploadFile.close();
     if (m_expectedSize >= 0 && m_received != m_expectedSize) {
         resultOrErr = QJsonObject{{"code", 422}, {"message", "size mismatch"}};
-        qWarning() << "[ Server ][FTP] size mismatch received=" << m_received << ", expected=" << m_expectedSize;
         reset();
         return false;
     }
     resultOrErr = QJsonObject{{"uploaded", true}, {"file", m_name}, {"size", m_received}};
-    qInfo() << "[ Server ][FTP] finishUpload ok file=" << m_name << ", size=" << m_received;
     reset();
     return true;
 }
@@ -93,11 +84,9 @@ bool FileTransferProcessor::downloadWhole(const QJsonObject& req,
         return false;
     }
     const QString path = QDir(m_baseDir).filePath(name);
-    qInfo() << "[ Server ][FTP] download request name=" << name << ", path=" << path;
     QFile f(path);
     if (!f.open(QIODevice::ReadOnly)) {
         completeOrErr = QJsonObject{{"code", 404}, {"message", "not found"}};
-        qWarning() << "[ Server ][FTP] not found path=" << path;
         return false;
     }
     while (!f.atEnd()) {
