@@ -112,7 +112,7 @@ void AppointmentsWidget::setupUI() {
     table_->setEditTriggers(QAbstractItemView::NoEditTriggers);
     table_->setSelectionBehavior(QAbstractItemView::SelectRows);
     table_->setSelectionMode(QAbstractItemView::SingleSelection);
-    table_->setAlternatingRowColors(true);
+    table_->setAlternatingRowColors(false); // 禁用交替行颜色
     table_->verticalHeader()->setVisible(false);
     table_->verticalHeader()->setDefaultSectionSize(36);
     table_->horizontalHeader()->setDefaultAlignment(Qt::AlignCenter);
@@ -160,7 +160,8 @@ void AppointmentsWidget::renderAppointments(const QJsonArray& arr) {
         const auto fee = appt.value("fee").toDouble();
 
     if (date == today) todayCount++;
-    if (status == "pending") pendingCount++; else if (status == "confirmed" || status == "completed") confirmedCount++;
+    if (status == "pending") pendingCount++; 
+    else if (status == "completed") confirmedCount++;
 
     auto* idItem = new QTableWidgetItem(QString::number(appointmentId));
     auto* nameItem = new QTableWidgetItem(patientName);
@@ -178,9 +179,12 @@ void AppointmentsWidget::renderAppointments(const QJsonArray& arr) {
     statusItem->setTextAlignment(Qt::AlignCenter);
     feeItem->setTextAlignment(Qt::AlignCenter);
 
-    if (status == "confirmed" || status == "completed") statusItem->setBackground(QBrush(QColor(144, 238, 144)));
-        else if (status == "pending") statusItem->setBackground(QBrush(QColor(255, 255, 224)));
-        else if (status == "cancelled") statusItem->setBackground(QBrush(QColor(255, 182, 193)));
+    // 只对状态列设置背景色：pending黄色，completed绿色
+    if (status == "pending") {
+        statusItem->setBackground(QBrush(QColor(255, 255, 224))); // 黄色背景
+    } else if (status == "completed") {
+        statusItem->setBackground(QBrush(QColor(144, 238, 144))); // 绿色背景
+    }
 
         QString patientTooltip = QString("患者: %1").arg(patientName);
         if (!appt.value("patient_age").toString().isEmpty()) patientTooltip += QString("\n年龄: %1").arg(appt.value("patient_age").toInt());
@@ -264,7 +268,7 @@ void AppointmentsWidget::onDiagnosisCompleted(int appointmentId) {
             auto* statusItem = table_->item(r, 5);
             if (statusItem) {
                 statusItem->setText("completed");
-                statusItem->setBackground(QBrush(QColor(144, 238, 144))); // 视作确认完成
+                statusItem->setBackground(QBrush(QColor(144, 238, 144))); // completed绿色背景
             }
             break;
         }

@@ -1067,7 +1067,7 @@ bool DBManager::createAppointment(const QJsonObject& appointmentData) {
                     SELECT COUNT(*) FROM appointments 
                     WHERE doctor_username = :username 
                     AND appointment_date = :date 
-                    AND status != 'cancelled'
+                    AND status IN ('pending', 'confirmed')
                 )");
                 countQuery.bindValue(":username", doctorUsername);
                 countQuery.bindValue(":date", appointmentDate);
@@ -2544,7 +2544,7 @@ bool DBManager::getAllDoctorsScheduleOverview(QJsonArray& doctorsSchedule) {
                 SELECT COUNT(*) FROM appointments a 
                 WHERE a.doctor_username = d.username 
                 AND date(a.appointment_date) = date('now')
-                AND a.status != 'cancelled'
+                AND a.status IN ('pending', 'confirmed')
                 AND EXISTS (
                     SELECT 1 FROM doctor_schedules ds2
                     WHERE ds2.doctor_username = d.username 
