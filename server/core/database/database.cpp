@@ -61,10 +61,14 @@ void DBManager::initDatabase() {
     createPrescriptionsTable();
     createPrescriptionItemsTable();
     createMedicationsTable();
+    createDoctorSchedulesTable();
     createHospitalizationsTable(); // 添加住院表
     createAttendanceTable();
     createLeaveRequestsTable();
     createChatMessagesTable();
+    
+    // 创建数据库触发器来维护预约统计
+    createAppointmentTriggers();
     
     // 不插入示例数据，使用现有数据库中的数据
 }
@@ -322,6 +326,30 @@ void DBManager::createPatientsTable() {
         )";
         if (!query.exec(sql)) {
             qDebug() << "创建patients表失败:" << query.lastError().text();
+        }
+    }
+}
+
+void DBManager::createDoctorSchedulesTable() {
+    if (!m_db.tables().contains(QStringLiteral("doctor_schedules"))) {
+        QSqlQuery query(m_db);
+        QString sql = R"(
+            CREATE TABLE doctor_schedules (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                doctor_username TEXT NOT NULL,
+                day_of_week INTEGER NOT NULL CHECK(day_of_week >= 0 AND day_of_week <= 6),
+                start_time TIME NOT NULL,
+                end_time TIME NOT NULL,
+                max_appointments INTEGER DEFAULT 20,
+                is_active BOOLEAN DEFAULT 1,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(doctor_username, day_of_week),
+                FOREIGN KEY (doctor_username) REFERENCES users(username)
+            )
+        )";
+        if (!query.exec(sql)) {
+            qDebug() << "创建doctor_schedules表失败:" << query.lastError().text();
         }
     }
 }
@@ -1003,8 +1031,21 @@ bool DBManager::createAppointment(const QJsonObject& appointmentData) {
         scheduleQuery.bindValue(":username", doctorUsername);
         scheduleQuery.bindValue(":appointment_date", appointmentDate);
         
+        qDebug() << "Checking schedule for doctor:" << doctorUsername 
+                 << "on date:" << appointmentDate;
+        
+        // 先测试日期转换
+        QSqlQuery dayQuery(m_db);
+        dayQuery.prepare("SELECT CAST(strftime('%w', :date) AS INTEGER) as day_of_week");
+        dayQuery.bindValue(":date", appointmentDate);
+        if (dayQuery.exec() && dayQuery.next()) {
+            int dayOfWeek = dayQuery.value(0).toInt();
+            qDebug() << "Calculated day_of_week:" << dayOfWeek << "for date:" << appointmentDate;
+        }
+        
         if (!scheduleQuery.exec() || !scheduleQuery.next()) {
-            qDebug() << "Doctor has no schedule for this day, trying fallback:" << scheduleQuery.lastError().text();
+            qDebug() << "Doctor has no schedule for this day, query:" << scheduleQuery.executedQuery();
+            qDebug() << "Error:" << scheduleQuery.lastError().text();
             strictValidationSuccess = false;
         } else {
             QString startTime = scheduleQuery.value("start_time").toString();
@@ -1037,8 +1078,8 @@ bool DBManager::createAppointment(const QJsonObject& appointmentData) {
                 } else {
                     int currentAppointments = countQuery.value(0).toInt();
                     if (currentAppointments >= maxAppointments) {
-                        qDebug() << "Doctor's appointment slots are full for this day, trying fallback";
-                        strictValidationSuccess = false;
+                        qDebug() << "Doctor's appointment slots are full for this day:" << currentAppointments << "/" << maxAppointments;
+                        return false; // 直接返回失败，不再使用fallback
                     }
                 }
             }
@@ -2498,11 +2539,27 @@ bool DBManager::getAllDoctorsScheduleOverview(QJsonArray& doctorsSchedule) {
                 ' (' || ds.start_time || '-' || ds.end_time || ')', 
                 '; '
             ) as working_days,
-            (SELECT COUNT(*) FROM appointments a 
-             WHERE a.doctor_username = d.username 
-             AND date(a.appointment_date) = date('now')
-             AND a.status != 'cancelled'
-            ) as today_total_appointments
+            -- 当天预约数（基于当前星期几和对应的排班）
+            COALESCE((
+                SELECT COUNT(*) FROM appointments a 
+                WHERE a.doctor_username = d.username 
+                AND date(a.appointment_date) = date('now')
+                AND a.status != 'cancelled'
+                AND EXISTS (
+                    SELECT 1 FROM doctor_schedules ds2
+                    WHERE ds2.doctor_username = d.username 
+                    AND ds2.day_of_week = CAST(strftime('%w', date('now')) AS INTEGER)
+                    AND ds2.is_active = 1
+                )
+            ), 0) as today_appointments,
+            -- 当天最大预约数（来自对应星期几的排班）
+            COALESCE((
+                SELECT ds3.max_appointments FROM doctor_schedules ds3
+                WHERE ds3.doctor_username = d.username 
+                AND ds3.day_of_week = CAST(strftime('%w', date('now')) AS INTEGER)
+                AND ds3.is_active = 1
+                LIMIT 1
+            ), d.max_patients_per_day) as today_max_appointments
         FROM doctors d
         LEFT JOIN doctor_schedules ds ON d.username = ds.doctor_username AND ds.is_active = 1
         GROUP BY d.username, d.name, d.title, d.department, d.specialization, 
@@ -2525,12 +2582,43 @@ bool DBManager::getAllDoctorsScheduleOverview(QJsonArray& doctorsSchedule) {
         doctorInfo["consultation_fee"] = query.value("consultation_fee").toDouble();
         doctorInfo["max_patients_per_day"] = query.value("max_patients_per_day").toInt();
         doctorInfo["working_days"] = query.value("working_days").toString();
-        doctorInfo["today_appointments"] = query.value("today_total_appointments").toInt();
-        doctorInfo["available_slots_today"] = query.value("max_patients_per_day").toInt() - query.value("today_total_appointments").toInt();
+        int todayAppointments = query.value("today_appointments").toInt();
+        int todayMaxAppointments = query.value("today_max_appointments").toInt();
+        doctorInfo["today_appointments"] = todayAppointments;
+        doctorInfo["today_max_appointments"] = todayMaxAppointments;
+        doctorInfo["available_slots_today"] = todayMaxAppointments - todayAppointments;
         
         doctorsSchedule.append(doctorInfo);
     }
     return true;
+}
+
+// 创建预约相关的数据库触发器
+void DBManager::createAppointmentTriggers() {
+    QSqlQuery query(m_db);
+    
+    // 删除可能已存在的触发器
+    query.exec("DROP TRIGGER IF EXISTS appointment_stats_update");
+    query.exec("DROP TRIGGER IF EXISTS appointment_stats_insert");
+    query.exec("DROP TRIGGER IF EXISTS appointment_stats_delete");
+    
+    // 创建预约统计缓存表（如果不存在）
+    if (!m_db.tables().contains("appointment_stats_cache")) {
+        QString createCacheTable = R"(
+            CREATE TABLE appointment_stats_cache (
+                doctor_username TEXT PRIMARY KEY,
+                appointment_date DATE,
+                current_count INTEGER DEFAULT 0,
+                last_updated DATETIME DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(doctor_username, appointment_date)
+            )
+        )";
+        if (!query.exec(createCacheTable)) {
+            qDebug() << "创建appointment_stats_cache表失败:" << query.lastError().text();
+        }
+    }
+    
+    qDebug() << "预约统计触发器创建完成";
 }
 
 int DBManager::getLastInsertId() {

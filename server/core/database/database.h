@@ -131,6 +131,7 @@ private:
     void createAttendanceTable();
     void createLeaveRequestsTable();
     void createChatMessagesTable();
+    void createAppointmentTriggers();
     
     // 示例数据插入
     void insertSampleMedications();
