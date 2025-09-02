@@ -15,6 +15,9 @@
 #include <QPainter>
 #include <QPainterPath>
 #include <QFontMetrics>
+#include <QFileDialog>
+#include <QStandardPaths>
+#include <QDir>
 
 // 本地工具：生成圆形头像
 namespace {
@@ -126,12 +129,15 @@ ChatRoomWidget::ChatRoomWidget(const QString& doctorName, CommunicationClient* c
     m_input = new QLineEdit(this);
     m_input->setPlaceholderText(tr("输入消息，回车发送"));
     m_sendBtn = new QPushButton(tr("发送"), this);
+    m_sendImageBtn = new QPushButton(tr("发送图片"), this);
     bottom->addWidget(m_input, 1);
     bottom->addWidget(m_sendBtn);
+    bottom->addWidget(m_sendImageBtn);
     root->addLayout(bottom); // 添加到根布局而不是右侧卡片
 
     m_chat = new ChatService(m_client, m_doctor, this);
     connect(m_sendBtn, &QPushButton::clicked, this, &ChatRoomWidget::sendClicked);
+    connect(m_sendImageBtn, &QPushButton::clicked, this, &ChatRoomWidget::sendImageClicked);
     connect(m_input, &QLineEdit::returnPressed, this, &ChatRoomWidget::sendClicked);
     // 医生端不允许 addPeer
     connect(m_convList, &QListWidget::currentRowChanged, this, &ChatRoomWidget::onPeerChanged);
@@ -241,6 +247,22 @@ ChatRoomWidget::ChatRoomWidget(const QString& doctorName, CommunicationClient* c
     });
     // 仅加载最近联系人，不自动轮询
     m_chat->recentContacts(20);
+
+    // 监听文件下载完成，刷新对应图片项
+    connect(m_client, &CommunicationClient::fileDownloaded, this, [this](const QString& serverName, const QString& localPath){
+        for (int i=0;i<m_list->count();++i) {
+            auto *it = m_list->item(i);
+            if (!it) continue;
+            if (it->data(ChatItemRoles::RoleMessageType).toString()=="image" && it->data(ChatItemRoles::RoleImageServerName).toString()==serverName) {
+                it->setData(ChatItemRoles::RoleImageLocalPath, localPath);
+                const auto r = m_list->visualItemRect(it);
+                m_list->viewport()->update(r);
+            }
+        }
+    // 完成一个，继续队列
+    m_downloading = false;
+    tryStartNextDownload();
+    });
 }
 
 void ChatRoomWidget::sendClicked() {
@@ -249,6 +271,14 @@ void ChatRoomWidget::sendClicked() {
         m_chat->sendText(m_doctor, m_currentPeer, m_input->text());
         m_input->clear();
     }
+}
+
+void ChatRoomWidget::sendImageClicked() {
+    if (m_currentPeer.isEmpty()) return;
+    const QString path = QFileDialog::getOpenFileName(this, tr("选择图片"), QString(), tr("Images (*.png *.jpg *.jpeg *.bmp *.gif)"));
+    if (path.isEmpty()) return;
+    qInfo() << "[ ChatRoomWidget ] 选择图片" << path;
+    m_chat->sendImage(m_doctor, m_currentPeer, path);
 }
 
 void ChatRoomWidget::addPeer() { /* 医生端禁用 */ }
@@ -296,15 +326,44 @@ void ChatRoomWidget::appendMessage(const QJsonObject& m) {
     }
     const QString sender = m.value("sender_username").toString(m.value("sender").toString());
     const QString text = m.value("text_content").toString();
+    const QString msgType = m.value("message_type").toString("text");
+    const QString serverImage = m.value("file_metadata").toObject().value("path").toString();
     const int id = m.value("id").toInt();
     auto *item = new QListWidgetItem();
     item->setData(ChatItemRoles::RoleSender, sender);
     item->setData(ChatItemRoles::RoleText, text);
     item->setData(ChatItemRoles::RoleIsOutgoing, sender == m_doctor);
     item->setData(ChatItemRoles::RoleMessageId, id);
-    item->setSizeHint(QSize(item->sizeHint().width(), 48));
+    item->setData(ChatItemRoles::RoleMessageType, msgType);
+    if (msgType == "image") {
+        item->setSizeHint(QSize(item->sizeHint().width(), 160));
+        const QString cacheDir = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/chat_images";
+        QDir().mkpath(cacheDir);
+        const QString localPath = QDir(cacheDir).filePath(serverImage);
+        item->setData(ChatItemRoles::RoleImageServerName, serverImage);
+        if (QFile::exists(localPath)) {
+            qInfo() << "[ ChatRoomWidget ] 使用已缓存图片" << localPath;
+            item->setData(ChatItemRoles::RoleImageLocalPath, localPath);
+        } else if (!serverImage.isEmpty()) {
+            item->setData(ChatItemRoles::RoleImageLocalPath, QString());
+            // 入队并尝试串行下载
+            qInfo() << "[ ChatRoomWidget ] 触发下载图片 server=" << serverImage << ", local=" << localPath;
+            m_downloadQueue.enqueue(qMakePair(serverImage, localPath));
+            tryStartNextDownload();
+        }
+    } else {
+        item->setSizeHint(QSize(item->sizeHint().width(), 48));
+    }
     m_list->addItem(item);
     m_list->scrollToBottom();
+}
+
+void ChatRoomWidget::tryStartNextDownload() {
+    if (m_downloading || m_downloadQueue.isEmpty()) return;
+    const auto pair = m_downloadQueue.dequeue();
+    qInfo() << "[ ChatRoomWidget ] 开始下载 server=" << pair.first << ", local=" << pair.second;
+    m_downloading = true;
+    m_client->downloadFile(pair.first, pair.second);
 }
 
 void ChatRoomWidget::onHistory(const QJsonArray& msgs, bool /*hasMore*/) {

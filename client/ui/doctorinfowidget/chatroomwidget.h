@@ -6,6 +6,7 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QMap>
+#include <QQueue>
 class QListWidget;
 class QLineEdit;
 class QPushButton;
@@ -18,6 +19,7 @@ public:
     explicit ChatRoomWidget(const QString& doctorName, CommunicationClient* client, QWidget* parent=nullptr);
 private slots:
     void sendClicked();
+    void sendImageClicked(); // Added declaration for sendImageClicked slot
     void addPeer();
     void onPeerChanged();
     void loadMore();
@@ -26,6 +28,7 @@ private slots:
 private:
     void appendMessage(const QJsonObject& m);
     void insertOlderAtTop(const QJsonArray& msgsDesc);
+    void tryStartNextDownload();
     QString m_doctor;
     QString m_currentPeer; // 患者用户名（简化：可编辑输入）
     CommunicationClient* m_client {nullptr};
@@ -36,9 +39,13 @@ private:
     QPushButton* m_addPeerBtn {nullptr};
     QLineEdit* m_input {nullptr};
     QPushButton* m_sendBtn {nullptr};
+    QPushButton* m_sendImageBtn {nullptr};
     QPushButton* m_loadMoreBtn {nullptr};
     qint64 m_cursor {0};
     QMap<QString, qint64> m_earliestByPeer; // 每个会话的最早消息id（用于翻页）
+    // 图片下载队列（serverName -> localPath）
+    QQueue<QPair<QString, QString>> m_downloadQueue;
+    bool m_downloading {false};
 };
 
 #endif // CHATROOMWIDGET_H

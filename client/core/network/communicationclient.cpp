@@ -43,13 +43,21 @@ CommunicationClient::CommunicationClient(QObject* parent)
         m_downloadFile->write(data);
     });
     connect(m_dispatcher, &ResponseDispatcher::fileDownloadCompleted, this, [this](const QJsonObject& meta) {
-        Q_UNUSED(meta);
-        if (m_downloadFile) {
+    const QString name = meta.value("name").toString();
+    if (m_downloadFile) {
             m_downloadFile->flush();
             m_downloadFile->close();
             m_downloadFile.reset(nullptr);
         }
-        qInfo() << "[ Client ] 文件下载完成";
+    // 发出带路径的完成信号
+    emit fileDownloaded(name.isEmpty() ? m_currentDownloadServerPath : name, m_currentDownloadLocalPath);
+    m_currentDownloadServerPath.clear();
+    m_currentDownloadLocalPath.clear();
+    qInfo() << "[ Client ] 文件下载完成:" << name;
+    });
+    connect(m_dispatcher, &ResponseDispatcher::fileTransferError, this, [this](const QJsonObject& err){
+        qWarning() << "[ Client ] 文件传输错误:" << err;
+        emit errorOccurred(err.value("code").toInt(), err.value("message").toString());
     });
 }
 
@@ -126,6 +134,7 @@ bool CommunicationClient::uploadFile(const QString& localPath, const QString& se
     }
     const QString name = serverPath.isEmpty() ? QFileInfo(file).fileName() : serverPath;
     const qint64 size = file.size();
+    qInfo() << "[ Client ] 开始上传文件 name=" << name << ", size=" << size << ", localPath=" << localPath;
     // 1) 发送 meta
     m_socket.write(pack(MessageType::FileUploadMeta, toJsonPayload(QJsonObject{{"name", name}, {"size", size}})));
     // 2) 发送所有数据块
@@ -136,6 +145,7 @@ bool CommunicationClient::uploadFile(const QString& localPath, const QString& se
     file.close();
     // 3) 完成
     m_socket.write(pack(MessageType::FileUploadComplete, toJsonPayload(QJsonObject{{"name", name}, {"size", size}})));
+    qInfo() << "[ Client ] 上传完成帧已发送 name=" << name;
     return true;
 }
 
@@ -147,6 +157,8 @@ bool CommunicationClient::downloadFile(const QString& serverPath, const QString&
         m_downloadFile.reset(nullptr);
         return false;
     }
+    m_currentDownloadServerPath = serverPath;
+    m_currentDownloadLocalPath = localPath;
     // 请求下载
     m_socket.write(pack(MessageType::FileDownloadRequest, toJsonPayload(QJsonObject{{"name", serverPath}})));
     return true;

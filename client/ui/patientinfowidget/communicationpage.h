@@ -3,6 +3,7 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QMap>
+#include <QQueue>
 
 class QListWidget; class QComboBox; class QLineEdit; class QPushButton; class ChatService; class DoctorListService;
 
@@ -12,6 +13,7 @@ public:
     CommunicationPage(CommunicationClient *c,const QString&p,QWidget*parent=nullptr);
 private slots:
     void sendClicked();
+    void sendImageClicked();
     void onPeerChanged();
     void loadMore();
     void onHistory(const QJsonArray& msgs, bool hasMore);
@@ -26,10 +28,16 @@ private:
     QListWidget* m_doctorList {nullptr};
     QLineEdit* m_input {nullptr};
     QPushButton* m_sendBtn {nullptr};
+    QPushButton* m_sendImageBtn {nullptr};
     QPushButton* m_loadMoreBtn {nullptr};
     ChatService* m_chat {nullptr};
     DoctorListService* m_doctorService {nullptr};
     qint64 m_cursor {0};
     QMap<QString, qint64> m_earliestByPeer;
     QString m_currentPeer;
+    // 图片下载队列
+    QQueue<QPair<QString, QString>> m_downloadQueue;
+    bool m_downloading {false};
+
+    void tryStartNextDownload();
 };

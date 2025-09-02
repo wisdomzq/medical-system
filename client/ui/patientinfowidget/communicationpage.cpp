@@ -14,6 +14,9 @@
 #include <QIcon>
 #include <QPainter>
 #include <QPainterPath>
+#include <QFileDialog>
+#include <QStandardPaths>
+#include <QDir>
 
 // 本地工具：生成圆形头像
 namespace {
@@ -112,9 +115,11 @@ CommunicationPage::CommunicationPage(CommunicationClient* c, const QString& p, Q
     m_input = new QLineEdit(this);
     m_input->setPlaceholderText("输入消息，回车发送");
     m_sendBtn = new QPushButton("发送", this);
+    m_sendImageBtn = new QPushButton("发送图片", this);
     m_sendBtn->setObjectName("primaryBtn");
     bottom->addWidget(m_input, 1);
     bottom->addWidget(m_sendBtn);
+    bottom->addWidget(m_sendImageBtn);
     root->addLayout(bottom);
 
     m_chat = new ChatService(m_client, m_patientName, this);
@@ -122,6 +127,7 @@ CommunicationPage::CommunicationPage(CommunicationClient* c, const QString& p, Q
 
     connect(m_sendBtn, &QPushButton::clicked, this, &CommunicationPage::sendClicked);
     connect(m_input, &QLineEdit::returnPressed, this, &CommunicationPage::sendClicked);
+    connect(m_sendImageBtn, &QPushButton::clicked, this, &CommunicationPage::sendImageClicked);
     connect(m_doctorList, &QListWidget::currentRowChanged, this, &CommunicationPage::onPeerChanged);
     connect(m_loadMoreBtn, &QPushButton::clicked, this, &CommunicationPage::loadMore);
     // 不使用旧信号直接渲染，避免重复
@@ -139,6 +145,21 @@ CommunicationPage::CommunicationPage(CommunicationClient* c, const QString& p, Q
 
     // 初始化医生下拉
     populateDoctors();
+
+    // 监听下载完成（刷新图片项）
+    connect(m_client, &CommunicationClient::fileDownloaded, this, [this](const QString& serverName, const QString& localPath){
+        for (int i=0;i<m_list->count();++i) {
+            auto *it = m_list->item(i);
+            if (!it) continue;
+            if (it->data(ChatItemRoles::RoleMessageType).toString()=="image" && it->data(ChatItemRoles::RoleImageServerName).toString()==serverName) {
+                it->setData(ChatItemRoles::RoleImageLocalPath, localPath);
+                const auto r = m_list->visualItemRect(it);
+                m_list->viewport()->update(r);
+            }
+        }
+        m_downloading = false;
+        tryStartNextDownload();
+    });
 }
 
 void CommunicationPage::populateDoctors() {
@@ -210,6 +231,15 @@ void CommunicationPage::sendClicked()
     }
 }
 
+void CommunicationPage::sendImageClicked()
+{
+    const QString doctor = currentDoctor();
+    if (doctor.isEmpty()) return;
+    const QString path = QFileDialog::getOpenFileName(this, tr("选择图片"), QString(), tr("Images (*.png *.jpg *.jpeg *.bmp *.gif)"));
+    if (path.isEmpty()) return;
+    m_chat->sendImage(doctor, m_patientName, path);
+}
+
 void CommunicationPage::appendMessage(const QJsonObject& m)
 {
     const QString doctor = m.value("doctor_username").toString();
@@ -217,13 +247,33 @@ void CommunicationPage::appendMessage(const QJsonObject& m)
     if (!(doctor == currentDoctor() && patient == m_patientName)) return;
     const QString sender = m.value("sender_username").toString(m.value("sender").toString());
     const QString text = m.value("text_content").toString();
+    const QString msgType = m.value("message_type").toString("text");
+    const QString serverImage = m.value("file_metadata").toObject().value("path").toString();
     const int id = m.value("id").toInt();
     auto *item = new QListWidgetItem();
     item->setData(ChatItemRoles::RoleSender, sender);
     item->setData(ChatItemRoles::RoleText, text);
     item->setData(ChatItemRoles::RoleIsOutgoing, sender == m_patientName);
     item->setData(ChatItemRoles::RoleMessageId, id);
-    item->setSizeHint(QSize(item->sizeHint().width(), 48));
+    item->setData(ChatItemRoles::RoleMessageType, msgType);
+    if (msgType == "image") {
+        item->setSizeHint(QSize(item->sizeHint().width(), 160));
+        const QString cacheDir = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/chat_images";
+        QDir().mkpath(cacheDir);
+        const QString localPath = QDir(cacheDir).filePath(serverImage);
+        item->setData(ChatItemRoles::RoleImageServerName, serverImage);
+        if (QFile::exists(localPath)) {
+            qInfo() << "[ CommunicationPage ] 使用已缓存图片" << localPath;
+            item->setData(ChatItemRoles::RoleImageLocalPath, localPath);
+        } else if (!serverImage.isEmpty()) {
+            item->setData(ChatItemRoles::RoleImageLocalPath, QString());
+            qInfo() << "[ CommunicationPage ] 触发下载图片 server=" << serverImage << ", local=" << localPath;
+            m_downloadQueue.enqueue(qMakePair(serverImage, localPath));
+            tryStartNextDownload();
+        }
+    } else {
+        item->setSizeHint(QSize(item->sizeHint().width(), 48));
+    }
     m_list->addItem(item);
     m_list->scrollToBottom();
 }
@@ -247,7 +297,7 @@ void CommunicationPage::insertOlderAtTop(const QJsonArray& msgsDesc)
     for (int i = msgsDesc.size() - 1; i >= 0; --i) {
         auto o = msgsDesc.at(i).toObject();
         const QString sender = o.value("sender_username").toString(o.value("sender").toString());
-        const QString text = o.value("text_content").toString();
+    const QString text = o.value("text_content").toString();
         const int id = o.value("id").toInt();
         auto* item = new QListWidgetItem();
         item->setData(ChatItemRoles::RoleSender, sender);
@@ -297,4 +347,12 @@ void CommunicationPage::loadMore()
     const qint64 beforeId = m_earliestByPeer.value(currentDoctor(), 0);
     const qint64 useBefore = beforeId > 0 ? beforeId : 0;
     m_chat->getHistory(currentDoctor(), m_patientName, useBefore, 20);
+}
+
+void CommunicationPage::tryStartNextDownload()
+{
+    if (m_downloading || m_downloadQueue.isEmpty()) return;
+    const auto pair = m_downloadQueue.dequeue();
+    m_downloading = true;
+    m_client->downloadFile(pair.first, pair.second);
 }

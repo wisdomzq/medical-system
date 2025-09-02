@@ -25,6 +25,8 @@ signals:
     void disconnected();
     void jsonReceived(const QJsonObject& obj);
     void errorOccurred(int code, const QString& message);
+    // 文件下载完成：携带服务器路径名与本地保存路径
+    void fileDownloaded(const QString& serverPath, const QString& localPath);
 
 public slots:
     void sendJson(const QJsonObject& obj);
@@ -52,4 +54,7 @@ private:
     quint16 m_port = 0;
     // 下载临时文件句柄
     QScopedPointer<QFile> m_downloadFile;
+    // 当前下载的标识与目标路径（用于在完成时发信号）
+    QString m_currentDownloadServerPath;
+    QString m_currentDownloadLocalPath;
 };

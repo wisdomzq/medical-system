@@ -20,6 +20,8 @@ signals:
     // 文件下载
     void fileChunkReceived(const QByteArray& data);
     void fileDownloadCompleted(const QJsonObject& meta);
+    // 文件传输出错
+    void fileTransferError(const QJsonObject& err);
 
 private:
     void handleJson(const QByteArray& payload);

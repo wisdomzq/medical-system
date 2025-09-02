@@ -33,10 +33,16 @@ void ClientHandler::initialize(qintptr socketDescriptor)
     m_parser = new StreamFrameParser(this);
     connect(m_parser, &StreamFrameParser::frameReady, this, [this](Header header, QByteArray payload) {
         this->m_currentHeader = header;
-        // 复用原有帧处理逻辑
-        QJsonObject obj = (header.type == MessageType::JsonRequest || header.type == MessageType::ErrorResponse || header.type == MessageType::JsonResponse)
-                              ? fromJsonPayload(payload)
-                              : QJsonObject{};
+        // 复用原有帧处理逻辑：文件传输的 Meta/Complete/DownloadRequest 也携带 JSON，需要解析
+        const bool isJsonPayload = (
+            header.type == MessageType::JsonRequest ||
+            header.type == MessageType::ErrorResponse ||
+            header.type == MessageType::JsonResponse ||
+            header.type == MessageType::FileUploadMeta ||
+            header.type == MessageType::FileUploadComplete ||
+            header.type == MessageType::FileDownloadRequest
+        );
+        QJsonObject obj = isJsonPayload ? fromJsonPayload(payload) : QJsonObject{};
 
         switch (header.type) {
         case MessageType::JsonRequest:
@@ -46,6 +52,7 @@ void ClientHandler::initialize(qintptr socketDescriptor)
             sendMessage(MessageType::HeartbeatPong, QJsonObject());
             break;
         case MessageType::FileUploadMeta: {
+            qInfo() << "[ Handler ] 收到 FileUploadMeta" << obj;
             QJsonObject out;
             if (!m_file->beginUpload(obj, out)) {
                 sendMessage(MessageType::FileTransferError, out);
@@ -55,6 +62,7 @@ void ClientHandler::initialize(qintptr socketDescriptor)
             break;
         }
         case MessageType::FileUploadChunk: {
+            // 二进制分片
             QJsonObject err;
             if (!m_file->appendChunk(payload, err)) {
                 sendMessage(MessageType::FileTransferError, err);
@@ -62,6 +70,7 @@ void ClientHandler::initialize(qintptr socketDescriptor)
             break;
         }
         case MessageType::FileUploadComplete: {
+            qInfo() << "[ Handler ] 收到 FileUploadComplete" << obj;
             QJsonObject result;
             if (!m_file->finishUpload(result)) {
                 sendMessage(MessageType::FileTransferError, result);
@@ -71,6 +80,7 @@ void ClientHandler::initialize(qintptr socketDescriptor)
             break;
         }
         case MessageType::FileDownloadRequest: {
+            qInfo() << "[ Handler ] 收到 FileDownloadRequest" << obj;
             QJsonObject complete;
             bool ok = m_file->downloadWhole(obj, [this](const QByteArray& data) {
                 this->sendBinary(MessageType::FileDownloadChunk, data);
