@@ -72,10 +72,6 @@ AppointmentPage::AppointmentPage(CommunicationClient *c, const QString &patient,
     patientNameEdit->setText(m_patientName);
     patientNameEdit->setFixedWidth(150);
 
-<<<<<<< Updated upstream
-    doctorTable=new QTableWidget; doctorTable->setColumnCount(8); doctorTable->setHorizontalHeaderLabels({"序号","账号","姓名","科室","工作时间","费用","已预约/上限","剩余"}); doctorTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch); doctorTable->setSelectionBehavior(QAbstractItemView::SelectRows); doctorTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    layout->addLayout(toolbar); layout->addWidget(new QLabel("医生排班")); layout->addWidget(doctorTable);
-=======
     doctorToolbarLayout->addWidget(refreshDoctorsBtn);
     doctorToolbarLayout->addSpacing(20);
     doctorToolbarLayout->addWidget(new QLabel("医生:"));
@@ -87,7 +83,6 @@ AppointmentPage::AppointmentPage(CommunicationClient *c, const QString &patient,
     doctorToolbarLayout->addSpacing(20);
     doctorToolbarLayout->addWidget(registerBtn);
     doctorToolbarLayout->addStretch();
->>>>>>> Stashed changes
 
     QLabel *doctorLabel = new QLabel("医生排班信息");
     doctorLabel->setObjectName("cardTitle");
