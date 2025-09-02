@@ -15,6 +15,41 @@
 #include <QDate>
 #include <QTime>
 
+// 统一解析医生工作时间：
+// 1) 优先使用后端直接提供的 workTime
+// 2) 其次使用 working_days（如：周一/周三...）
+// 3) 若医生端将上下班时间编码到 title，形如 "HH:mm-HH:mm"，则提取并与上面信息组合显示
+namespace {
+static QString extractWorkTime(const QJsonObject& o) {
+    // 直接字段
+    const QString workTime = o.value("workTime").toString();
+    if (!workTime.isEmpty()) return workTime;
+
+    const QString workingDays = o.value("working_days").toString();
+
+    // 从 title 中解析 "HH:mm-HH:mm"
+    QString timeRange;
+    const QString title = o.value("title").toString();
+    if (!title.isEmpty()) {
+        const auto parts = title.split('-');
+        if (parts.size() == 2) {
+            const QTime s = QTime::fromString(parts[0].trimmed(), "HH:mm");
+            const QTime e = QTime::fromString(parts[1].trimmed(), "HH:mm");
+            if (s.isValid() && e.isValid()) {
+                timeRange = s.toString("HH:mm") + "-" + e.toString("HH:mm");
+            }
+        }
+    }
+
+    if (!workingDays.isEmpty() && !timeRange.isEmpty()) return workingDays + " " + timeRange;
+    if (!workingDays.isEmpty()) return workingDays;
+    if (!timeRange.isEmpty()) return timeRange;
+
+    // 兜底：返回 title（若非时间格式，也至少给出原始信息）
+    return title;
+}
+}
+
 AppointmentPage::AppointmentPage(CommunicationClient *c, const QString &patient, QWidget *parent)
     : BasePage(c, patient, parent)
 {
@@ -229,9 +264,9 @@ AppointmentPage::AppointmentPage(CommunicationClient *c, const QString &patient,
                 set(2, o.value("name").toString());
                 set(3, o.value("department").toString());
                 {
-                    const auto work = o.value("workTime").toString(o.value("working_days").toString());
+                    const auto work = extractWorkTime(o);
                     set(4, work);
-                    if (auto *it=doctorTable->item(row,4)) { if (work.length()>50) it->setToolTip(work); }
+                    if (auto *it=doctorTable->item(row,4)) { if (work.length()>40) it->setToolTip(work); }
                 }
                 set(5, QString::number(o.value("fee").toDouble(o.value("consultation_fee").toDouble()), 'f', 2));
                 // 使用准确的今日预约数量
@@ -246,9 +281,9 @@ AppointmentPage::AppointmentPage(CommunicationClient *c, const QString &patient,
                 set(2, o.value("name").toString());
                 set(3, o.value("department").toString());
                 {
-                    const auto work = QString("%1 (%2)").arg(o.value("title").toString()).arg(o.value("specialization").toString());
+                    const auto work = extractWorkTime(o);
                     set(4, work);
-                    if (auto *it=doctorTable->item(row,4)) { if (work.length()>50) it->setToolTip(work); }
+                    if (auto *it=doctorTable->item(row,4)) { if (work.length()>40) it->setToolTip(work); }
                 }
                 set(5, QString::number(o.value("consultation_fee").toDouble(),'f',2));
                 // 使用准确的预约数量和上限
@@ -333,7 +368,9 @@ void AppointmentPage::handleResponse(const QJsonObject &obj){
         if(!obj.value("success").toBool())return;
         QJsonArray arr=obj.value("data").toArray(); doctorTable->setRowCount(arr.size()); int row=0;
         for(auto v:arr){ QJsonObject o=v.toObject(); auto set=[&](int c,const QString&t){ auto* it=new QTableWidgetItem(t); it->setTextAlignment(Qt::AlignCenter); doctorTable->setItem(row,c,it); };
-            set(0,QString::number(o.value("doctorId").toInt())); set(1,o.value("doctor_username").toString()); set(2,o.value("name").toString()); set(3,o.value("department").toString()); set(4,o.value("workTime").toString()); set(5,QString::number(o.value("fee").toDouble(),'f',2)); int reserved=o.value("reservedPatients").toInt(); int maxp=o.value("maxPatientsPerDay").toInt(); int remain=o.value("remainingSlots").toInt(); set(6,QString("%1/%2").arg(reserved).arg(maxp)); set(7,QString::number(remain)); doctorTable->setRowHeight(row,40); ++row; }
+            set(0,QString::number(o.value("doctorId").toInt())); set(1,o.value("doctor_username").toString()); set(2,o.value("name").toString()); set(3,o.value("department").toString());
+            set(4, extractWorkTime(o));
+            set(5,QString::number(o.value("fee").toDouble(),'f',2)); int reserved=o.value("reservedPatients").toInt(); int maxp=o.value("maxPatientsPerDay").toInt(); int remain=o.value("remainingSlots").toInt(); set(6,QString("%1/%2").arg(reserved).arg(maxp)); set(7,QString::number(remain)); doctorTable->setRowHeight(row,40); ++row; }
     } else if(type=="doctors_response"){
         // 处理来自get_all_doctors的响应，现在包含预约统计信息
         if(!obj.value("success").toBool())return;
@@ -344,12 +381,8 @@ void AppointmentPage::handleResponse(const QJsonObject &obj){
             set(2,o.value("name").toString()); // 医生姓名
             set(3,o.value("department").toString()); // 科室
             
-            // 工作时间信息：优先使用working_days，否则使用职称信息
-            QString workInfo = o.value("working_days").toString();
-            if (workInfo.isEmpty()) {
-                workInfo = QString("%1 (%2)").arg(o.value("title").toString()).arg(o.value("specialization").toString());
-            }
-            set(4, workInfo);
+            // 工作时间信息：统一通过 extractWorkTime 解析（working_days + title 中的 HH:mm-HH:mm）
+            set(4, extractWorkTime(o));
             
             set(5,QString::number(o.value("consultation_fee").toDouble(),'f',2)); // 挂号费
             
@@ -378,7 +411,7 @@ void AppointmentPage::handleResponse(const QJsonObject &obj){
             set(1,o.value("username").toString()); 
             set(2,o.value("name").toString()); 
             set(3,o.value("department").toString()); 
-            set(4,o.value("working_days").toString()); // 显示工作日信息
+            set(4, extractWorkTime(o)); // 工作日 + 时段
             set(5,QString::number(o.value("consultation_fee").toDouble(),'f',2)); 
             int todayAppts=o.value("today_appointments").toInt(); 
             int maxDaily=o.value("max_patients_per_day").toInt(); 

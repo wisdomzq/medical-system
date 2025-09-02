@@ -6,6 +6,33 @@
 #include <QMessageBox>
 #include <QJsonDocument>
 #include <QDebug>
+#include <QTime>
+
+namespace {
+// 与预约页一致：统一从 workTime/working_days/title 中解析工作时间
+static QString extractWorkTime(const QJsonObject& o) {
+    const QString wt = o.value("workTime").toString();
+    if (!wt.isEmpty()) return wt;
+
+    const QString workingDays = o.value("working_days").toString();
+
+    QString timeRange;
+    const QString title = o.value("title").toString();
+    if (!title.isEmpty()) {
+        const auto parts = title.split('-');
+        if (parts.size() == 2) {
+            const QTime s = QTime::fromString(parts[0].trimmed(), "HH:mm");
+            const QTime e = QTime::fromString(parts[1].trimmed(), "HH:mm");
+            if (s.isValid() && e.isValid()) timeRange = s.toString("HH:mm") + "-" + e.toString("HH:mm");
+        }
+    }
+
+    if (!workingDays.isEmpty() && !timeRange.isEmpty()) return workingDays + " " + timeRange;
+    if (!workingDays.isEmpty()) return workingDays;
+    if (!timeRange.isEmpty()) return timeRange;
+    return title; // 兜底
+}
+}
 
 DoctorListPage::DoctorListPage(CommunicationClient* client, const QString& patientName, QWidget *parent)
     : BasePage(client, patientName, parent), m_doctorInfoPage(nullptr)
@@ -131,7 +158,7 @@ void DoctorListPage::setupUI()
     // 设置列宽
     m_doctorTable->setColumnWidth(0, 100); // 姓名
     m_doctorTable->setColumnWidth(1, 100); // 科室
-    m_doctorTable->setColumnWidth(2, 120); // 职称
+    m_doctorTable->setColumnWidth(2, 160); // 工作时间
     m_doctorTable->setColumnWidth(3, 150); // 专业
     m_doctorTable->setColumnWidth(4, 80);  // 挂号费
     
@@ -198,9 +225,11 @@ void DoctorListPage::displayDoctors(const QJsonArray& doctors)
             m_doctorTable->setItem(i, 1, item);
         }
         
-        // 职称
+        // 工作时间（working_days + title 中的 HH:mm-HH:mm）
         {
-            auto* item = new QTableWidgetItem(doctor.value("title").toString());
+            const auto work = extractWorkTime(doctor);
+            auto* item = new QTableWidgetItem(work);
+            if (work.length() > 40) item->setToolTip(work);
             item->setTextAlignment(Qt::AlignCenter);
             m_doctorTable->setItem(i, 2, item);
         }
