@@ -71,22 +71,47 @@ LoginWidget::LoginWidget(CommunicationClient* sharedClient, QWidget* parent)
     auto makeRoleCard = [&](const QString &icon, const QString &btnText, const QString &btnObjName, std::function<void()> onClick){
         QWidget *card = new QWidget(this);
         card->setObjectName("RoleCard");
+        card->setMinimumSize(300, 380);
+        card->setMaximumSize(320, 400);
+        
         QVBoxLayout *cl = new QVBoxLayout(card);
-        cl->setContentsMargins(12,12,12,12);
-        cl->setSpacing(12);
+        cl->setContentsMargins(24,32,24,32);
+        cl->setSpacing(16);
+        
         // 圆形图标容器
         QLabel *circle = new QLabel(card);
         circle->setObjectName("RoleCircle");
-        circle->setFixedSize(120,120);
+        circle->setFixedSize(140,140);
         circle->setAlignment(Qt::AlignCenter);
-        QPixmap pm = QIcon(icon).pixmap(72,72);
+        QPixmap pm = QIcon(icon).pixmap(88,88);
         circle->setPixmap(pm);
         cl->addWidget(circle, 0, Qt::AlignHCenter);
+        
+        // 角色标题
+        QLabel *roleName = new QLabel(card);
+        roleName->setObjectName("RoleName");
+        roleName->setAlignment(Qt::AlignHCenter);
+        roleName->setText(btnText == QStringLiteral("我是医生") ? QStringLiteral("医生工作台") : QStringLiteral("患者服务平台"));
+        cl->addWidget(roleName);
+        
+        // 角色描述
+        QLabel *roleDesc = new QLabel(card);
+        roleDesc->setObjectName("RoleDesc");
+        roleDesc->setAlignment(Qt::AlignHCenter);
+        roleDesc->setWordWrap(true);
+        roleDesc->setText(btnText == QStringLiteral("我是医生")
+                          ? QStringLiteral("专业的医疗管理平台\n门诊管理 · 病患跟踪 · 数据分析")
+                          : QStringLiteral("便捷的就医服务系统\n在线挂号 · 健康档案 · 医患沟通"));
+        cl->addWidget(roleDesc);
+        
+        cl->addSpacing(4);
+        
         // 下方动作按钮
         QPushButton *btn = new QPushButton(btnText, card);
         btn->setObjectName(btnObjName);
         btn->setFixedSize(160, 40);
         cl->addWidget(btn, 0, Qt::AlignHCenter);
+        
         QObject::connect(btn, &QPushButton::clicked, card, [onClick]{ onClick(); });
         return card;
     };
@@ -95,25 +120,34 @@ LoginWidget::LoginWidget(CommunicationClient* sharedClient, QWidget* parent)
     QWidget *patientCard = makeRoleCard(":/icons/病人.svg", QStringLiteral("我是病人"), "RoleBtnPatient", [this]{ showPatientLogin(); });
 
     QHBoxLayout* btnLayout = new QHBoxLayout();
+    btnLayout->setContentsMargins(40,0,40,0);
+    btnLayout->setSpacing(48);
     btnLayout->addStretch();
+    doctorCard->setMinimumWidth(300);
+    patientCard->setMinimumWidth(300);
     btnLayout->addWidget(doctorCard);
-    btnLayout->addSpacing(40);
     btnLayout->addWidget(patientCard);
     btnLayout->addStretch();
 
     // 外层带圆角边框的容器，包住提示文字与身份选择
     QWidget* selectionGroup = new QWidget(selectionPage);
     selectionGroup->setObjectName("SelectionGroup");
+    selectionGroup->setMaximumWidth(900);
     QVBoxLayout* groupLayout = new QVBoxLayout(selectionGroup);
-    groupLayout->setContentsMargins(24, 24, 24, 24);
-    groupLayout->setSpacing(16);
+    groupLayout->setContentsMargins(40, 40, 40, 40);
+    groupLayout->setSpacing(24);
     groupLayout->addWidget(userTypeLabel);
-    groupLayout->addSpacing(12);
+    // 次级说明文字
+    QLabel* userTypeSub = new QLabel(QStringLiteral("选择您的身份类型，开始使用智慧医疗服务"), selectionGroup);
+    userTypeSub->setObjectName("UserTypeSubLabel");
+    userTypeSub->setAlignment(Qt::AlignCenter);
+    groupLayout->addWidget(userTypeSub);
+    groupLayout->addSpacing(10);
     groupLayout->addLayout(btnLayout);
 
     selectionLayout->addStretch();
     selectionLayout->addWidget(createTitleLabel()); // Use helper for title
-    selectionLayout->addSpacing(20);
+    selectionLayout->addSpacing(10);
     selectionLayout->addWidget(selectionGroup, 0, Qt::AlignHCenter);
     selectionLayout->addStretch();
 
@@ -389,15 +423,16 @@ LoginWidget::LoginWidget(CommunicationClient* sharedClient, QWidget* parent)
 QLabel* LoginWidget::createTitleLabel() {
     QLabel* titleLabel = new QLabel("智慧医疗系统");
     titleLabel->setObjectName("LoginTitle");
+    
     // 最小兜底：若 QSS 未加载，也有较大字号与指定字体
     QFont f;
     f.setFamily(QStringLiteral("文泉驿微米黑"));
-    f.setPointSize(34);
+    f.setPointSize(28);
     f.setBold(true);
-    // 字符间距加大一些（绝对像素）
-    f.setLetterSpacing(QFont::AbsoluteSpacing, 3.0);
+    f.setLetterSpacing(QFont::AbsoluteSpacing, 2.0);
     titleLabel->setFont(f);
     titleLabel->setAlignment(Qt::AlignCenter);
+    
     return titleLabel;
 }
 
