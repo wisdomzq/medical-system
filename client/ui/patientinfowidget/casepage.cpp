@@ -86,9 +86,6 @@ void CasePage::setupUI()
     QStringList headers;
     headers << "序号" << "就诊日期" << "科室" << "主治医生" << "诊断结果";
     m_recordTable->setHorizontalHeaderLabels(headers);
-    // 表头居中与样式
-    m_recordTable->horizontalHeader()->setDefaultAlignment(Qt::AlignCenter);
-    m_recordTable->horizontalHeader()->setFixedHeight(36);
     
     // 设置表格样式
     m_recordTable->setAlternatingRowColors(true);
@@ -96,41 +93,6 @@ void CasePage::setupUI()
     m_recordTable->setSelectionMode(QAbstractItemView::SingleSelection);
     m_recordTable->horizontalHeader()->setStretchLastSection(true);
     m_recordTable->verticalHeader()->setVisible(false);
-    m_recordTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    m_recordTable->setFocusPolicy(Qt::NoFocus);
-    m_recordTable->setWordWrap(false);
-    m_recordTable->setStyleSheet(
-        "QTableWidget {"
-        "  background-color: #ffffff;"
-        "  border: 1px solid #e5e7eb;"
-        "  border-radius: 8px;"
-        "  gridline-color: #f1f5f9;"
-        "}"
-        "QTableWidget::item {"
-        "  padding: 6px;"
-        "}"
-        "QTableWidget::item:!selected:alternate {"
-        "  background: #f9fafb;"
-        "}"
-        "QTableWidget::item:selected {"
-        "  background-color: #eef2ff;"
-        "  color: #1f2937;"
-        "}"
-        "QHeaderView::section {"
-        "  background: #f8fafc;"
-        "  padding: 8px;"
-        "  border: none;"
-        "  border-right: 1px solid #e5e7eb;"
-        "  font-weight: 600;"
-        "}"
-        "QHeaderView::section:last {"
-        "  border-right: none;"
-        "}"
-        "QTableCornerButton::section {"
-        "  background: #f8fafc;"
-        "  border: none;"
-        "}"
-    );
     
     // 设置列宽
     m_recordTable->setColumnWidth(0, 60);  // 序号
@@ -207,11 +169,7 @@ void CasePage::populateTable(const QJsonArray &records)
         QJsonObject record = records[i].toObject();
         
         // 序号
-        {
-            auto *item = new QTableWidgetItem(QString::number(i + 1));
-            item->setTextAlignment(Qt::AlignCenter);
-            m_recordTable->setItem(i, 0, item);
-        }
+        m_recordTable->setItem(i, 0, new QTableWidgetItem(QString::number(i + 1)));
         
         // 日期 - 显示完整的日期时间
         QString date = record.value("visit_date").toString();
@@ -222,18 +180,10 @@ void CasePage::populateTable(const QJsonArray &records)
                 date = dt.toString("yyyy-MM-dd-hh:mm"); // 显示年月日-时刻
             }
         }
-        {
-            auto *item = new QTableWidgetItem(date);
-            item->setTextAlignment(Qt::AlignCenter);
-            m_recordTable->setItem(i, 1, item);
-        }
+        m_recordTable->setItem(i, 1, new QTableWidgetItem(date));
         
         // 科室
-        {
-            auto *item = new QTableWidgetItem(record.value("department").toString());
-            item->setTextAlignment(Qt::AlignCenter);
-            m_recordTable->setItem(i, 2, item);
-        }
+        m_recordTable->setItem(i, 2, new QTableWidgetItem(record.value("department").toString()));
         
         // 主治医生
         QString doctorName = record.value("doctor_name").toString();
@@ -241,25 +191,14 @@ void CasePage::populateTable(const QJsonArray &records)
         if (!doctorTitle.isEmpty()) {
             doctorName += " (" + doctorTitle + ")";
         }
-        {
-            auto *item = new QTableWidgetItem(doctorName);
-            item->setTextAlignment(Qt::AlignCenter);
-            m_recordTable->setItem(i, 3, item);
-        }
+        m_recordTable->setItem(i, 3, new QTableWidgetItem(doctorName));
         
         // 诊断结果
         QString diagnosis = record.value("diagnosis").toString();
         if (diagnosis.length() > 50) {
             diagnosis = diagnosis.left(47) + "...";
         }
-        {
-            auto *item = new QTableWidgetItem(diagnosis);
-            item->setTextAlignment(Qt::AlignCenter);
-            m_recordTable->setItem(i, 4, item);
-        }
-
-        // 行高
-        m_recordTable->setRowHeight(i, 40);
+        m_recordTable->setItem(i, 4, new QTableWidgetItem(diagnosis));
     }
     
     qDebug() << "[ CasePage ] 表格已填充，共" << records.size() << "条记录";

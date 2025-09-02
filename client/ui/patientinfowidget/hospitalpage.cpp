@@ -32,28 +32,7 @@ HospitalPage::HospitalPage(CommunicationClient *c,const QString &patient,QWidget
     titleV->addWidget(title);
     titleV->addWidget(subTitle);
     topBarLayout->addLayout(titleV);
-    
-    // 刷新按钮移到标题右侧 - 学习医嘱模块的白色样式
-    refreshBtn=new QPushButton("刷新"); 
-    refreshBtn->setStyleSheet(
-        "QPushButton {"
-        "    background-color: #ffffff;"
-        "    color: #4f63dd;"
-        "    border: 1px solid #d9e6fb;"
-        "    border-radius: 8px;"
-        "    padding: 8px 14px;"
-        "    font-size: 14px;"
-        "}"
-        "QPushButton:hover {"
-        "    background-color: #eef2ff;"
-        "}"
-        "QPushButton:pressed {"
-        "    background-color: #e0e7ff;"
-        "}"
-    );
-    
     topBarLayout->addStretch();
-    topBarLayout->addWidget(refreshBtn);
     layout->addWidget(topBar);
     
     // 内容区域
@@ -63,13 +42,13 @@ HospitalPage::HospitalPage(CommunicationClient *c,const QString &patient,QWidget
     contentLayout->setSpacing(10);
     
     QHBoxLayout *bar=new QHBoxLayout; 
+    refreshBtn=new QPushButton("刷新"); 
+    refreshBtn->setObjectName("primaryBtn");
     filterDoctorEdit=new QLineEdit; 
     filterDoctorEdit->setPlaceholderText("按医生过滤(可选)"); 
-    searchBtn=new QPushButton("搜索");
-    searchBtn->setObjectName("primaryBtn");
     bar->addWidget(filterDoctorEdit); 
-    bar->addWidget(searchBtn);
     bar->addStretch(); 
+    bar->addWidget(refreshBtn); 
     contentLayout->addLayout(bar);
     
     // 创建表格卡片容器
@@ -93,7 +72,6 @@ HospitalPage::HospitalPage(CommunicationClient *c,const QString &patient,QWidget
     tableCardLayout->addWidget(table);
     contentLayout->addWidget(tableCard); 
     connect(refreshBtn,&QPushButton::clicked,this,&HospitalPage::refresh);
-    connect(searchBtn,&QPushButton::clicked,this,&HospitalPage::searchByDoctor);
     
     layout->addWidget(contentWidget);
     // 服务化
@@ -121,14 +99,5 @@ HospitalPage::HospitalPage(CommunicationClient *c,const QString &patient,QWidget
     refresh(); }
 
 void HospitalPage::refresh(){ if(filterDoctorEdit->text().trimmed().isEmpty()) m_service->fetchByPatient(m_patientName); else m_service->fetchByDoctor(filterDoctorEdit->text().trimmed()); }
-
-void HospitalPage::searchByDoctor(){ 
-    QString doctorFilter = filterDoctorEdit->text().trimmed();
-    if(doctorFilter.isEmpty()) {
-        m_service->fetchByPatient(m_patientName);
-    } else {
-        m_service->fetchByDoctor(doctorFilter);
-    }
-}
 
 void HospitalPage::handleResponse(const QJsonObject &){ /* 已服务化，兼容入口保留 */ }

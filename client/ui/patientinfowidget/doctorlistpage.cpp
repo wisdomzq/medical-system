@@ -6,33 +6,6 @@
 #include <QMessageBox>
 #include <QJsonDocument>
 #include <QDebug>
-#include <QTime>
-
-namespace {
-// 与预约页一致：统一从 workTime/working_days/title 中解析工作时间
-static QString extractWorkTime(const QJsonObject& o) {
-    const QString wt = o.value("workTime").toString();
-    if (!wt.isEmpty()) return wt;
-
-    const QString workingDays = o.value("working_days").toString();
-
-    QString timeRange;
-    const QString title = o.value("title").toString();
-    if (!title.isEmpty()) {
-        const auto parts = title.split('-');
-        if (parts.size() == 2) {
-            const QTime s = QTime::fromString(parts[0].trimmed(), "HH:mm");
-            const QTime e = QTime::fromString(parts[1].trimmed(), "HH:mm");
-            if (s.isValid() && e.isValid()) timeRange = s.toString("HH:mm") + "-" + e.toString("HH:mm");
-        }
-    }
-
-    if (!workingDays.isEmpty() && !timeRange.isEmpty()) return workingDays + " " + timeRange;
-    if (!workingDays.isEmpty()) return workingDays;
-    if (!timeRange.isEmpty()) return timeRange;
-    return title; // 兜底
-}
-}
 
 DoctorListPage::DoctorListPage(CommunicationClient* client, const QString& patientName, QWidget *parent)
     : BasePage(client, patientName, parent), m_doctorInfoPage(nullptr)
@@ -107,11 +80,8 @@ void DoctorListPage::setupUI()
     // 医生列表表格
     m_doctorTable = new QTableWidget();
     m_doctorTable->setColumnCount(6);
-    QStringList headers = {"姓名", "科室", "工作时间", "专业", "挂号费", "操作"};
+    QStringList headers = {"姓名", "科室", "职称", "专业", "挂号费", "操作"};
     m_doctorTable->setHorizontalHeaderLabels(headers);
-    // 表头居中与高度
-    m_doctorTable->horizontalHeader()->setDefaultAlignment(Qt::AlignCenter);
-    m_doctorTable->horizontalHeader()->setFixedHeight(36);
     
     // 设置表格样式
     m_doctorTable->setAlternatingRowColors(true);
@@ -120,45 +90,11 @@ void DoctorListPage::setupUI()
     m_doctorTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     m_doctorTable->horizontalHeader()->setStretchLastSection(true);
     m_doctorTable->verticalHeader()->setVisible(false);
-    m_doctorTable->setFocusPolicy(Qt::NoFocus);
-    m_doctorTable->setWordWrap(false);
-    m_doctorTable->setStyleSheet(
-        "QTableWidget {"
-        "  background-color: #ffffff;"
-        "  border: 1px solid #e5e7eb;"
-        "  border-radius: 8px;"
-        "  gridline-color: #f1f5f9;"
-        "}"
-        "QTableWidget::item {"
-        "  padding: 6px;"
-        "}"
-        "QTableWidget::item:!selected:alternate {"
-        "  background: #f9fafb;"
-        "}"
-        "QTableWidget::item:selected {"
-        "  background-color: #eef2ff;"
-        "  color: #1f2937;"
-        "}"
-        "QHeaderView::section {"
-        "  background: #f8fafc;"
-        "  padding: 8px;"
-        "  border: none;"
-        "  border-right: 1px solid #e5e7eb;"
-        "  font-weight: 600;"
-        "}"
-        "QHeaderView::section:last {"
-        "  border-right: none;"
-        "}"
-        "QTableCornerButton::section {"
-        "  background: #f8fafc;"
-        "  border: none;"
-        "}"
-    );
     
     // 设置列宽
     m_doctorTable->setColumnWidth(0, 100); // 姓名
     m_doctorTable->setColumnWidth(1, 100); // 科室
-    m_doctorTable->setColumnWidth(2, 160); // 工作时间
+    m_doctorTable->setColumnWidth(2, 120); // 职称
     m_doctorTable->setColumnWidth(3, 150); // 专业
     m_doctorTable->setColumnWidth(4, 80);  // 挂号费
     
@@ -212,55 +148,25 @@ void DoctorListPage::displayDoctors(const QJsonArray& doctors)
         QJsonObject doctor = doctors[i].toObject();
         
         // 姓名
-        {
-            auto* item = new QTableWidgetItem(doctor.value("name").toString());
-            item->setTextAlignment(Qt::AlignCenter);
-            m_doctorTable->setItem(i, 0, item);
-        }
+        m_doctorTable->setItem(i, 0, new QTableWidgetItem(doctor.value("name").toString()));
         
         // 科室
-        {
-            auto* item = new QTableWidgetItem(doctor.value("department").toString());
-            item->setTextAlignment(Qt::AlignCenter);
-            m_doctorTable->setItem(i, 1, item);
-        }
+        m_doctorTable->setItem(i, 1, new QTableWidgetItem(doctor.value("department").toString()));
         
-        // 工作时间（working_days + title 中的 HH:mm-HH:mm）
-        {
-            const auto work = extractWorkTime(doctor);
-            auto* item = new QTableWidgetItem(work);
-            if (work.length() > 40) item->setToolTip(work);
-            item->setTextAlignment(Qt::AlignCenter);
-            m_doctorTable->setItem(i, 2, item);
-        }
+        // 职称
+        m_doctorTable->setItem(i, 2, new QTableWidgetItem(doctor.value("title").toString()));
         
         // 专业
-        {
-            const auto spec = doctor.value("specialization").toString();
-            auto* item = new QTableWidgetItem(spec);
-            if (spec.length() > 50) item->setToolTip(spec);
-            item->setTextAlignment(Qt::AlignCenter);
-            m_doctorTable->setItem(i, 3, item);
-        }
+        m_doctorTable->setItem(i, 3, new QTableWidgetItem(doctor.value("specialization").toString()));
         
         // 挂号费
         double fee = doctor.value("consultation_fee").toDouble();
-        {
-            auto* item = new QTableWidgetItem(QString("¥%1").arg(fee, 0, 'f', 2));
-            item->setTextAlignment(Qt::AlignCenter);
-            m_doctorTable->setItem(i, 4, item);
-        }
+        m_doctorTable->setItem(i, 4, new QTableWidgetItem(QString("¥%1").arg(fee, 0, 'f', 2)));
         
         // 操作列 - 存储医生用户名用于后续查询
-        {
-            auto* actionItem = new QTableWidgetItem("查看详情");
-            actionItem->setData(Qt::UserRole, doctor.value("username").toString());
-            actionItem->setTextAlignment(Qt::AlignCenter);
-            m_doctorTable->setItem(i, 5, actionItem);
-        }
-
-        // 行高
-        m_doctorTable->setRowHeight(i, 40);
+        QTableWidgetItem* actionItem = new QTableWidgetItem("查看详情");
+        actionItem->setData(Qt::UserRole, doctor.value("username").toString());
+        m_doctorTable->setItem(i, 5, actionItem);
     }
 }
 

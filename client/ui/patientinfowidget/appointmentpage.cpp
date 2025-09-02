@@ -15,41 +15,6 @@
 #include <QDate>
 #include <QTime>
 
-// 统一解析医生工作时间：
-// 1) 优先使用后端直接提供的 workTime
-// 2) 其次使用 working_days（如：周一/周三...）
-// 3) 若医生端将上下班时间编码到 title，形如 "HH:mm-HH:mm"，则提取并与上面信息组合显示
-namespace {
-static QString extractWorkTime(const QJsonObject& o) {
-    // 直接字段
-    const QString workTime = o.value("workTime").toString();
-    if (!workTime.isEmpty()) return workTime;
-
-    const QString workingDays = o.value("working_days").toString();
-
-    // 从 title 中解析 "HH:mm-HH:mm"
-    QString timeRange;
-    const QString title = o.value("title").toString();
-    if (!title.isEmpty()) {
-        const auto parts = title.split('-');
-        if (parts.size() == 2) {
-            const QTime s = QTime::fromString(parts[0].trimmed(), "HH:mm");
-            const QTime e = QTime::fromString(parts[1].trimmed(), "HH:mm");
-            if (s.isValid() && e.isValid()) {
-                timeRange = s.toString("HH:mm") + "-" + e.toString("HH:mm");
-            }
-        }
-    }
-
-    if (!workingDays.isEmpty() && !timeRange.isEmpty()) return workingDays + " " + timeRange;
-    if (!workingDays.isEmpty()) return workingDays;
-    if (!timeRange.isEmpty()) return timeRange;
-
-    // 兜底：返回 title（若非时间格式，也至少给出原始信息）
-    return title;
-}
-}
-
 AppointmentPage::AppointmentPage(CommunicationClient *c, const QString &patient, QWidget *parent)
     : BasePage(c, patient, parent)
 {
@@ -128,44 +93,6 @@ AppointmentPage::AppointmentPage(CommunicationClient *c, const QString &patient,
     doctorTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     doctorTable->setSelectionBehavior(QAbstractItemView::SelectRows);
     doctorTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    doctorTable->verticalHeader()->setVisible(false);
-    doctorTable->horizontalHeader()->setDefaultAlignment(Qt::AlignCenter);
-    doctorTable->horizontalHeader()->setFixedHeight(36);
-    doctorTable->setAlternatingRowColors(true);
-    doctorTable->setFocusPolicy(Qt::NoFocus);
-    doctorTable->setWordWrap(false);
-    doctorTable->setStyleSheet(
-        "QTableWidget {"
-        "  background-color: #ffffff;"
-        "  border: 1px solid #e5e7eb;"
-        "  border-radius: 8px;"
-        "  gridline-color: #f1f5f9;"
-        "}"
-        "QTableWidget::item {"
-        "  padding: 6px;"
-        "}"
-        "QTableWidget::item:!selected:alternate {"
-        "  background: #f9fafb;"
-        "}"
-        "QTableWidget::item:selected {"
-        "  background-color: #eef2ff;"
-        "  color: #1f2937;"
-        "}"
-        "QHeaderView::section {"
-        "  background: #f8fafc;"
-        "  padding: 8px;"
-        "  border: none;"
-        "  border-right: 1px solid #e5e7eb;"
-        "  font-weight: 600;"
-        "}"
-        "QHeaderView::section:last {"
-        "  border-right: none;"
-        "}"
-        "QTableCornerButton::section {"
-        "  background: #f8fafc;"
-        "  border: none;"
-        "}"
-    );
 
     doctorCardLayout->addWidget(doctorLabel);
     doctorCardLayout->addWidget(doctorToolbar);
@@ -198,44 +125,6 @@ AppointmentPage::AppointmentPage(CommunicationClient *c, const QString &patient,
     appointmentsTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     appointmentsTable->setSelectionBehavior(QAbstractItemView::SelectRows);
     appointmentsTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    appointmentsTable->verticalHeader()->setVisible(false);
-    appointmentsTable->horizontalHeader()->setDefaultAlignment(Qt::AlignCenter);
-    appointmentsTable->horizontalHeader()->setFixedHeight(36);
-    appointmentsTable->setAlternatingRowColors(true);
-    appointmentsTable->setFocusPolicy(Qt::NoFocus);
-    appointmentsTable->setWordWrap(false);
-    appointmentsTable->setStyleSheet(
-        "QTableWidget {"
-        "  background-color: #ffffff;"
-        "  border: 1px solid #e5e7eb;"
-        "  border-radius: 8px;"
-        "  gridline-color: #f1f5f9;"
-        "}"
-        "QTableWidget::item {"
-        "  padding: 6px;"
-        "}"
-        "QTableWidget::item:!selected:alternate {"
-        "  background: #f9fafb;"
-        "}"
-        "QTableWidget::item:selected {"
-        "  background-color: #eef2ff;"
-        "  color: #1f2937;"
-        "}"
-        "QHeaderView::section {"
-        "  background: #f8fafc;"
-        "  padding: 8px;"
-        "  border: none;"
-        "  border-right: 1px solid #e5e7eb;"
-        "  font-weight: 600;"
-        "}"
-        "QHeaderView::section:last {"
-        "  border-right: none;"
-        "}"
-        "QTableCornerButton::section {"
-        "  background: #f8fafc;"
-        "  border: none;"
-        "}"
-    );
 
     appointmentCardLayout->addWidget(appointmentLabel);
     appointmentCardLayout->addWidget(appointmentToolbar);
@@ -255,7 +144,7 @@ AppointmentPage::AppointmentPage(CommunicationClient *c, const QString &patient,
     connect(m_service, &PatientAppointmentService::doctorsFetched, this, [this](const QJsonArray& arr){
         doctorTable->setRowCount(arr.size()); int row=0;
         for (const auto &v : arr) {
-            QJsonObject o=v.toObject(); auto set=[&](int c,const QString&t){ auto* it=new QTableWidgetItem(t); it->setTextAlignment(Qt::AlignCenter); doctorTable->setItem(row,c,it); };
+            QJsonObject o=v.toObject(); auto set=[&](int c,const QString&t){ doctorTable->setItem(row,c,new QTableWidgetItem(t)); };
             // 兼容不同医生列表响应的字段
             const bool hasSchedule = o.contains("doctorId") || o.contains("working_days");
             if (hasSchedule) {
@@ -263,11 +152,7 @@ AppointmentPage::AppointmentPage(CommunicationClient *c, const QString &patient,
                 set(1, o.value("doctor_username").toString(o.value("username").toString()));
                 set(2, o.value("name").toString());
                 set(3, o.value("department").toString());
-                {
-                    const auto work = extractWorkTime(o);
-                    set(4, work);
-                    if (auto *it=doctorTable->item(row,4)) { if (work.length()>40) it->setToolTip(work); }
-                }
+                set(4, o.value("workTime").toString(o.value("working_days").toString()));
                 set(5, QString::number(o.value("fee").toDouble(o.value("consultation_fee").toDouble()), 'f', 2));
                 // 使用准确的今日预约数量
                 int reserved = o.value("reservedPatients").toInt(o.value("today_appointments").toInt());
@@ -280,11 +165,7 @@ AppointmentPage::AppointmentPage(CommunicationClient *c, const QString &patient,
                 set(1, o.value("username").toString());
                 set(2, o.value("name").toString());
                 set(3, o.value("department").toString());
-                {
-                    const auto work = extractWorkTime(o);
-                    set(4, work);
-                    if (auto *it=doctorTable->item(row,4)) { if (work.length()>40) it->setToolTip(work); }
-                }
+                set(4, QString("%1 (%2)").arg(o.value("title").toString()).arg(o.value("specialization").toString()));
                 set(5, QString::number(o.value("consultation_fee").toDouble(),'f',2));
                 // 使用准确的预约数量和上限
                 int todayAppointments = o.value("today_appointments").toInt();
@@ -302,13 +183,12 @@ AppointmentPage::AppointmentPage(CommunicationClient *c, const QString &patient,
                          << "today_appointments=" << todayAppointments 
                          << "today_max_appointments=" << todayMaxAppointments;
             }
-            doctorTable->setRowHeight(row, 40);
             ++row;
         }
     });
     connect(m_service, &PatientAppointmentService::appointmentsFetched, this, [this](const QJsonArray& arr){
         appointmentsTable->setRowCount(arr.size()); int r=0;
-        for(const auto &v: arr){ QJsonObject o=v.toObject(); auto set=[&](int c,const QString&t){ auto* it=new QTableWidgetItem(t); it->setTextAlignment(Qt::AlignCenter); appointmentsTable->setItem(r,c,it); };
+        for(const auto &v: arr){ QJsonObject o=v.toObject(); auto set=[&](int c,const QString&t){ appointmentsTable->setItem(r,c,new QTableWidgetItem(t)); };
             set(0,QString::number(o.value("id").toInt())); 
             set(1,o.value("doctor_username").toString()); 
             set(2,o.value("doctor_name").toString()); 
@@ -323,7 +203,6 @@ AppointmentPage::AppointmentPage(CommunicationClient *c, const QString &patient,
                     .arg(o.value("doctor_specialization").toString());
                 if (auto *it = appointmentsTable->item(r,2)) it->setToolTip(tooltip);
             }
-            appointmentsTable->setRowHeight(r, 40);
             ++r; 
         }
     });
@@ -367,22 +246,24 @@ void AppointmentPage::handleResponse(const QJsonObject &obj){
     if(type=="doctor_schedule_response"){
         if(!obj.value("success").toBool())return;
         QJsonArray arr=obj.value("data").toArray(); doctorTable->setRowCount(arr.size()); int row=0;
-        for(auto v:arr){ QJsonObject o=v.toObject(); auto set=[&](int c,const QString&t){ auto* it=new QTableWidgetItem(t); it->setTextAlignment(Qt::AlignCenter); doctorTable->setItem(row,c,it); };
-            set(0,QString::number(o.value("doctorId").toInt())); set(1,o.value("doctor_username").toString()); set(2,o.value("name").toString()); set(3,o.value("department").toString());
-            set(4, extractWorkTime(o));
-            set(5,QString::number(o.value("fee").toDouble(),'f',2)); int reserved=o.value("reservedPatients").toInt(); int maxp=o.value("maxPatientsPerDay").toInt(); int remain=o.value("remainingSlots").toInt(); set(6,QString("%1/%2").arg(reserved).arg(maxp)); set(7,QString::number(remain)); doctorTable->setRowHeight(row,40); ++row; }
+        for(auto v:arr){ QJsonObject o=v.toObject(); auto set=[&](int c,const QString&t){ doctorTable->setItem(row,c,new QTableWidgetItem(t)); };
+            set(0,QString::number(o.value("doctorId").toInt())); set(1,o.value("doctor_username").toString()); set(2,o.value("name").toString()); set(3,o.value("department").toString()); set(4,o.value("workTime").toString()); set(5,QString::number(o.value("fee").toDouble(),'f',2)); int reserved=o.value("reservedPatients").toInt(); int maxp=o.value("maxPatientsPerDay").toInt(); int remain=o.value("remainingSlots").toInt(); set(6,QString("%1/%2").arg(reserved).arg(maxp)); set(7,QString::number(remain)); ++row; }
     } else if(type=="doctors_response"){
         // 处理来自get_all_doctors的响应，现在包含预约统计信息
         if(!obj.value("success").toBool())return;
         QJsonArray arr=obj.value("data").toArray(); doctorTable->setRowCount(arr.size()); int row=0;
-        for(auto v:arr){ QJsonObject o=v.toObject(); auto set=[&](int c,const QString&t){ auto* it=new QTableWidgetItem(t); it->setTextAlignment(Qt::AlignCenter); doctorTable->setItem(row,c,it); };
+        for(auto v:arr){ QJsonObject o=v.toObject(); auto set=[&](int c,const QString&t){ doctorTable->setItem(row,c,new QTableWidgetItem(t)); };
             set(0,QString::number(row+1)); // 序号从1开始
             set(1,o.value("username").toString()); // 医生账号
             set(2,o.value("name").toString()); // 医生姓名
             set(3,o.value("department").toString()); // 科室
             
-            // 工作时间信息：统一通过 extractWorkTime 解析（working_days + title 中的 HH:mm-HH:mm）
-            set(4, extractWorkTime(o));
+            // 工作时间信息：优先使用working_days，否则使用职称信息
+            QString workInfo = o.value("working_days").toString();
+            if (workInfo.isEmpty()) {
+                workInfo = QString("%1 (%2)").arg(o.value("title").toString()).arg(o.value("specialization").toString());
+            }
+            set(4, workInfo);
             
             set(5,QString::number(o.value("consultation_fee").toDouble(),'f',2)); // 挂号费
             
@@ -399,26 +280,24 @@ void AppointmentPage::handleResponse(const QJsonObject &obj){
             // 输出调试信息
             qDebug() << QString("[ AppointmentPage ] 医生 \"%1\" today_appointments= %2 today_max_appointments= %3")
                         .arg(o.value("name").toString()).arg(todayAppts).arg(todayMax);
-            doctorTable->setRowHeight(row, 40);
             ++row; 
         }
     } else if(type=="doctors_schedule_overview_response"){
         // 保留之前的增强处理逻辑（备用）
         if(!obj.value("success").toBool())return;
         QJsonArray arr=obj.value("data").toArray(); doctorTable->setRowCount(arr.size()); int row=0;
-        for(auto v:arr){ QJsonObject o=v.toObject(); auto set=[&](int c,const QString&t){ auto* it=new QTableWidgetItem(t); it->setTextAlignment(Qt::AlignCenter); doctorTable->setItem(row,c,it); };
+        for(auto v:arr){ QJsonObject o=v.toObject(); auto set=[&](int c,const QString&t){ doctorTable->setItem(row,c,new QTableWidgetItem(t)); };
             set(0,QString::number(row+1)); // 临时序号
             set(1,o.value("username").toString()); 
             set(2,o.value("name").toString()); 
             set(3,o.value("department").toString()); 
-            set(4, extractWorkTime(o)); // 工作日 + 时段
+            set(4,o.value("working_days").toString()); // 显示工作日信息
             set(5,QString::number(o.value("consultation_fee").toDouble(),'f',2)); 
             int todayAppts=o.value("today_appointments").toInt(); 
             int maxDaily=o.value("max_patients_per_day").toInt(); 
             int available=o.value("available_slots_today").toInt(); 
             set(6,QString("%1/%2").arg(todayAppts).arg(maxDaily)); 
             set(7,QString::number(available)); 
-            doctorTable->setRowHeight(row, 40);
             ++row; 
         }
     } else if(type=="register_doctor_response" || type=="create_appointment_response"){
@@ -450,7 +329,7 @@ void AppointmentPage::handleResponse(const QJsonObject &obj){
     } else if(type=="appointments_response"){
         if(!obj.value("success").toBool())return;
         QJsonArray arr=obj.value("data").toArray(); appointmentsTable->setRowCount(arr.size()); int r=0;
-    for(auto v:arr){ QJsonObject o=v.toObject(); auto set=[&](int c,const QString&t){ auto* it=new QTableWidgetItem(t); it->setTextAlignment(Qt::AlignCenter); appointmentsTable->setItem(r,c,it); };
+        for(auto v:arr){ QJsonObject o=v.toObject(); auto set=[&](int c,const QString&t){ appointmentsTable->setItem(r,c,new QTableWidgetItem(t)); };
             set(0,QString::number(o.value("id").toInt())); 
             set(1,o.value("doctor_username").toString()); 
             set(2,o.value("doctor_name").toString()); 
@@ -465,9 +344,8 @@ void AppointmentPage::handleResponse(const QJsonObject &obj){
                 QString tooltip = QString("医生职称: %1\n专业: %2")
                     .arg(o.value("doctor_title").toString())
                     .arg(o.value("doctor_specialization").toString());
-        if (auto *it = appointmentsTable->item(r, 2)) it->setToolTip(tooltip); // 医生姓名列
+                appointmentsTable->item(r, 2)->setToolTip(tooltip); // 医生姓名列
             }
-        appointmentsTable->setRowHeight(r, 40);
             ++r; 
         }
     }
