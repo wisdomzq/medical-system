@@ -14,8 +14,37 @@
 HospitalPage::HospitalPage(CommunicationClient *c,const QString &patient,QWidget *parent)
     : BasePage(c,patient,parent) {
     QVBoxLayout *layout=new QVBoxLayout(this);
-    QHBoxLayout *bar=new QHBoxLayout; refreshBtn=new QPushButton("刷新"); filterDoctorEdit=new QLineEdit; filterDoctorEdit->setPlaceholderText("按医生过滤(可选)"); bar->addWidget(filterDoctorEdit); bar->addStretch(); bar->addWidget(refreshBtn); layout->addLayout(bar);
-    table=new QTableWidget; table->setColumnCount(8); table->setHorizontalHeaderLabels({"ID","主治医生","病房","床号","就诊日期","入院日期","出院日期","状态"}); table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch); table->setEditTriggers(QAbstractItemView::NoEditTriggers); table->setSelectionBehavior(QAbstractItemView::SelectRows); layout->addWidget(table); connect(refreshBtn,&QPushButton::clicked,this,&HospitalPage::refresh);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(12);
+    
+    // 顶部栏（仿照医生端风格）
+    QWidget* topBar = new QWidget(this);
+    topBar->setObjectName("hospitalTopBar");
+    topBar->setAttribute(Qt::WA_StyledBackground, true);
+    QHBoxLayout* topBarLayout = new QHBoxLayout(topBar);
+    topBarLayout->setContentsMargins(16, 12, 16, 12);
+    QLabel* title = new QLabel("住院信息", topBar);
+    title->setObjectName("hospitalTitle");
+    QLabel* subTitle = new QLabel("住院记录查询", topBar);
+    subTitle->setObjectName("hospitalSubTitle");
+    QVBoxLayout* titleV = new QVBoxLayout();
+    titleV->setContentsMargins(0,0,0,0);
+    titleV->addWidget(title);
+    titleV->addWidget(subTitle);
+    topBarLayout->addLayout(titleV);
+    topBarLayout->addStretch();
+    layout->addWidget(topBar);
+    
+    // 内容区域
+    QWidget* contentWidget = new QWidget(this);
+    QVBoxLayout* contentLayout = new QVBoxLayout(contentWidget);
+    contentLayout->setContentsMargins(15, 15, 15, 15);
+    contentLayout->setSpacing(10);
+    
+    QHBoxLayout *bar=new QHBoxLayout; refreshBtn=new QPushButton("刷新"); filterDoctorEdit=new QLineEdit; filterDoctorEdit->setPlaceholderText("按医生过滤(可选)"); bar->addWidget(filterDoctorEdit); bar->addStretch(); bar->addWidget(refreshBtn); contentLayout->addLayout(bar);
+    table=new QTableWidget; table->setColumnCount(8); table->setHorizontalHeaderLabels({"ID","主治医生","病房","床号","就诊日期","入院日期","出院日期","状态"}); table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch); table->setEditTriggers(QAbstractItemView::NoEditTriggers); table->setSelectionBehavior(QAbstractItemView::SelectRows); contentLayout->addWidget(table); connect(refreshBtn,&QPushButton::clicked,this,&HospitalPage::refresh);
+    
+    layout->addWidget(contentWidget);
     // 服务化
     m_service = new HospitalizationService(m_client, this);
     connect(m_service, &HospitalizationService::fetched, this, [this](const QJsonArray& arr){

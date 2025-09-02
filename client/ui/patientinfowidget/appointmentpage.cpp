@@ -19,23 +19,125 @@ AppointmentPage::AppointmentPage(CommunicationClient *c, const QString &patient,
     : BasePage(c, patient, parent)
 {
     QVBoxLayout *layout = new QVBoxLayout(this);
-    QHBoxLayout *toolbar = new QHBoxLayout; refreshDoctorsBtn=new QPushButton("刷新医生排班"); registerBtn=new QPushButton("挂号");
-    doctorIdEdit=new QLineEdit; doctorIdEdit->setPlaceholderText("(序号)"); doctorIdEdit->setFixedWidth(70);
-    doctorNameEdit=new QLineEdit; doctorNameEdit->setPlaceholderText("医生姓名"); doctorNameEdit->setFixedWidth(120);
-    patientNameEdit=new QLineEdit; patientNameEdit->setPlaceholderText("患者(自动当前账号)");
-    patientNameEdit->setEnabled(false); // 禁止手动修改，避免无效用户名导致外键失败
-    patientNameEdit->setText(m_patientName);
-    toolbar->addWidget(refreshDoctorsBtn);
-    toolbar->addWidget(new QLabel("医生:")); toolbar->addWidget(doctorNameEdit);
-    toolbar->addWidget(new QLabel("序号:")); toolbar->addWidget(doctorIdEdit);
-    toolbar->addWidget(new QLabel("患者:")); toolbar->addWidget(patientNameEdit);
-    toolbar->addWidget(registerBtn); toolbar->addStretch();
+    layout->setSpacing(0);
+    layout->setContentsMargins(0,0,0,0);
 
+    // 创建顶部栏
+    QWidget *topBar = new QWidget;
+    topBar->setObjectName("appointmentTopBar");
+    QHBoxLayout *topLayout = new QHBoxLayout(topBar);
+    topLayout->setContentsMargins(16, 12, 16, 12);
+    
+    QLabel *titleLabel = new QLabel("预约挂号");
+    titleLabel->setObjectName("appointmentTitle");
+    topLayout->addWidget(titleLabel);
+    topLayout->addStretch();
+    
+    layout->addWidget(topBar);
+
+    // 主内容区域
+    QWidget *contentArea = new QWidget;
+    QVBoxLayout *contentLayout = new QVBoxLayout(contentArea);
+    contentLayout->setContentsMargins(16, 16, 16, 16);
+    contentLayout->setSpacing(16);
+
+    // 医生排班卡片
+    QWidget *doctorCard = new QWidget;
+    doctorCard->setObjectName("doctorCard");
+    QVBoxLayout *doctorCardLayout = new QVBoxLayout(doctorCard);
+    doctorCardLayout->setContentsMargins(20, 20, 20, 20);
+    doctorCardLayout->setSpacing(16);
+
+    // 医生排班工具栏
+    QWidget *doctorToolbar = new QWidget;
+    QHBoxLayout *doctorToolbarLayout = new QHBoxLayout(doctorToolbar);
+    doctorToolbarLayout->setContentsMargins(0, 0, 0, 0);
+    
+    refreshDoctorsBtn = new QPushButton("刷新医生排班");
+    refreshDoctorsBtn->setObjectName("primaryBtn");
+    registerBtn = new QPushButton("立即挂号");
+    registerBtn->setObjectName("primaryBtn");
+    
+    doctorIdEdit = new QLineEdit;
+    doctorIdEdit->setPlaceholderText("序号");
+    doctorIdEdit->setFixedWidth(80);
+    
+    doctorNameEdit = new QLineEdit;
+    doctorNameEdit->setPlaceholderText("医生姓名");
+    doctorNameEdit->setFixedWidth(150);
+    
+    patientNameEdit = new QLineEdit;
+    patientNameEdit->setPlaceholderText("患者账号");
+    patientNameEdit->setEnabled(false);
+    patientNameEdit->setText(m_patientName);
+    patientNameEdit->setFixedWidth(150);
+
+<<<<<<< Updated upstream
     doctorTable=new QTableWidget; doctorTable->setColumnCount(8); doctorTable->setHorizontalHeaderLabels({"序号","账号","姓名","科室","工作时间","费用","已预约/上限","剩余"}); doctorTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch); doctorTable->setSelectionBehavior(QAbstractItemView::SelectRows); doctorTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     layout->addLayout(toolbar); layout->addWidget(new QLabel("医生排班")); layout->addWidget(doctorTable);
+=======
+    doctorToolbarLayout->addWidget(refreshDoctorsBtn);
+    doctorToolbarLayout->addSpacing(20);
+    doctorToolbarLayout->addWidget(new QLabel("医生:"));
+    doctorToolbarLayout->addWidget(doctorNameEdit);
+    doctorToolbarLayout->addWidget(new QLabel("序号:"));
+    doctorToolbarLayout->addWidget(doctorIdEdit);
+    doctorToolbarLayout->addWidget(new QLabel("患者:"));
+    doctorToolbarLayout->addWidget(patientNameEdit);
+    doctorToolbarLayout->addSpacing(20);
+    doctorToolbarLayout->addWidget(registerBtn);
+    doctorToolbarLayout->addStretch();
+>>>>>>> Stashed changes
 
-    QHBoxLayout *apptBar=new QHBoxLayout; refreshAppointmentsBtn=new QPushButton("刷新我的预约"); apptBar->addWidget(refreshAppointmentsBtn); apptBar->addStretch(); layout->addSpacing(12); layout->addLayout(apptBar);
-    appointmentsTable=new QTableWidget; appointmentsTable->setColumnCount(8); appointmentsTable->setHorizontalHeaderLabels({"ID","医生账号","医生姓名","日期","时间","科室","状态","费用"}); appointmentsTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch); appointmentsTable->setSelectionBehavior(QAbstractItemView::SelectRows); appointmentsTable->setEditTriggers(QAbstractItemView::NoEditTriggers); layout->addWidget(new QLabel("我的预约列表")); layout->addWidget(appointmentsTable);
+    QLabel *doctorLabel = new QLabel("医生排班信息");
+    doctorLabel->setObjectName("cardTitle");
+    
+    doctorTable = new QTableWidget;
+    doctorTable->setColumnCount(8);
+    doctorTable->setHorizontalHeaderLabels({"序号","账号","姓名","科室","工作时间","费用","已/上限","剩余"});
+    doctorTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    doctorTable->setSelectionBehavior(QAbstractItemView::SelectRows);
+    doctorTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
+
+    doctorCardLayout->addWidget(doctorLabel);
+    doctorCardLayout->addWidget(doctorToolbar);
+    doctorCardLayout->addWidget(doctorTable);
+
+    // 我的预约卡片
+    QWidget *appointmentCard = new QWidget;
+    appointmentCard->setObjectName("appointmentCard");
+    QVBoxLayout *appointmentCardLayout = new QVBoxLayout(appointmentCard);
+    appointmentCardLayout->setContentsMargins(20, 20, 20, 20);
+    appointmentCardLayout->setSpacing(16);
+
+    // 预约工具栏
+    QWidget *appointmentToolbar = new QWidget;
+    QHBoxLayout *appointmentToolbarLayout = new QHBoxLayout(appointmentToolbar);
+    appointmentToolbarLayout->setContentsMargins(0, 0, 0, 0);
+    
+    refreshAppointmentsBtn = new QPushButton("刷新我的预约");
+    refreshAppointmentsBtn->setObjectName("primaryBtn");
+    
+    appointmentToolbarLayout->addWidget(refreshAppointmentsBtn);
+    appointmentToolbarLayout->addStretch();
+
+    QLabel *appointmentLabel = new QLabel("我的预约列表");
+    appointmentLabel->setObjectName("cardTitle");
+    
+    appointmentsTable = new QTableWidget;
+    appointmentsTable->setColumnCount(8);
+    appointmentsTable->setHorizontalHeaderLabels({"ID","医生账号","医生姓名","日期","时间","科室","状态","费用"});
+    appointmentsTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    appointmentsTable->setSelectionBehavior(QAbstractItemView::SelectRows);
+    appointmentsTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
+
+    appointmentCardLayout->addWidget(appointmentLabel);
+    appointmentCardLayout->addWidget(appointmentToolbar);
+    appointmentCardLayout->addWidget(appointmentsTable);
+
+    contentLayout->addWidget(doctorCard);
+    contentLayout->addWidget(appointmentCard);
+    layout->addWidget(contentArea);
 
     connect(refreshDoctorsBtn,&QPushButton::clicked,this,&AppointmentPage::requestDoctorSchedule);
     connect(refreshAppointmentsBtn,&QPushButton::clicked,this,&AppointmentPage::requestAppointments);

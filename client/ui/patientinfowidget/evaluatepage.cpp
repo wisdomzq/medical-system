@@ -24,12 +24,36 @@
 EvaluatePage::EvaluatePage(CommunicationClient *c, const QString &patient, QWidget *parent)
     : BasePage(c, patient, parent) {
     auto *mainLay = new QVBoxLayout(this);
-    auto *title = new QLabel(QStringLiteral("<h2>健康评估 & 账户充值</h2>")); 
-    mainLay->addWidget(title);
+    mainLay->setContentsMargins(0, 0, 0, 0);
+    mainLay->setSpacing(12);
+    
+    // 顶部栏（仿照医生端风格）
+    QWidget* topBar = new QWidget(this);
+    topBar->setObjectName("evaluateTopBar");
+    topBar->setAttribute(Qt::WA_StyledBackground, true);
+    QHBoxLayout* topBarLayout = new QHBoxLayout(topBar);
+    topBarLayout->setContentsMargins(16, 12, 16, 12);
+    QLabel* title = new QLabel("评估与充值", topBar);
+    title->setObjectName("evaluateTitle");
+    QLabel* subTitle = new QLabel("健康评估 & 账户充值", topBar);
+    subTitle->setObjectName("evaluateSubTitle");
+    QVBoxLayout* titleV = new QVBoxLayout();
+    titleV->setContentsMargins(0,0,0,0);
+    titleV->addWidget(title);
+    titleV->addWidget(subTitle);
+    topBarLayout->addLayout(titleV);
+    topBarLayout->addStretch();
+    mainLay->addWidget(topBar);
+    
+    // 内容区域
+    QWidget* contentWidget = new QWidget(this);
+    QVBoxLayout* contentLayout = new QVBoxLayout(contentWidget);
+    contentLayout->setContentsMargins(20, 20, 20, 20);
+    contentLayout->setSpacing(15);
 
     // 余额显示
     m_balanceLabel = new QLabel(tr("当前余额: 加载中...")); 
-    mainLay->addWidget(m_balanceLabel);
+    contentLayout->addWidget(m_balanceLabel);
 
     // 充值区域
     auto *rechargeBox = new QGroupBox(tr("账户充值"));
@@ -44,7 +68,7 @@ EvaluatePage::EvaluatePage(CommunicationClient *c, const QString &patient, QWidg
     rechargeLay->addWidget(m_amountSpin); 
     rechargeLay->addWidget(m_rechargeBtn); 
     rechargeLay->addStretch();
-    mainLay->addWidget(rechargeBox);
+    contentLayout->addWidget(rechargeBox);
 
     // 量表评估区域
     auto *scaleBox = new QGroupBox(tr("健康评估量表"));
@@ -79,16 +103,18 @@ EvaluatePage::EvaluatePage(CommunicationClient *c, const QString &patient, QWidg
     rightLay->addWidget(m_resultText);
     
     scaleLay->addLayout(rightLay);
-    mainLay->addWidget(scaleBox);
+    contentLayout->addWidget(scaleBox);
 
     // 状态标签
     m_statusLabel = new QLabel(); 
-    mainLay->addWidget(m_statusLabel);
+    contentLayout->addWidget(m_statusLabel);
 
     // 返回按钮
     m_backBtn = new QPushButton(tr("返回首页"));
     connect(m_backBtn, &QPushButton::clicked, this, &EvaluatePage::goBack);
-    mainLay->addWidget(m_backBtn);
+    contentLayout->addWidget(m_backBtn);
+    
+    mainLay->addWidget(contentWidget);
 
     // 初始化量表数据
     initializeScales();

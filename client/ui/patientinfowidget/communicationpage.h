@@ -12,7 +12,7 @@ public:
     CommunicationPage(CommunicationClient *c,const QString&p,QWidget*parent=nullptr);
 private slots:
     void sendClicked();
-    void onPeerChanged(int idx);
+    void onPeerChanged();
     void loadMore();
     void onHistory(const QJsonArray& msgs, bool hasMore);
     void onEvents(const QJsonArray& msgs, const QJsonArray& instant, qint64 nextCursor, bool hasMore);
@@ -23,7 +23,7 @@ private:
     QString currentDoctor() const;
 
     QListWidget* m_list {nullptr};
-    QComboBox* m_doctorCombo {nullptr};
+    QListWidget* m_doctorList {nullptr};
     QLineEdit* m_input {nullptr};
     QPushButton* m_sendBtn {nullptr};
     QPushButton* m_loadMoreBtn {nullptr};
@@ -31,4 +31,5 @@ private:
     DoctorListService* m_doctorService {nullptr};
     qint64 m_cursor {0};
     QMap<QString, qint64> m_earliestByPeer;
+    QString m_currentPeer;
 };

@@ -30,39 +30,54 @@ void CasePage::setupUI()
 {
     // 主布局
     m_mainLayout = new QVBoxLayout(this);
-    m_mainLayout->setContentsMargins(20, 20, 20, 20);
-    m_mainLayout->setSpacing(15);
+    m_mainLayout->setContentsMargins(0, 0, 0, 0);
+    m_mainLayout->setSpacing(12);
     
-    // 头部布局
-    m_headerLayout = new QHBoxLayout();
-    
-    // 标题
-    m_titleLabel = new QLabel("我的病例");
-    m_titleLabel->setStyleSheet("font-size: 18px; font-weight: bold; color: #2c3e50;");
+    // 顶部栏（仿照医生端风格）
+    QWidget* topBar = new QWidget(this);
+    topBar->setObjectName("caseTopBar");
+    topBar->setAttribute(Qt::WA_StyledBackground, true);
+    QHBoxLayout* topBarLayout = new QHBoxLayout(topBar);
+    topBarLayout->setContentsMargins(16, 12, 16, 12);
+    QLabel* title = new QLabel("我的病例", topBar);
+    title->setObjectName("caseTitle");
+    QLabel* subTitle = new QLabel("病例记录与查看", topBar);
+    subTitle->setObjectName("caseSubTitle");
+    QVBoxLayout* titleV = new QVBoxLayout();
+    titleV->setContentsMargins(0,0,0,0);
+    titleV->addWidget(title);
+    titleV->addWidget(subTitle);
+    topBarLayout->addLayout(titleV);
     
     // 刷新按钮
     m_backButton = new QPushButton("刷新");
     m_backButton->setStyleSheet(
         "QPushButton {"
-        "    background-color: #3498db;"
-        "    color: white;"
-        "    border: none;"
-        "    padding: 8px 16px;"
-        "    border-radius: 4px;"
+        "    background-color: #ffffff;"
+        "    color: #4f63dd;"
+        "    border: 1px solid #d9e6fb;"
+        "    border-radius: 8px;"
+        "    padding: 8px 14px;"
         "    font-size: 14px;"
         "}"
         "QPushButton:hover {"
-        "    background-color: #2980b9;"
+        "    background-color: #eef2ff;"
         "}"
         "QPushButton:pressed {"
-        "    background-color: #21618c;"
+        "    background-color: #e0e7ff;"
         "}"
     );
     connect(m_backButton, &QPushButton::clicked, this, &CasePage::onRefreshButtonClicked);
     
-    m_headerLayout->addWidget(m_titleLabel);
-    m_headerLayout->addStretch();
-    m_headerLayout->addWidget(m_backButton);
+    topBarLayout->addStretch();
+    topBarLayout->addWidget(m_backButton);
+    m_mainLayout->addWidget(topBar);
+    
+    // 内容区域
+    QWidget* contentWidget = new QWidget(this);
+    QVBoxLayout* contentLayout = new QVBoxLayout(contentWidget);
+    contentLayout->setContentsMargins(20, 20, 20, 20);
+    contentLayout->setSpacing(15);
     
     // 病例表格
     m_recordTable = new QTableWidget();
@@ -89,8 +104,8 @@ void CasePage::setupUI()
     connect(m_recordTable, &QTableWidget::cellDoubleClicked, this, &CasePage::onRowDoubleClicked);
     
     // 添加到主布局
-    m_mainLayout->addLayout(m_headerLayout);
-    m_mainLayout->addWidget(m_recordTable);
+    contentLayout->addWidget(m_recordTable);
+    m_mainLayout->addWidget(contentWidget);
 }
 
 void CasePage::onConnected()

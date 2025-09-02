@@ -11,26 +11,104 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QTimer>
+#include <QIcon>
+#include <QPainter>
+#include <QPainterPath>
+
+// 本地工具：生成圆形头像
+namespace {
+static QPixmap makeRoundAvatar(const QIcon &icon, int size) {
+    const QPixmap src = icon.pixmap(size, size);
+    QPixmap dst(size, size);
+    dst.fill(Qt::transparent);
+    QPainter p(&dst);
+    p.setRenderHint(QPainter::Antialiasing, true);
+    QPainterPath path; path.addEllipse(0, 0, size, size);
+    p.setClipPath(path);
+    p.drawPixmap(0, 0, src.scaled(size, size, Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation));
+    p.end();
+    return dst;
+}
+}
 
 CommunicationPage::CommunicationPage(CommunicationClient* c, const QString& p, QWidget* parent)
     : BasePage(c, p, parent)
 {
     auto* root = new QVBoxLayout(this);
-    auto* top = new QHBoxLayout();
-    top->addWidget(new QLabel(QString("选择医生:")));
-    m_doctorCombo = new QComboBox(this);
-    top->addWidget(m_doctorCombo, 1);
-    m_loadMoreBtn = new QPushButton("加载更多历史", this);
-    top->addWidget(m_loadMoreBtn);
-    root->addLayout(top);
+    root->setContentsMargins(12, 12, 12, 12);
+    root->setSpacing(0);
+    
+    // 顶部栏（仿照医生端风格）
+    QWidget* topBar = new QWidget(this);
+    topBar->setObjectName("communicationTopBar");
+    topBar->setAttribute(Qt::WA_StyledBackground, true);
+    QHBoxLayout* topBarLayout = new QHBoxLayout(topBar);
+    topBarLayout->setContentsMargins(16, 12, 16, 12);
+    QLabel* title = new QLabel("医患沟通", topBar);
+    title->setObjectName("communicationTitle");
+    title->setAttribute(Qt::WA_StyledBackground, true);
+    title->setStyleSheet("background: transparent; border: none; margin: 0px; padding: 0px;");
+    
+    m_loadMoreBtn = new QPushButton("加载更多历史", topBar);
+    m_loadMoreBtn->setObjectName("loadMoreBtn");
+    topBarLayout->addWidget(title);
+    topBarLayout->addStretch();
+    topBarLayout->addWidget(m_loadMoreBtn);
+    root->addWidget(topBar);
+    
+    // 内容区（左右卡片布局）
+    auto* content = new QHBoxLayout();
+    content->setContentsMargins(0, 0, 0, 0);
+    content->setSpacing(12);
+    root->addLayout(content, 1);
 
+    // 左侧：医生列表卡片
+    QWidget* leftCard = new QWidget(this);
+    leftCard->setObjectName("leftCard");
+    leftCard->setAttribute(Qt::WA_StyledBackground, true);
+    leftCard->setAutoFillBackground(true);
+    auto* left = new QVBoxLayout(leftCard);
+    left->setContentsMargins(0, 0, 0, 0);
+    left->setSpacing(0);
+    
+    m_doctorList = new QListWidget(this);
+    m_doctorList->setObjectName("convList");
+    m_doctorList->setViewMode(QListView::ListMode);
+    m_doctorList->setFlow(QListView::TopToBottom);
+    m_doctorList->setIconSize(QSize(40, 40));
+    m_doctorList->setSpacing(0);
+    m_doctorList->setUniformItemSizes(false);
+    m_doctorList->setSelectionMode(QAbstractItemView::SingleSelection);
+    m_doctorList->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+    m_doctorList->setMinimumHeight(400);
+    m_doctorList->setMaximumHeight(600);
+    left->addWidget(m_doctorList, 1);
+
+    // 右侧：消息区卡片
+    QWidget* rightCard = new QWidget(this);
+    rightCard->setObjectName("rightCard");
+    rightCard->setAttribute(Qt::WA_StyledBackground, true);
+    rightCard->setAutoFillBackground(true);
+    auto* right = new QVBoxLayout(rightCard);
+    right->setContentsMargins(0, 0, 0, 0);
+    right->setSpacing(0);
+
+    // 聊天内容区域
     m_list = new QListWidget(this);
     m_list->setItemDelegate(new ChatBubbleDelegate(m_patientName, m_list));
     m_list->setSelectionMode(QAbstractItemView::NoSelection);
     m_list->setSpacing(8);
-    root->addWidget(m_list, 1);
+    m_list->setMinimumHeight(400);
+    m_list->setMaximumHeight(600);
+    right->addWidget(m_list, 1);
 
+    // 装入内容区
+    content->addWidget(leftCard, 1);
+    content->addWidget(rightCard, 2);
+
+    // 底部输入区域 - 独立于卡片，与卡片边距对齐
     auto* bottom = new QHBoxLayout();
+    bottom->setContentsMargins(0, 8, 0, 0);
     m_input = new QLineEdit(this);
     m_input->setPlaceholderText("输入消息，回车发送");
     m_sendBtn = new QPushButton("发送", this);
@@ -43,7 +121,7 @@ CommunicationPage::CommunicationPage(CommunicationClient* c, const QString& p, Q
 
     connect(m_sendBtn, &QPushButton::clicked, this, &CommunicationPage::sendClicked);
     connect(m_input, &QLineEdit::returnPressed, this, &CommunicationPage::sendClicked);
-    connect(m_doctorCombo, qOverload<int>(&QComboBox::currentIndexChanged), this, &CommunicationPage::onPeerChanged);
+    connect(m_doctorList, &QListWidget::currentRowChanged, this, &CommunicationPage::onPeerChanged);
     connect(m_loadMoreBtn, &QPushButton::clicked, this, &CommunicationPage::loadMore);
     // 不使用旧信号直接渲染，避免重复
     // connect(m_chat, &ChatService::historyReceived, this, &CommunicationPage::onHistory);
@@ -64,18 +142,61 @@ CommunicationPage::CommunicationPage(CommunicationClient* c, const QString& p, Q
 
 void CommunicationPage::populateDoctors() {
     connect(m_doctorService, &DoctorListService::fetched, this, [this](const QJsonArray& doctors){
-        m_doctorCombo->clear();
+        m_doctorList->clear();
+        const QIcon avatarIcon(":/icons/医生.svg");
         for (const auto &v : doctors) {
             const auto o = v.toObject();
-            m_doctorCombo->addItem(QString("%1(%2)").arg(o.value("name").toString()).arg(o.value("department").toString()), o.value("username").toString());
+            const QString username = o.value("username").toString();
+            const QString name = o.value("name").toString();
+            const QString department = o.value("department").toString();
+            const QString displayName = QString("%1(%2)").arg(name).arg(department);
+            
+            // 行项目
+            auto *it = new QListWidgetItem();
+            it->setText(username);                   // 逻辑上使用用户名
+            it->setData(Qt::UserRole, username);     // 备用：存储用户名
+            it->setSizeHint(QSize(200, 60));         // 行高
+            m_doctorList->addItem(it);
+
+            // 行内容部件：圆形头像 + 名称
+            QWidget *row = new QWidget(m_doctorList);
+            row->setObjectName("convRow");
+            row->setAttribute(Qt::WA_StyledBackground, true);
+            row->setAutoFillBackground(true);
+            row->setStyleSheet("QWidget#convRow { background-color: rgb(240,248,255) !important; border-bottom: 1px solid rgba(0,0,0,15); }");
+            auto *hl = new QHBoxLayout(row);
+            hl->setContentsMargins(12, 10, 12, 10);
+            hl->setSpacing(10);
+            auto *av = new QLabel(row);
+            av->setFixedSize(40, 40);
+            av->setObjectName("convAvatar");
+            av->setPixmap(makeRoundAvatar(avatarIcon, 40));
+            av->setStyleSheet("background: transparent;");
+            
+            // 文本区域：医生名称和科室
+            auto *textBox = new QVBoxLayout();
+            textBox->setContentsMargins(0,0,0,0);
+            textBox->setSpacing(0);
+            auto *nm = new QLabel(displayName, row);
+            nm->setObjectName("convName");
+            nm->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+            nm->setStyleSheet("background: transparent; color: black;");
+            textBox->addWidget(nm);
+
+            hl->addWidget(av);
+            hl->addLayout(textBox, 1);
+            row->setLayout(hl);
+            row->setProperty("active", false); // 默认未选中
+            row->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+            m_doctorList->setItemWidget(it, row);
         }
-        // 不自动选中，等待用户选择
     });
     m_doctorService->fetchAllDoctors();
 }
 
 QString CommunicationPage::currentDoctor() const {
-    return m_doctorCombo->currentIndex()>=0 ? m_doctorCombo->currentData().toString() : QString();
+    auto *item = m_doctorList->currentItem();
+    return item ? item->text() : QString();
 }
 
 void CommunicationPage::sendClicked()
@@ -136,15 +257,36 @@ void CommunicationPage::insertOlderAtTop(const QJsonArray& msgsDesc)
     }
 }
 
-void CommunicationPage::onPeerChanged(int /*idx*/)
+void CommunicationPage::onPeerChanged()
 {
+    auto *item = m_doctorList->currentItem();
+    // 更新行样式：先清除所有 active，再给当前设置 active
+    for (int i=0;i<m_doctorList->count();++i){
+        if (auto *it = m_doctorList->item(i)){
+            if (auto *w = m_doctorList->itemWidget(it)){
+                const bool isActive = (it==item);
+                w->setProperty("active", isActive);
+                if (isActive) { 
+                    // 设置选中状态的背景色 - 深蓝色
+                    w->setStyleSheet("QWidget#convRow { background-color: rgba(207, 189, 241, 1) !important; border-bottom: 1px solid rgba(0,0,0,15); }");
+                } else {
+                    // 设置默认状态的背景色 - 浅蓝色
+                    w->setStyleSheet("QWidget#convRow { background-color: rgba(240,248,255, 1) !important; border-bottom: 1px solid rgba(0,0,0,15); }");
+                }
+                w->style()->unpolish(w); w->style()->polish(w); w->update();
+            }
+        }
+    }
+    
     m_list->clear();
-    if (currentDoctor().isEmpty()) { m_chat->stopPolling(); return; }
+    if (!item) { m_currentPeer.clear(); m_chat->stopPolling(); return; }
+    m_currentPeer = item->text();
+    
     // 先渲染缓存
-    for (const auto &o : m_chat->messagesFor(currentDoctor(), m_patientName)) appendMessage(o);
-    m_earliestByPeer[currentDoctor()] = m_chat->earliestIdFor(currentDoctor(), m_patientName);
+    for (const auto &o : m_chat->messagesFor(m_currentPeer, m_patientName)) appendMessage(o);
+    m_earliestByPeer[m_currentPeer] = m_chat->earliestIdFor(m_currentPeer, m_patientName);
     // 拉取最近 20
-    m_chat->getHistory(currentDoctor(), m_patientName, 0, 20);
+    m_chat->getHistory(m_currentPeer, m_patientName, 0, 20);
     m_chat->startPolling();
 }
 

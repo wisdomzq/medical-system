@@ -20,6 +20,8 @@
 #include <QFile>
 #include <QIODevice>
 #include <QIcon>
+#include <QLabel>
+#include <QFont>
 
 PatientInfoWidget::PatientInfoWidget(const QString &patientName, CommunicationClient* sharedClient, QWidget *parent)
     : QWidget(parent), m_patientName(patientName)
@@ -34,11 +36,41 @@ PatientInfoWidget::PatientInfoWidget(const QString &patientName, CommunicationCl
         setStyleSheet(QString::fromUtf8(f.readAll()));
     }
 
-    navList = new QListWidget(this);
+    // 创建左侧面板和品牌栏（仿照医生端）
+    QWidget* leftPanel = new QWidget(this);
+    leftPanel->setObjectName("leftPanel");
+    QVBoxLayout* leftLayout = new QVBoxLayout(leftPanel);
+    leftLayout->setContentsMargins(0, 0, 0, 0);
+    leftLayout->setSpacing(0);
+
+    // 品牌栏
+    QWidget* brandBar = new QWidget(leftPanel);
+    brandBar->setObjectName("brandBar");
+    QHBoxLayout* brandLayout = new QHBoxLayout(brandBar);
+    brandLayout->setContentsMargins(12, 12, 12, 12);
+    brandLayout->setSpacing(8);
+    QLabel* brandIcon = new QLabel(brandBar);
+    brandIcon->setAttribute(Qt::WA_TranslucentBackground, true);
+    brandIcon->setStyleSheet("background: transparent;");
+    brandIcon->setPixmap(QIcon(":/icons/智慧医疗系统.svg").pixmap(28, 28));
+    QLabel* brandText = new QLabel(QStringLiteral("  智慧医疗系统"), brandBar);
+    brandText->setObjectName("brandTitle");
+    QFont brandFont = brandText->font();
+    brandFont.setPointSize(16);
+    brandFont.setBold(true);
+    brandText->setFont(brandFont);
+    brandLayout->addWidget(brandIcon);
+    brandLayout->addWidget(brandText);
+    brandLayout->addStretch();
+
+    navList = new QListWidget(leftPanel);
     navList->setObjectName("leftNav");
-    navList->setIconSize(QSize(18, 18));
+    navList->setIconSize(QSize(30, 30));
     navList->setUniformItemSizes(true);
     navList->setFocusPolicy(Qt::NoFocus);
+
+    leftLayout->addWidget(brandBar);
+    leftLayout->addWidget(navList);
 
     pages = new QStackedWidget(this);
 
@@ -68,7 +100,7 @@ PatientInfoWidget::PatientInfoWidget(const QString &patientName, CommunicationCl
 
     auto addNav = [&](const QString &text, const QString &iconRes){
         QListWidgetItem *it = new QListWidgetItem(QIcon(iconRes), text);
-        it->setSizeHint(QSize(160, 36));
+        it->setSizeHint(QSize(200, 72));
         navList->addItem(it);
     };
     addNav("我的预约", ":/icons/我的预约.svg");
@@ -109,7 +141,7 @@ PatientInfoWidget::PatientInfoWidget(const QString &patientName, CommunicationCl
     connect(navList, &QListWidget::currentRowChanged, this, [updateBold](int){ updateBold(); });
 
     auto root = new QHBoxLayout(this);
-    root->addWidget(navList, 0);
+    root->addWidget(leftPanel, 0);
     root->addWidget(pages, 1);
     setLayout(root);
 }

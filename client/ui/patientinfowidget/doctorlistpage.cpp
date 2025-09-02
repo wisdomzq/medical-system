@@ -20,13 +20,32 @@ DoctorListPage::DoctorListPage(CommunicationClient* client, const QString& patie
 void DoctorListPage::setupUI()
 {
     m_mainLayout = new QVBoxLayout(this);
-    m_mainLayout->setContentsMargins(15, 15, 15, 15);
-    m_mainLayout->setSpacing(10);
+    m_mainLayout->setContentsMargins(0, 0, 0, 0);
+    m_mainLayout->setSpacing(12);
     
-    // 标题
-    QLabel* titleLabel = new QLabel("医生信息查询");
-    titleLabel->setStyleSheet("font-size: 18px; font-weight: bold; color: #2c3e50; margin-bottom: 10px;");
-    m_mainLayout->addWidget(titleLabel);
+    // 顶部栏（仿照医生端风格）
+    QWidget* topBar = new QWidget(this);
+    topBar->setObjectName("doctorListTopBar");
+    topBar->setAttribute(Qt::WA_StyledBackground, true);
+    QHBoxLayout* topBarLayout = new QHBoxLayout(topBar);
+    topBarLayout->setContentsMargins(16, 12, 16, 12);
+    QLabel* title = new QLabel("医生信息查询", topBar);
+    title->setObjectName("doctorListTitle");
+    QLabel* subTitle = new QLabel("查看医生详细信息", topBar);
+    subTitle->setObjectName("doctorListSubTitle");
+    QVBoxLayout* titleV = new QVBoxLayout();
+    titleV->setContentsMargins(0,0,0,0);
+    titleV->addWidget(title);
+    titleV->addWidget(subTitle);
+    topBarLayout->addLayout(titleV);
+    topBarLayout->addStretch();
+    m_mainLayout->addWidget(topBar);
+    
+    // 内容区域
+    QWidget* contentWidget = new QWidget(this);
+    QVBoxLayout* contentLayout = new QVBoxLayout(contentWidget);
+    contentLayout->setContentsMargins(15, 15, 15, 15);
+    contentLayout->setSpacing(10);
     
     // 搜索区域
     m_searchLayout = new QHBoxLayout();
@@ -67,7 +86,7 @@ void DoctorListPage::setupUI()
     m_searchLayout->addWidget(m_searchButton);
     m_searchLayout->addStretch();
     
-    m_mainLayout->addLayout(m_searchLayout);
+    contentLayout->addLayout(m_searchLayout);
     
     // 医生列表表格
     m_doctorTable = new QTableWidget();
@@ -90,7 +109,7 @@ void DoctorListPage::setupUI()
     m_doctorTable->setColumnWidth(3, 150); // 专业
     m_doctorTable->setColumnWidth(4, 80);  // 挂号费
     
-    m_mainLayout->addWidget(m_doctorTable);
+    contentLayout->addWidget(m_doctorTable);
     
     // 操作按钮
     QHBoxLayout* buttonLayout = new QHBoxLayout();
@@ -114,7 +133,9 @@ void DoctorListPage::setupUI()
     
     buttonLayout->addStretch();
     buttonLayout->addWidget(m_viewButton);
-    m_mainLayout->addLayout(buttonLayout);
+    contentLayout->addLayout(buttonLayout);
+    
+    m_mainLayout->addWidget(contentWidget);
     
     // 连接信号
     connect(m_searchButton, &QPushButton::clicked, this, &DoctorListPage::onSearchClicked);
