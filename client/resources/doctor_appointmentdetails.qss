@@ -143,16 +143,16 @@ QWidget#hospYesNoRow QRadioButton { background: transparent; }
 
 /* 恢复并统一 QRadioButton 指示器样式，确保圆圈可见 */
 QRadioButton::indicator {
-  width: 14px; height: 14px;
+  width: 16px; 
+  height: 16px;
+  border-radius: 8px;
 }
 QRadioButton::indicator:unchecked {
   border: 2px solid #4f63dd;
-  border-radius: 8px;
   background: #fff;
 }
 QRadioButton::indicator:checked {
   border: 2px solid #4f63dd;
-  border-radius: 8px;
-  background: radial-gradient(circle at center, #4f63dd 0%, #4f63dd 60%, transparent 62%);
+  background: #4f63dd;
 }
 QRadioButton:disabled { color: #a0aec0; }

@@ -13,10 +13,17 @@
 #include <QTimer>
 #include <QMessageBox>
 #include <QJsonObject>
+#include <QFile>
 
 ProfilePage::ProfilePage(CommunicationClient *c,const QString &patient,QWidget *parent)
     : BasePage(c,patient,parent)
 {
+    // 加载医生端样式，统一风格
+    if (QFile::exists(":/doctor_profile.qss")) {
+        QFile f(":/doctor_profile.qss");
+        if (f.open(QIODevice::ReadOnly)) this->setStyleSheet(QString::fromUtf8(f.readAll()));
+    }
+
     auto* root = new QVBoxLayout(this);
     root->setContentsMargins(0, 0, 0, 0);
     root->setSpacing(12);
@@ -39,17 +46,27 @@ ProfilePage::ProfilePage(CommunicationClient *c,const QString &patient,QWidget *
     topBarLayout->addStretch();
     root->addWidget(topBar);
     
-    // 内容区域
+    // 内容区域（包一层，提供外边距）
     QWidget* contentWidget = new QWidget(this);
     QVBoxLayout* contentLayout = new QVBoxLayout(contentWidget);
     contentLayout->setContentsMargins(20, 20, 20, 20);
     contentLayout->setSpacing(15);
 
+    // 卡片容器，仿照医生端
+    auto* card = new QWidget(this);
+    card->setObjectName("profileCard");
+    card->setAttribute(Qt::WA_StyledBackground, true);
+    auto* cardLy = new QVBoxLayout(card);
+    cardLy->setContentsMargins(16, 16, 16, 16);
+    cardLy->setSpacing(12);
+
     // 表单
     auto* form = new QFormLayout();
+    form->setLabelAlignment(Qt::AlignRight);
+    form->setFieldGrowthPolicy(QFormLayout::AllNonFixedFieldsGrow);
     
     // 基本信息
-    nameEdit_ = new QLineEdit(this);
+    nameEdit_ = new QLineEdit(this); nameEdit_->setPlaceholderText("请输入姓名");
     ageEdit_ = new QSpinBox(this);
     ageEdit_->setRange(0, 150);
     ageEdit_->setSuffix(" 岁");
@@ -57,14 +74,14 @@ ProfilePage::ProfilePage(CommunicationClient *c,const QString &patient,QWidget *
     genderEdit_ = new QComboBox(this);
     genderEdit_->addItems({"", "男", "女"});
     
-    phoneEdit_ = new QLineEdit(this);
-    emailEdit_ = new QLineEdit(this);
-    addressEdit_ = new QLineEdit(this);
+    phoneEdit_ = new QLineEdit(this); phoneEdit_->setPlaceholderText("联系方式");
+    emailEdit_ = new QLineEdit(this); emailEdit_->setPlaceholderText("邮箱");
+    addressEdit_ = new QLineEdit(this); addressEdit_->setPlaceholderText("联系地址");
     
     // 身份证和紧急联系人信息
-    idCardEdit_ = new QLineEdit(this);
-    emergencyContactEdit_ = new QLineEdit(this);
-    emergencyPhoneEdit_ = new QLineEdit(this);
+    idCardEdit_ = new QLineEdit(this); idCardEdit_->setPlaceholderText("身份证号");
+    emergencyContactEdit_ = new QLineEdit(this); emergencyContactEdit_->setPlaceholderText("紧急联系人");
+    emergencyPhoneEdit_ = new QLineEdit(this); emergencyPhoneEdit_->setPlaceholderText("紧急联系电话");
     
     form->addRow("姓名：", nameEdit_);
     form->addRow("年龄：", ageEdit_);
@@ -76,28 +93,29 @@ ProfilePage::ProfilePage(CommunicationClient *c,const QString &patient,QWidget *
     form->addRow("紧急联系人：", emergencyContactEdit_);
     form->addRow("紧急联系电话：", emergencyPhoneEdit_);
 
-    contentLayout->addLayout(form);
+    cardLy->addLayout(form);
 
-    // 按钮
-    auto* btns = new QHBoxLayout();
+    // 操作区（应用与医生端一致的对象名以复用样式）
+    auto* actions = new QWidget(this);
+    actions->setObjectName("profileActions");
+    auto* btns = new QHBoxLayout(actions);
+    btns->setContentsMargins(0, 8, 0, 0);
     btns->addStretch();
-    refreshBtn_ = new QPushButton("刷新", this);
-    refreshBtn_->setObjectName("primaryBtn");
-    updateBtn_ = new QPushButton("保存", this);
-    updateBtn_->setObjectName("primaryBtn");
-    QPushButton *backBtn = new QPushButton("返回登录", this);
-    backBtn->setObjectName("primaryBtn");
+    refreshBtn_ = new QPushButton("刷新", this); refreshBtn_->setObjectName("refreshBtn");
+    updateBtn_ = new QPushButton("保存", this); updateBtn_->setObjectName("saveBtn");
     btns->addWidget(refreshBtn_);
     btns->addWidget(updateBtn_);
-    btns->addWidget(backBtn);
-    contentLayout->addLayout(btns);
+    cardLy->addWidget(actions);
+
+    // 将卡片加入内容区域
+    contentLayout->addWidget(card);
     contentLayout->addStretch();
     
     root->addWidget(contentWidget);
+    root->addStretch();
 
     connect(updateBtn_, &QPushButton::clicked, this, &ProfilePage::updateProfile);
     connect(refreshBtn_, &QPushButton::clicked, this, &ProfilePage::requestPatientInfo);
-    connect(backBtn, &QPushButton::clicked, this, [this]{ emit backToLogin(); });
 
     // 注入服务并连接信号
     patientService_ = new PatientService(m_client, this);
