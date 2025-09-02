@@ -9,43 +9,126 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QTimer>
+#include <QFile>
+#include <QIODevice>
+#include <QIcon>
+#include <QPainter>
+#include <QPainterPath>
+#include <QFontMetrics>
+
+// 本地工具：生成圆形头像
+namespace {
+static QPixmap makeRoundAvatar(const QIcon &icon, int size) {
+    const QPixmap src = icon.pixmap(size, size);
+    QPixmap dst(size, size);
+    dst.fill(Qt::transparent);
+    QPainter p(&dst);
+    p.setRenderHint(QPainter::Antialiasing, true);
+    QPainterPath path; path.addEllipse(0, 0, size, size);
+    p.setClipPath(path);
+    p.drawPixmap(0, 0, src.scaled(size, size, Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation));
+    p.end();
+    return dst;
+}
+}
 
 ChatRoomWidget::ChatRoomWidget(const QString& doctorName, CommunicationClient* client, QWidget* parent)
     : QWidget(parent), m_doctor(doctorName), m_client(client) {
-    auto* root = new QHBoxLayout(this);
-    // 左侧：会话列表
-    auto* left = new QVBoxLayout();
-    left->addWidget(new QLabel(QString("医生聊天室 - %1").arg(m_doctor)));
+    // 加载聊天室专用样式
+    {
+        QFile f(":/doctor_chatroom.qss");
+        if (f.open(QIODevice::ReadOnly)) {
+            this->setStyleSheet(QString::fromUtf8(f.readAll()));
+        }
+    }
+
+    // 根布局：上方标题栏 + 下方内容区
+    auto* root = new QVBoxLayout(this);
+    root->setContentsMargins(12, 12, 12, 12);
+    root->setSpacing(0); // 移除间距让卡片紧贴
+
+    // 顶部栏 - 包含标题和加载按钮
+    QWidget* topBar = new QWidget(this);
+    topBar->setObjectName("chatTopBar");
+    topBar->setAttribute(Qt::WA_StyledBackground, true);
+    topBar->setAutoFillBackground(true);
+    // 颜色与尺寸完全交由 QSS 管理（与 profile/appointment 保持一致）
+    auto* topLay = new QHBoxLayout(topBar);
+    topLay->setContentsMargins(16, 12, 16, 12);
+    topLay->setSpacing(8);
+    auto* title = new QLabel(tr("医生聊天室"), topBar);
+    title->setObjectName("chatTitle");
+    title->setAttribute(Qt::WA_StyledBackground, true);
+    title->setStyleSheet("background: transparent; border: none; margin: 0px; padding: 0px;");
+    // 使按钮成为顶栏的子控件，便于应用 "QWidget#chatTopBar QPushButton" 的QSS规则
+    m_loadMoreBtn = new QPushButton(tr("加载更多历史"), topBar);
+    m_loadMoreBtn->setObjectName("loadMoreBtn");
+    topLay->addWidget(title);
+    topLay->addStretch();
+    topLay->addWidget(m_loadMoreBtn);
+    root->addWidget(topBar);
+
+    // 内容区（左右）- 卡片布局
+    auto* content = new QHBoxLayout();
+    content->setContentsMargins(0, 0, 0, 0);
+    content->setSpacing(12);
+    root->addLayout(content, 1);
+
+    // 左侧：会话列表卡片
+    QWidget* leftCard = new QWidget(this);
+    leftCard->setObjectName("leftCard");
+    leftCard->setAttribute(Qt::WA_StyledBackground, true);
+    leftCard->setAutoFillBackground(true);
+    auto* left = new QVBoxLayout(leftCard);
+    left->setContentsMargins(0, 0, 0, 0);
+    left->setSpacing(0);
+    
     m_convList = new QListWidget(this);
+    m_convList->setObjectName("convList");
+    m_convList->setViewMode(QListView::ListMode);
+    m_convList->setFlow(QListView::TopToBottom);
+    m_convList->setIconSize(QSize(40, 40));
+    m_convList->setSpacing(0);
+    m_convList->setUniformItemSizes(false);
+    m_convList->setSelectionMode(QAbstractItemView::SingleSelection);
+    m_convList->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+    m_convList->setMinimumHeight(400);
+    m_convList->setMaximumHeight(600);
     left->addWidget(m_convList, 1);
+
     // 医生端不允许主动添加患者会话，移除输入与按钮
 
-    // 右侧：消息区
-    auto* right = new QVBoxLayout();
-    auto ctrl = new QHBoxLayout();
-    m_loadMoreBtn = new QPushButton("加载更多历史", this);
-    ctrl->addWidget(m_loadMoreBtn);
-    ctrl->addStretch();
-    right->addLayout(ctrl);
+    // 右侧：消息区卡片
+    QWidget* rightCard = new QWidget(this);
+    rightCard->setObjectName("rightCard");
+    rightCard->setAttribute(Qt::WA_StyledBackground, true);
+    rightCard->setAutoFillBackground(true);
+    auto* right = new QVBoxLayout(rightCard);
+    right->setContentsMargins(0, 0, 0, 0);
+    right->setSpacing(0);
 
+    // 聊天内容区域
     m_list = new QListWidget(this);
     m_list->setItemDelegate(new ChatBubbleDelegate(m_doctor, m_list));
     m_list->setSelectionMode(QAbstractItemView::NoSelection);
     m_list->setSpacing(8);
+    m_list->setMinimumHeight(400);
+    m_list->setMaximumHeight(600);
     right->addWidget(m_list, 1);
 
+    // 装入内容区
+    content->addWidget(leftCard, 1);
+    content->addWidget(rightCard, 2);
+
+    // 底部输入区域 - 独立于卡片，与卡片边距对齐
     auto bottom = new QHBoxLayout();
+    bottom->setContentsMargins(0, 8, 0, 0); // 上方间距8px，左右与卡片对齐
     m_input = new QLineEdit(this);
-    m_input->setPlaceholderText("输入消息，回车发送");
-    m_sendBtn = new QPushButton("发送", this);
+    m_input->setPlaceholderText(tr("输入消息，回车发送"));
+    m_sendBtn = new QPushButton(tr("发送"), this);
     bottom->addWidget(m_input, 1);
     bottom->addWidget(m_sendBtn);
-    right->addLayout(bottom);
-
-    root->addLayout(left, 1);
-    root->addLayout(right, 2);
-
-    setLayout(root);
+    root->addLayout(bottom); // 添加到根布局而不是右侧卡片
 
     m_chat = new ChatService(m_client, m_doctor, this);
     connect(m_sendBtn, &QPushButton::clicked, this, &ChatRoomWidget::sendClicked);
@@ -60,11 +143,37 @@ ChatRoomWidget::ChatRoomWidget(const QString& doctorName, CommunicationClient* c
     connect(m_chat, &ChatService::conversationHistoryLoaded, this, [this](const QString& doctor,const QString& patient,const QList<QJsonObject>& pageAsc,bool /*hasMore*/, qint64 earliest){
         if (doctor!=m_doctor || patient!=m_currentPeer) return;
         for (const auto &o : pageAsc) appendMessage(o);
+        // 清除当前会话的未读徽标
+        for (int i=0;i<m_convList->count();++i){
+            auto *it = m_convList->item(i); if (!it) continue; if (it->text()!=m_currentPeer) continue;
+            if (auto *w = m_convList->itemWidget(it)){
+                if (auto *bd = w->findChild<QLabel*>("convBadge")) {
+                    w->setProperty("unread", 0); bd->hide();
+                }
+            }
+        }
         m_earliestByPeer[m_currentPeer] = earliest;
     });
     connect(m_chat, &ChatService::conversationUpserted, this, [this](const QString& doctor,const QString& patient,const QList<QJsonObject>& deltaAsc){
         if (doctor!=m_doctor || patient!=m_currentPeer) return;
-        for (const auto &o : deltaAsc) appendMessage(o);
+        for (const auto &o : deltaAsc) {
+            appendMessage(o);
+            const QString peer = o.value("patient_username").toString();
+            const QString sender = o.value("sender_username").toString(o.value("sender").toString());
+            // 更新对应会话行的未读
+            for (int i=0;i<m_convList->count();++i){
+                auto *it = m_convList->item(i); if (!it) continue; if (it->text()!=peer) continue;
+                if (auto *w = m_convList->itemWidget(it)){
+                    int unread = w->property("unread").toInt();
+                    if (peer!=m_currentPeer && sender!=m_doctor) unread += 1; else unread = 0; // 当前会话不累积
+                    w->setProperty("unread", unread);
+                    if (auto *bd = w->findChild<QLabel*>("convBadge")) {
+                        if (unread>0) { bd->setText(QString::number(unread)); bd->show(); }
+                        else { bd->hide(); }
+                    }
+                }
+            }
+        }
     });
     connect(m_chat, &ChatService::sendMessageResult, this, [this](bool ok, const QJsonObject& data){
         if (!ok) return;
@@ -76,7 +185,58 @@ ChatRoomWidget::ChatRoomWidget(const QString& doctorName, CommunicationClient* c
     });
     connect(m_chat, &ChatService::recentContactsReceived, this, [this](const QJsonArray& contacts){
         m_convList->clear();
-        for (const auto &v : contacts) m_convList->addItem(v.toObject().value("username").toString());
+        const QIcon avatarIcon(":/icons/用户.svg");
+        for (const auto &v : contacts) {
+            const QString name = v.toObject().value("username").toString();
+            // 行项目
+            auto *it = new QListWidgetItem();
+            it->setText(name);                   // 逻辑上仍使用文本
+            it->setData(Qt::UserRole, name);     // 备用：存储用户名
+            it->setSizeHint(QSize(200, 60));     // 行高
+            m_convList->addItem(it);
+
+            // 行内容部件：圆形头像 + 名称
+            QWidget *row = new QWidget(m_convList);
+            row->setObjectName("convRow");
+            row->setAttribute(Qt::WA_StyledBackground, true);
+            row->setAutoFillBackground(true);
+            // 直接设置样式表强制背景色，使用更不透明的颜色
+            row->setStyleSheet("QWidget#convRow { background-color: rgb(240,248,255) !important; border-bottom: 1px solid rgba(0,0,0,15); }");
+            auto *hl = new QHBoxLayout(row);
+            hl->setContentsMargins(12, 10, 12, 10);
+            hl->setSpacing(10);
+            auto *av = new QLabel(row);
+            av->setFixedSize(40, 40);
+            av->setObjectName("convAvatar");
+            av->setPixmap(makeRoundAvatar(avatarIcon, 40));
+            av->setStyleSheet("background: transparent;"); // 头像背景透明
+            // 文本区域：仅名称
+            auto *textBox = new QVBoxLayout();
+            textBox->setContentsMargins(0,0,0,0);
+            textBox->setSpacing(0);
+            auto *nm = new QLabel(name, row);
+            nm->setObjectName("convName");
+            nm->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+            nm->setStyleSheet("background: transparent; color: black;"); // 名称标签背景透明，文字黑色
+            textBox->addWidget(nm);
+
+            // 未读徽标
+            auto *badge = new QLabel("", row);
+            badge->setObjectName("convBadge");
+            badge->setFixedSize(22,22);
+            badge->setAlignment(Qt::AlignCenter);
+            badge->setStyleSheet("background: transparent;"); // 徽标背景透明
+            badge->hide();
+
+            hl->addWidget(av);
+            hl->addLayout(textBox, 1);
+            hl->addWidget(badge);
+            row->setLayout(hl);
+            row->setProperty("active", false); // 默认未选中
+            row->setProperty("unread", 0);
+            row->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+            m_convList->setItemWidget(it, row);
+        }
         // 初始不自动选中与加载，等待用户选择
     });
     // 仅加载最近联系人，不自动轮询
@@ -95,6 +255,25 @@ void ChatRoomWidget::addPeer() { /* 医生端禁用 */ }
 
 void ChatRoomWidget::onPeerChanged() {
     auto *item = m_convList->currentItem();
+    // 更新行样式：先清除所有 active，再给当前设置 active
+    for (int i=0;i<m_convList->count();++i){
+        if (auto *it = m_convList->item(i)){
+            if (auto *w = m_convList->itemWidget(it)){
+                const bool isActive = (it==item);
+                w->setProperty("active", isActive);
+                if (isActive) { 
+                    w->setProperty("unread", 0); 
+                    if (auto *bd=w->findChild<QLabel*>("convBadge")) bd->hide();
+                    // 设置选中状态的背景色 - 深蓝色
+                    w->setStyleSheet("QWidget#convRow { background-color: rgba(207, 189, 241, 1) !important; border-bottom: 1px solid rgba(0,0,0,15); }");
+                } else {
+                    // 设置默认状态的背景色 - 浅蓝色
+                    w->setStyleSheet("QWidget#convRow { background-color: rgba(240,248,255, 1) !important; border-bottom: 1px solid rgba(0,0,0,15); }");
+                }
+                w->style()->unpolish(w); w->style()->polish(w); w->update();
+            }
+        }
+    }
     m_list->clear();
     if (!item) { m_currentPeer.clear(); m_chat->stopPolling(); return; }
     m_currentPeer = item->text();

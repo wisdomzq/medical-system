@@ -22,7 +22,7 @@ void DoctorListModule::onRequest(const QJsonObject &payload) {
 
 void DoctorListModule::handleGetAll(const QJsonObject &payload) {
     DBManager db(DatabaseConfig::getDatabasePath());
-    QJsonArray list; bool ok = db.getAllDoctors(list);
+    QJsonArray list; bool ok = db.getAllDoctorsScheduleOverview(list);
     QJsonObject out; out["type"] = "doctors_response"; out["success"] = ok; if (ok) out["data"] = list; else out["error"] = QStringLiteral("获取医生列表失败");
     Log::resultCount("DoctorList", ok, list.size(), "all");
     reply(out, payload);

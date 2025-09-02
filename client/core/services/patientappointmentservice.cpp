@@ -59,4 +59,18 @@ void PatientAppointmentService::onJsonReceived(const QJsonObject& obj)
         else emit createFailed(obj.value("error").toString());
         return;
     }
+    
+    // 监听预约完成通知，自动刷新医生列表数据
+    if (type == "appointment_completed_notification") {
+        qDebug() << "[PatientAppointmentService] 收到预约完成通知，刷新医生数据";
+        
+        // 发出预约数量变化信号（预约完成意味着-1）
+        QString doctorUsername = obj.value("doctor_username").toString();
+        if (!doctorUsername.isEmpty()) {
+            emit appointmentCountChanged(doctorUsername, -1);
+        }
+        
+        fetchAllDoctors(); // 自动刷新医生排班信息
+        return;
+    }
 }

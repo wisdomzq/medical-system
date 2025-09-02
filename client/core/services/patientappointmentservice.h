@@ -30,6 +30,9 @@ signals:
 
     void createSucceeded(const QString& message);
     void createFailed(const QString& message);
+    
+    // 预约数量变化通知
+    void appointmentCountChanged(const QString& doctorUsername, int delta);
 
 private slots:
     void onJsonReceived(const QJsonObject& obj);

@@ -18,15 +18,44 @@
 MedicationSearchPage::MedicationSearchPage(CommunicationClient *c, const QString &p, QWidget *parent)
     : BasePage(c,p,parent) {
     auto *outer = new QVBoxLayout(this);
+    outer->setContentsMargins(0, 0, 0, 0);
+    outer->setSpacing(12);
+    
+    // 顶部栏（仿照医生端风格）
+    QWidget* topBar = new QWidget(this);
+    topBar->setObjectName("medicationTopBar");
+    topBar->setAttribute(Qt::WA_StyledBackground, true);
+    QHBoxLayout* topBarLayout = new QHBoxLayout(topBar);
+    topBarLayout->setContentsMargins(16, 12, 16, 12);
+    QLabel* title = new QLabel("药品搜索", topBar);
+    title->setObjectName("medicationTitle");
+    QLabel* subTitle = new QLabel("查询药品信息", topBar);
+    subTitle->setObjectName("medicationSubTitle");
+    QVBoxLayout* titleV = new QVBoxLayout();
+    titleV->setContentsMargins(0,0,0,0);
+    titleV->addWidget(title);
+    titleV->addWidget(subTitle);
+    topBarLayout->addLayout(titleV);
+    topBarLayout->addStretch();
+    outer->addWidget(topBar);
+    
+    // 内容区域
+    QWidget* contentWidget = new QWidget(this);
+    QVBoxLayout* contentLayout = new QVBoxLayout(contentWidget);
+    contentLayout->setContentsMargins(15, 15, 15, 15);
+    contentLayout->setSpacing(10);
+    
     auto *hl = new QHBoxLayout();
     m_searchEdit = new QLineEdit(this);
     m_searchEdit->setPlaceholderText(QStringLiteral("输入药品名称/通用名/类别进行搜索(留空获取全部)"));
     m_searchBtn = new QPushButton(QStringLiteral("搜索"), this);
+    m_searchBtn->setObjectName("primaryBtn");
     m_remoteBtn = new QPushButton(QStringLiteral("远程搜索"), this);
+    m_remoteBtn->setObjectName("primaryBtn");
     hl->addWidget(m_searchEdit,1);
     hl->addWidget(m_searchBtn);
     hl->addWidget(m_remoteBtn);
-    outer->addLayout(hl);
+    contentLayout->addLayout(hl);
 
     m_table = new QTableWidget(this);
     m_table->setColumnCount(14);
@@ -36,7 +65,9 @@ MedicationSearchPage::MedicationSearchPage(CommunicationClient *c, const QString
     m_table->setEditTriggers(QAbstractItemView::NoEditTriggers);
     m_table->setSelectionBehavior(QAbstractItemView::SelectRows);
     m_table->verticalHeader()->setDefaultSectionSize(70); // 设置默认行高
-    outer->addWidget(m_table,1);
+    contentLayout->addWidget(m_table,1);
+    
+    outer->addWidget(contentWidget);
 
     connect(m_searchBtn,&QPushButton::clicked,this,&MedicationSearchPage::onSearch);
     connect(m_searchEdit,&QLineEdit::returnPressed,this,&MedicationSearchPage::onSearch);

@@ -43,23 +43,50 @@ AdvicePage::AdvicePage(CommunicationClient *c, const QString &patient, QWidget *
 
 void AdvicePage::setupUI() {
     auto *mainLayout = new QVBoxLayout(this);
+    mainLayout->setContentsMargins(0, 0, 0, 0);
+    mainLayout->setSpacing(12);
     
-    // 标题和统计信息
+    // 顶部栏（仿照医生端风格）
+    QWidget* topBar = new QWidget(this);
+    topBar->setObjectName("adviceTopBar");
+    topBar->setAttribute(Qt::WA_StyledBackground, true);
+    QHBoxLayout* topBarLayout = new QHBoxLayout(topBar);
+    topBarLayout->setContentsMargins(16, 12, 16, 12);
+    QLabel* title = new QLabel("我的医嘱", topBar);
+    title->setObjectName("adviceTitle");
+    QLabel* subTitle = new QLabel("医嘱管理与查看", topBar);
+    subTitle->setObjectName("adviceSubTitle");
+    QVBoxLayout* titleV = new QVBoxLayout();
+    titleV->setContentsMargins(0,0,0,0);
+    titleV->addWidget(title);
+    titleV->addWidget(subTitle);
+    topBarLayout->addLayout(titleV);
+    topBarLayout->addStretch();
+    mainLayout->addWidget(topBar);
+    
+    // 内容区域
+    QWidget* contentWidget = new QWidget(this);
+    QVBoxLayout* contentLayout = new QVBoxLayout(contentWidget);
+    contentLayout->setContentsMargins(16, 16, 16, 16);
+    contentLayout->setSpacing(12);
+    
+    // 统计信息
     auto *headerLayout = new QHBoxLayout();
-    auto *titleLabel = new QLabel("<h2>我的医嘱</h2>");
     m_countLabel = new QLabel("医嘱数量: 0");
     m_countLabel->setStyleSheet("color: #666; font-size: 14px;");
     
-    headerLayout->addWidget(titleLabel);
     headerLayout->addStretch();
     headerLayout->addWidget(m_countLabel);
-    mainLayout->addLayout(headerLayout);
+    contentLayout->addLayout(headerLayout);
     
     // 操作按钮
     auto *buttonLayout = new QHBoxLayout();
     m_refreshBtn = new QPushButton("刷新列表");
+    m_refreshBtn->setObjectName("primaryBtn");
     m_detailsBtn = new QPushButton("查看详情");
+    m_detailsBtn->setObjectName("primaryBtn");
     m_prescriptionBtn = new QPushButton("查看处方");
+    m_prescriptionBtn->setObjectName("primaryBtn");
     m_detailsBtn->setEnabled(false);
     m_prescriptionBtn->setEnabled(false);
     
@@ -71,7 +98,7 @@ void AdvicePage::setupUI() {
     buttonLayout->addWidget(m_detailsBtn);
     buttonLayout->addWidget(m_prescriptionBtn);
     buttonLayout->addStretch();
-    mainLayout->addLayout(buttonLayout);
+    contentLayout->addLayout(buttonLayout);
     
     // 医嘱列表表格
     m_table = new QTableWidget(this);
@@ -112,12 +139,14 @@ void AdvicePage::setupUI() {
     
     connect(m_table, &QTableWidget::cellDoubleClicked, this, &AdvicePage::onTableDoubleClick);
     
-    mainLayout->addWidget(m_table);
+    contentLayout->addWidget(m_table);
     
     // 状态标签
     m_statusLabel = new QLabel("准备就绪");
     m_statusLabel->setStyleSheet("color: #666; font-size: 12px;");
-    mainLayout->addWidget(m_statusLabel);
+    contentLayout->addWidget(m_statusLabel);
+    
+    mainLayout->addWidget(contentWidget);
 }
 
 void AdvicePage::populateTable(const QJsonArray &advices) {

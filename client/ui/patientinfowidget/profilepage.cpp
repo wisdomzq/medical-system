@@ -18,9 +18,32 @@ ProfilePage::ProfilePage(CommunicationClient *c,const QString &patient,QWidget *
     : BasePage(c,patient,parent)
 {
     auto* root = new QVBoxLayout(this);
-    auto* title = new QLabel(QString("个人信息 - %1").arg(patient));
-    title->setStyleSheet("font-size:18px;font-weight:600;margin:4px 0 12px 0;");
-    root->addWidget(title);
+    root->setContentsMargins(0, 0, 0, 0);
+    root->setSpacing(12);
+    
+    // 顶部栏（仿照医生端风格）
+    QWidget* topBar = new QWidget(this);
+    topBar->setObjectName("profileTopBar");
+    topBar->setAttribute(Qt::WA_StyledBackground, true);
+    QHBoxLayout* topBarLayout = new QHBoxLayout(topBar);
+    topBarLayout->setContentsMargins(16, 12, 16, 12);
+    QLabel* title = new QLabel("个人信息", topBar);
+    title->setObjectName("profileTitle");
+    QLabel* subTitle = new QLabel(QString("患者：%1").arg(patient), topBar);
+    subTitle->setObjectName("profileSubTitle");
+    QVBoxLayout* titleV = new QVBoxLayout();
+    titleV->setContentsMargins(0,0,0,0);
+    titleV->addWidget(title);
+    titleV->addWidget(subTitle);
+    topBarLayout->addLayout(titleV);
+    topBarLayout->addStretch();
+    root->addWidget(topBar);
+    
+    // 内容区域
+    QWidget* contentWidget = new QWidget(this);
+    QVBoxLayout* contentLayout = new QVBoxLayout(contentWidget);
+    contentLayout->setContentsMargins(20, 20, 20, 20);
+    contentLayout->setSpacing(15);
 
     // 表单
     auto* form = new QFormLayout();
@@ -53,19 +76,24 @@ ProfilePage::ProfilePage(CommunicationClient *c,const QString &patient,QWidget *
     form->addRow("紧急联系人：", emergencyContactEdit_);
     form->addRow("紧急联系电话：", emergencyPhoneEdit_);
 
-    root->addLayout(form);
+    contentLayout->addLayout(form);
 
     // 按钮
     auto* btns = new QHBoxLayout();
     btns->addStretch();
     refreshBtn_ = new QPushButton("刷新", this);
+    refreshBtn_->setObjectName("primaryBtn");
     updateBtn_ = new QPushButton("保存", this);
+    updateBtn_->setObjectName("primaryBtn");
     QPushButton *backBtn = new QPushButton("返回登录", this);
+    backBtn->setObjectName("primaryBtn");
     btns->addWidget(refreshBtn_);
     btns->addWidget(updateBtn_);
     btns->addWidget(backBtn);
-    root->addLayout(btns);
-    root->addStretch();
+    contentLayout->addLayout(btns);
+    contentLayout->addStretch();
+    
+    root->addWidget(contentWidget);
 
     connect(updateBtn_, &QPushButton::clicked, this, &ProfilePage::updateProfile);
     connect(refreshBtn_, &QPushButton::clicked, this, &ProfilePage::requestPatientInfo);

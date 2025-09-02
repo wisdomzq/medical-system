@@ -23,6 +23,7 @@
 #include <QDate>
 #include <QDateEdit>
 #include <QDoubleSpinBox>
+#include <QFile>
 
 #include "core/network/communicationclient.h"
 #include "core/network/protocol.h"
@@ -34,14 +35,38 @@ AppointmentDetailsDialog::AppointmentDetailsDialog(const QString& doctorUsername
     : QDialog(parent), doctorUsername_(doctorUsername), appt_(appt), client_(client), ownsClient_(false) {
     setWindowTitle(tr("预约详情 - %1").arg(appt_.value("patient_name").toString()));
     resize(720, 520);
+    // 加载详情页专用样式
+    {
+        QFile f(":/doctor_appointmentdetails.qss");
+        if (f.open(QFile::ReadOnly)) {
+            this->setStyleSheet(QString::fromUtf8(f.readAll()));
+            f.close();
+        }
+    }
 
     auto* root = new QVBoxLayout(this);
-    auto* head = new QLabel(tr("患者：%1  时间：%2 %3")
-                                .arg(appt_.value("patient_name").toString())
-                                .arg(appt_.value("appointment_date").toString())
-                                .arg(appt_.value("appointment_time").toString()), this);
-    head->setStyleSheet("font-weight:600;margin-bottom:8px;");
-    root->addWidget(head);
+
+    // 顶部栏：标题 + 关键信息
+    auto* topBar = new QWidget(this);
+    topBar->setObjectName("detailTopBar");
+    topBar->setAttribute(Qt::WA_StyledBackground, true);
+    auto* topHL = new QHBoxLayout(topBar);
+    topHL->setContentsMargins(16, 12, 16, 12);
+    topHL->setSpacing(8);
+    auto* titleLbl = new QLabel(tr("预约详情"), topBar);
+    titleLbl->setObjectName("detailTitle");
+    auto* subLbl = new QLabel(
+        tr("患者：%1  时间：%2 %3")
+            .arg(appt_.value("patient_name").toString())
+            .arg(appt_.value("appointment_date").toString())
+            .arg(appt_.value("appointment_time").toString()),
+        topBar);
+    subLbl->setObjectName("detailSubtitle");
+    topHL->addWidget(titleLbl);
+    topHL->addSpacing(12);
+    topHL->addWidget(subLbl);
+    topHL->addStretch();
+    root->addWidget(topBar);
 
     auto* form = new QFormLayout();
     chiefEdit_ = new QLineEdit(this);
@@ -52,19 +77,34 @@ AppointmentDetailsDialog::AppointmentDetailsDialog(const QString& doctorUsername
     form->addRow(tr("诊断"), diagnosisEdit_);
     form->addRow(tr("治疗方案"), planEdit_);
     form->addRow(tr("备注"), notesEdit_);
-    root->addLayout(form);
+    // 病例卡片容器
+    auto* recordBox = new QGroupBox(tr("病例"), this);
+    recordBox->setObjectName("recordCard");
+    auto* recordLay = new QVBoxLayout(recordBox);
+    recordLay->setContentsMargins(16, 24, 16, 16);
+    recordLay->setSpacing(10);
+    recordLay->addLayout(form);
+    root->addWidget(recordBox);
 
-    auto* btnRow = new QHBoxLayout();
+    // 操作栏
+    auto* actionsBar = new QWidget(this);
+    actionsBar->setObjectName("detailActions");
+    auto* btnRow = new QHBoxLayout(actionsBar);
+    btnRow->setContentsMargins(0, 0, 0, 0);
     btnRow->addStretch();
-    saveBtn_ = new QPushButton(tr("保存病历"), this);
+    saveBtn_ = new QPushButton(tr("保存病历"), actionsBar);
+    saveBtn_->setObjectName("saveBtn");
     btnRow->addWidget(saveBtn_);
-    completeBtn_ = new QPushButton(tr("完成诊断"), this);
+    completeBtn_ = new QPushButton(tr("完成诊断"), actionsBar);
+    completeBtn_->setObjectName("completeBtn");
     completeBtn_->setEnabled(false); // 默认禁用，开具处方后启用
     btnRow->addWidget(completeBtn_);
-    root->addLayout(btnRow);
+    root->addWidget(actionsBar);
 
     auto* adviceBox = new QGroupBox(tr("医嘱"), this);
+    adviceBox->setObjectName("adviceCard");
     auto* adviceLay = new QVBoxLayout(adviceBox);
+    adviceLay->setContentsMargins(16, 24, 16, 16);
     advicesList_ = new QListWidget(adviceBox);
     advicesList_->setFrameShape(QFrame::NoFrame);
     advicesList_->setStyleSheet("background: transparent; margin: 0; padding: 0;");
@@ -83,6 +123,8 @@ AppointmentDetailsDialog::AppointmentDetailsDialog(const QString& doctorUsername
                            QButtonGroup* group,
                            const std::function<QString(const QString&)>& toDisplay){
         auto* row = new QWidget(parent);
+        row->setObjectName("adviceRadioRow");
+        row->setAttribute(Qt::WA_StyledBackground, true);
         auto* hl = new QHBoxLayout(row);
         hl->setContentsMargins(0,0,0,0);
         hl->setSpacing(8);
@@ -101,6 +143,7 @@ AppointmentDetailsDialog::AppointmentDetailsDialog(const QString& doctorUsername
     };
     adviceContentEdit_ = new QTextEdit(adviceBox); adviceContentEdit_->setPlaceholderText(tr("医嘱内容")); adviceContentEdit_->setFixedHeight(60);
     adviceAddBtn_ = new QPushButton(tr("添加医嘱"), adviceBox);
+    adviceAddBtn_->setObjectName("secondaryBtn");
     adviceAddBtn_->setEnabled(false); // 初始禁用，待 recordId_ 就绪再启用
     auto* adviceLeft = new QVBoxLayout();
     auto toTypeLabel = [this](const QString& en) -> QString {
@@ -130,7 +173,9 @@ AppointmentDetailsDialog::AppointmentDetailsDialog(const QString& doctorUsername
     root->addWidget(adviceBox);
 
     auto* prescriptionBox = new QGroupBox(tr("处方"), this);
+    prescriptionBox->setObjectName("prescriptionCard");
     auto* prescriptionLay = new QVBoxLayout(prescriptionBox);
+    prescriptionLay->setContentsMargins(16, 24, 16, 16);
     prescriptionsList_ = new QListWidget(prescriptionBox);
     prescriptionsList_->setFrameShape(QFrame::NoFrame);
     prescriptionsList_->setStyleSheet("background: transparent; margin: 0; padding: 0;");
@@ -144,7 +189,9 @@ AppointmentDetailsDialog::AppointmentDetailsDialog(const QString& doctorUsername
     // 药品操作按钮
     auto* medicationBtnLayout = new QHBoxLayout();
     addMedicationBtn_ = new QPushButton(tr("添加药品"), prescriptionBox);
+    addMedicationBtn_->setObjectName("outlineBtn");
     removeMedicationBtn_ = new QPushButton(tr("删除药品"), prescriptionBox);
+    removeMedicationBtn_->setObjectName("dangerBtn");
     removeMedicationBtn_->setEnabled(false);
     medicationBtnLayout->addWidget(addMedicationBtn_);
     medicationBtnLayout->addWidget(removeMedicationBtn_);
@@ -155,6 +202,7 @@ AppointmentDetailsDialog::AppointmentDetailsDialog(const QString& doctorUsername
     prescriptionNotesEdit_ = new QLineEdit(prescriptionBox);
     prescriptionNotesEdit_->setPlaceholderText(tr("处方备注"));
     prescriptionAddBtn_ = new QPushButton(tr("开具处方"), prescriptionBox);
+    prescriptionAddBtn_->setObjectName("primaryBtn");
     prescriptionForm->addWidget(prescriptionNotesEdit_);
     prescriptionForm->addWidget(prescriptionAddBtn_);
     prescriptionLay->addLayout(prescriptionForm);
@@ -163,10 +211,14 @@ AppointmentDetailsDialog::AppointmentDetailsDialog(const QString& doctorUsername
     // --- Hospitalization Section ---
     hospService_ = new HospitalizationService(client_, this);
     hospBox_ = new QGroupBox(tr("是否住院"), this);
+    hospBox_->setObjectName("hospCard");
     auto* hospLay = new QVBoxLayout(hospBox_);
+    hospLay->setContentsMargins(16, 24, 16, 16);
     // Yes/No
     hospYesNoGroup_ = new QButtonGroup(hospBox_);
     auto* ynRow = new QWidget(hospBox_);
+    ynRow->setObjectName("hospYesNoRow");
+    ynRow->setAttribute(Qt::WA_StyledBackground, true);
     auto* ynHL = new QHBoxLayout(ynRow); ynHL->setContentsMargins(0,0,0,0); ynHL->setSpacing(12);
     auto* rbNo = new QRadioButton(tr("否"), ynRow);
     auto* rbYes = new QRadioButton(tr("是"), ynRow);
@@ -194,6 +246,7 @@ AppointmentDetailsDialog::AppointmentDetailsDialog(const QString& doctorUsername
     auto* hospBtnRow = new QHBoxLayout();
     hospBtnRow->addStretch();
     hospCreateBtn_ = new QPushButton(tr("创建住院记录"), hospBox_);
+    hospCreateBtn_->setObjectName("outlineBtn");
     hospBtnRow->addWidget(hospCreateBtn_);
     hospLay->addLayout(hospBtnRow);
     // 初始隐藏详情并根据切换显示
@@ -607,8 +660,11 @@ void AppointmentDetailsDialog::setupPrescriptionItemsTable() {
     QStringList headers = {tr("药品名称"), tr("数量"), tr("剂量"), tr("用法"), tr("疗程"), tr("单价")};
     prescriptionItemsTable_->setHorizontalHeaderLabels(headers);
     prescriptionItemsTable_->horizontalHeader()->setStretchLastSection(true);
+    prescriptionItemsTable_->horizontalHeader()->setDefaultAlignment(Qt::AlignCenter);
     prescriptionItemsTable_->setSelectionBehavior(QAbstractItemView::SelectRows);
     prescriptionItemsTable_->setAlternatingRowColors(true);
+    prescriptionItemsTable_->verticalHeader()->setVisible(false);
+    prescriptionItemsTable_->verticalHeader()->setDefaultSectionSize(36);
     
     // 设置表格选择变化的信号
     connect(prescriptionItemsTable_->selectionModel(), &QItemSelectionModel::selectionChanged,
@@ -621,13 +677,25 @@ void AppointmentDetailsDialog::updatePrescriptionItemsTable() {
     for (int i = 0; i < prescriptionItems_.size(); ++i) {
         QJsonObject item = prescriptionItems_[i].toObject();
         
-        prescriptionItemsTable_->setItem(i, 0, new QTableWidgetItem(item.value("medication_name").toString()));
+    auto* nameItem = new QTableWidgetItem(item.value("medication_name").toString());
+    nameItem->setTextAlignment(Qt::AlignVCenter | Qt::AlignLeft);
+    prescriptionItemsTable_->setItem(i, 0, nameItem);
         QString quantityText = QString("%1 %2").arg(item.value("quantity").toInt()).arg(item.value("unit").toString());
-        prescriptionItemsTable_->setItem(i, 1, new QTableWidgetItem(quantityText));
-        prescriptionItemsTable_->setItem(i, 2, new QTableWidgetItem(item.value("dosage").toString()));
-        prescriptionItemsTable_->setItem(i, 3, new QTableWidgetItem(item.value("frequency").toString()));
-        prescriptionItemsTable_->setItem(i, 4, new QTableWidgetItem(item.value("duration").toString()));
-        prescriptionItemsTable_->setItem(i, 5, new QTableWidgetItem(QString("¥%1").arg(QString::number(item.value("unit_price").toDouble(), 'f', 2))));
+    auto* qtyItem = new QTableWidgetItem(quantityText);
+    auto* dosageItem = new QTableWidgetItem(item.value("dosage").toString());
+    auto* freqItem = new QTableWidgetItem(item.value("frequency").toString());
+    auto* durItem = new QTableWidgetItem(item.value("duration").toString());
+    auto* priceItem = new QTableWidgetItem(QString("¥%1").arg(QString::number(item.value("unit_price").toDouble(), 'f', 2)));
+    qtyItem->setTextAlignment(Qt::AlignCenter);
+    dosageItem->setTextAlignment(Qt::AlignCenter);
+    freqItem->setTextAlignment(Qt::AlignCenter);
+    durItem->setTextAlignment(Qt::AlignCenter);
+    priceItem->setTextAlignment(Qt::AlignCenter);
+    prescriptionItemsTable_->setItem(i, 1, qtyItem);
+    prescriptionItemsTable_->setItem(i, 2, dosageItem);
+    prescriptionItemsTable_->setItem(i, 3, freqItem);
+    prescriptionItemsTable_->setItem(i, 4, durItem);
+    prescriptionItemsTable_->setItem(i, 5, priceItem);
     }
 }
 

@@ -3,9 +3,16 @@
         <file>style.qss</file>
     <file>doctorinfo.qss</file>
     <file>doctor_attendance.qss</file>
+    <file>doctor_appointment.qss</file>
+    <file>doctor_appointmentdetails.qss</file>
+    <file>doctor_profile.qss</file>
+    <file>doctor_chatroom.qss</file>
+    <file>doctor_datachart.qss</file>
+    <file>doctor_remotedata.qss</file>
     <file>patientinfo.qss</file>
     <file>login.qss</file>
     <file>background.jpeg</file>
+    <file>登录背景.jpeg</file>
     <file>icons/考勤.svg</file>
     <file>icons/聊天室.svg</file>
     <file>icons/基本信息.svg</file>
@@ -35,5 +42,6 @@
     <file>icons/地址.svg</file>
     <file>icons/年龄.svg</file>
     <file>icons/智慧医疗系统.svg</file>
+    <file>icons/用户.svg</file>
     </qresource>
 </RCC>

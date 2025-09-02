@@ -40,10 +40,18 @@ void AppointmentModule::handleCreate(const QJsonObject &payload) {
     bool ok = db.createAppointment(data);
     out["success"] = ok;
     if (!ok) {
-        // 诊断提示
+        // 详细诊断提示
         QString diag; QJsonObject tmp;
-        if (!db.getDoctorInfo(data.value("doctor_username").toString(), tmp)) diag += QStringLiteral("医生不存在; ");
-        if (!db.getPatientInfo(data.value("patient_username").toString(), tmp)) diag += QStringLiteral("患者不存在; ");
+        if (!db.getDoctorInfo(data.value("doctor_username").toString(), tmp)) {
+            diag += QStringLiteral("医生不存在; ");
+        } else {
+            // 检查预约是否已满 - 使用数据库管理器的内部机制
+            // 由于createAppointment已经做了验证，这里主要提供用户友好的错误信息
+            diag = QStringLiteral("当前医生预约数量已达上限，请等待或选择其他医生挂号");
+        }
+        if (!db.getPatientInfo(data.value("patient_username").toString(), tmp)) {
+            if (diag.isEmpty()) diag += QStringLiteral("患者不存在; ");
+        }
         if (diag.isEmpty()) diag = QStringLiteral("数据库插入失败");
         out["error"] = diag;
     }
@@ -94,6 +102,32 @@ void AppointmentModule::handleUpdateStatus(const QJsonObject &payload) {
     QJsonObject ret; ret["appointment_id"] = apptId; ret["status"] = status; out["data"] = ret;
     Log::result("Appointment", ok, "update_appointment_status");
     reply(out, payload);
+    
+    // 如果状态更新为completed，广播一个预约完成通知
+    if (ok && status == "completed") {
+        // 广播预约完成通知，让其他客户端知道预约数量发生变化
+        QJsonObject notification;
+        notification["type"] = "appointment_completed_notification";
+        notification["appointment_id"] = apptId;
+        notification["timestamp"] = QDateTime::currentMSecsSinceEpoch();
+        
+        // 通过查询获取医生用户名和预约日期
+        QJsonArray patientAppointments;
+        QString allDoctors = ""; // 空字符串表示获取所有医生
+        if (db.getAppointmentsByDoctor(allDoctors, patientAppointments)) {
+            for (const auto& apptData : patientAppointments) {
+                QJsonObject appt = apptData.toObject();
+                if (appt.value("id").toInt() == apptId) {
+                    notification["doctor_username"] = appt.value("doctor_username").toString();
+                    notification["appointment_date"] = appt.value("appointment_date").toString();
+                    break;
+                }
+            }
+        }
+        
+        // 发送给消息路由器进行广播
+        emit businessResponse(notification);
+    }
 }
 
 void AppointmentModule::reply(QJsonObject resp, const QJsonObject &orig) {

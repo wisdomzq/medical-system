@@ -18,6 +18,9 @@ private slots:
     void sendRegisterRequest();
 
 private:
+    void updateDoctorAppointmentCount(int row, int delta); // 更新指定行的预约计数
+    void updateDoctorCountByUsername(const QString& doctorUsername, int delta); // 根据用户名更新预约计数
+    
     QTableWidget *doctorTable=nullptr; QTableWidget *appointmentsTable=nullptr;
     QPushButton *refreshDoctorsBtn=nullptr; QPushButton *registerBtn=nullptr; QPushButton *refreshAppointmentsBtn=nullptr;
     QLineEdit *doctorIdEdit=nullptr; QLineEdit *doctorNameEdit=nullptr; QLineEdit *patientNameEdit=nullptr;

@@ -1,19 +1,425 @@
 /* 登录界面专属样式（仅 LoginWidget 加载） */
 
-QWidget#LoginRoot { /* 登录页整页背景 */
-	/* 回退色（未能加载图片时） */
-	background: #f0f4ff;
-	/* 使用整页背景图，等比拉伸填充 */
-	border-image: url(:/background.jpeg) 0 0 0 0 stretch stretch;
+/* 主背景 - 使用背景图片 */
+QWidget#LoginRoot {
+	background-image: url(:/登录背景.jpeg);
+	background-position: center;
+	background-repeat: no-repeat;
+	background-attachment: fixed;
 }
 
-/* 大气标题 */
+/* 顶部标题 - 恢复渐变设计 */
 QLabel#LoginTitle {
-	color: #0d47a1;
-	font-size: 36px;    /* 更大字号 */
-	font-weight: 800;   /* 更强字重 */
-	padding: 28px 0;
-	background: transparent; /* 去掉任何继承的背景 */
+	color: #ffffff;
+	font-size: 32px;
+	font-weight: bold;
+	padding: 24px 48px;
+	background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+		stop: 0 #667eea, stop: 0.5 #764ba2, stop: 1 #667eea);
+	border-radius: 20px;
+	border: 3px solid rgba(255, 255, 255, 0.3);
+	min-height: 32px;
+}
+
+/* 身份选择区域 - 添加透明度 */
+QWidget#SelectionGroup {
+	background: rgba(255, 255, 255, 0.85);
+	border: none;
+	border-radius: 28px;
+}
+
+/* 主标题文字 */
+QLabel#UserTypeLabel {
+	color: #1a202c;
+	font-size: 30px;
+	font-weight: bold;
+	background: transparent;
+	border: none;
+}
+
+/* 副标题文字 */
+QLabel#UserTypeSubLabel {
+	color: #6b7280;
+	font-size: 16px;
+	background: transparent;
+}
+
+/* 角色卡片基础样式 - 添加透明度 */
+QWidget#RoleCard {
+	background: rgba(255, 255, 255, 0.75);
+	border: 1px solid rgba(229, 231, 235, 0.6);
+	border-radius: 24px;
+}
+
+QWidget#RoleCard:hover {
+	background: rgba(248, 250, 252, 0.85);
+	border: 1px solid rgba(203, 213, 225, 0.8);
+}
+
+/* 角色图标圆形容器 */
+QLabel#RoleCircle {
+	background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1,
+		stop: 0 #667eea, stop: 1 #764ba2);
+	border-radius: 70px;
+	border: 6px solid #ffffff;
+}
+
+/* 角色名称 */
+QLabel#RoleName {
+	color: #111827;
+	font-size: 24px;
+	font-weight: bold;
+	background: transparent;
+}
+
+/* 角色描述 */
+QLabel#RoleDesc {
+	color: #6b7280;
+	font-size: 15px;
+	background: transparent;
+}
+
+/* 医生按钮 */
+QPushButton#RoleBtnDoctor {
+	background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+		stop: 0 #f093fb, stop: 1 #f5576c);
+	border: none;
+	border-radius: 20px;
+	color: #ffffff;
+	font-weight: bold;
+	font-size: 14px;
+	padding: 12px 24px;
+}
+
+QPushButton#RoleBtnDoctor:hover {
+	background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+		stop: 0 #f2adfb, stop: 1 #f7708a);
+}
+
+QPushButton#RoleBtnDoctor:pressed {
+	background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+		stop: 0 #ed79f9, stop: 1 #f33e54);
+}
+
+/* 病人按钮 */
+QPushButton#RoleBtnPatient {
+	background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+		stop: 0 #667eea, stop: 1 #764ba2);
+	border: none;
+	border-radius: 20px;
+	color: #ffffff;
+	font-weight: bold;
+	font-size: 14px;
+	padding: 12px 24px;
+}
+
+QPushButton#RoleBtnPatient:hover {
+	background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+		stop: 0 #7c8df8, stop: 1 #8b5fbf);
+}
+
+QPushButton#RoleBtnPatient:pressed {
+	background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+		stop: 0 #5568dc, stop: 1 #634085);
+}
+
+/* 登录页面卡片样式 */
+/* 登录页面卡片样式 - 增加透明度 */
+QWidget#LoginFormCard {
+	background: rgba(248, 250, 252, 0.75);
+	border-radius: 24px;
+	border: 1px solid rgba(102, 126, 234, 0.15);
+}
+
+/* 登录表单卡片内的标题特殊样式 - 优化配色 */
+QWidget#LoginFormCard QLabel#LoginTitle {
+	color: #ffffff;
+	font-size: 22px;
+	font-weight: bold;
+	padding: 16px 24px;
+	background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+		stop: 0 #667eea, stop: 0.3 #764ba2, stop: 0.7 #667eea, stop: 1 #5a67d8);
+	border-radius: 16px;
+	border: none;
+	min-height: 24px;
+	margin-bottom: 4px;
+}
+
+/* 登录插图区域 - 协调配色 */
+QLabel#LoginIllustration {
+	background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1,
+		stop: 0 #f8fafc, stop: 0.5 #e2e8f0, stop: 1 #cbd5e1);
+	border-radius: 20px;
+	border: 1px solid rgba(102, 126, 234, 0.1);
+}
+
+/* 输入行样式 - 美化设计，调整合适高度 */
+QWidget#UnderRow {
+	background: rgba(255, 255, 255, 0.8);
+	border: 1px solid rgba(203, 213, 225, 0.6);
+	border-radius: 12px;
+	padding: 12px 16px;
+	margin: 8px 0px;
+	min-height: 16px;
+}
+
+QWidget#UnderRow:hover {
+	background: rgba(255, 255, 255, 0.95);
+	border: 1px solid rgba(102, 126, 234, 0.3);
+}
+
+QLabel#InputIcon {
+	color: #94a3b8;
+	min-height: 24px;
+	max-height: 24px;
+	min-width: 24px;
+	max-width: 24px;
+	margin-left: 8px;
+	margin-right: 4px;
+}
+
+/* 输入框 - 美化样式，增加高度 */
+QLineEdit {
+	background: transparent;
+	border: none;
+	padding: 6px 8px;
+	font-size: 16px;
+	color: #1e293b;
+	font-weight: 500;
+	min-height: 24px;
+}
+
+QLineEdit:focus {
+	color: #0f172a;
+}
+
+/* 主要按钮 - 协调的渐变 */
+QPushButton#PrimaryLoginBtn {
+	background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+		stop: 0 #667eea, stop: 0.5 #764ba2, stop: 1 #5a67d8);
+	border: none;
+	border-radius: 16px;
+	color: #ffffff;
+	font-weight: bold;
+	font-size: 16px;
+	padding: 14px 28px;
+	min-height: 20px;
+}
+
+QPushButton#PrimaryLoginBtn:hover {
+	background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+		stop: 0 #7c8df8, stop: 0.5 #8b5fbf, stop: 1 #6b73ff);
+}
+
+QPushButton#PrimaryLoginBtn:pressed {
+	background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+		stop: 0 #5568dc, stop: 0.5 #634085, stop: 1 #4c51bf);
+}
+
+/* 注册链接 - 协调颜色 */
+QPushButton#RegisterLink {
+	background: transparent;
+	border: none;
+	color: #667eea;
+	font-weight: 600;
+}
+
+QPushButton#RegisterLink:hover {
+	color: #5a67d8;
+}
+
+/* 返回按钮 - 优化样式 */
+QPushButton#BackIconBtn {
+	background: rgba(102, 126, 234, 0.1);
+	border: none;
+	border-radius: 12px;
+	padding: 10px;
+}
+
+QPushButton#BackIconBtn:hover {
+	background: rgba(102, 126, 234, 0.2);
+}
+
+QPushButton#BackIconBtn:pressed {
+	background: rgba(102, 126, 234, 0.3);
+}
+}
+
+QPushButton#BackIconBtn:hover {
+	background: rgba(255, 255, 255, 0.3);
+}
+
+QPushButton#BackIconBtn:pressed {
+	background: rgba(255, 255, 255, 0.1);
+}
+
+/* 确保所有标签背景透明 */
+QLabel {
+	background: transparent;
+}
+
+/* 特别确保选择区域内标签无背景 */
+QWidget#SelectionGroup QLabel,
+QWidget#RoleCard QLabel,
+QWidget#LoginFormCard QLabel {
+	background: transparent;
+}
+
+/* 医生按钮 */
+QPushButton#RoleBtnDoctor {
+	background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+		stop: 0 #ff9a8b, stop: 1 #ff6a88);
+	border: none;
+	border-radius: 24px;
+	color: #ffffff;
+	font-weight: bold;
+	font-size: 15px;
+	padding: 16px 32px;
+	min-height: 20px;
+}
+
+QPushButton#RoleBtnDoctor:hover {
+	background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+		stop: 0 #ffb3a8, stop: 1 #ff8aa5);
+}
+
+QPushButton#RoleBtnDoctor:pressed {
+	background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+		stop: 0 #ff7e6b, stop: 1 #ff5470);
+}
+
+/* 病人按钮 */
+QPushButton#RoleBtnPatient {
+	background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+		stop: 0 #667eea, stop: 1 #764ba2);
+	border: none;
+	border-radius: 24px;
+	color: #ffffff;
+	font-weight: bold;
+	font-size: 15px;
+	padding: 16px 32px;
+	min-height: 20px;
+}
+
+QPushButton#RoleBtnPatient:hover {
+	background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+		stop: 0 #7c8df8, stop: 1 #8b5fbf);
+}
+
+QPushButton#RoleBtnPatient:pressed {
+	background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+		stop: 0 #5568dc, stop: 1 #634085);
+}
+
+/* 登录页面卡片样式 */
+QWidget#LoginFormCard {
+	background: rgba(255, 255, 255, 0.95);
+	border-radius: 20px;
+	border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* 登录插图区域 */
+QLabel#LoginIllustration {
+	background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1,
+		stop: 0 #f1f5f9, stop: 1 #e2e8f0);
+	border-radius: 16px;
+}
+
+/* 输入行样式 */
+QWidget#UnderRow {
+	border-bottom: 2px solid #e2e8f0;
+	padding: 8px 0px;
+}
+
+QWidget#UnderRow:focus-within {
+	border-bottom: 2px solid #667eea;
+}
+
+QLabel#InputIcon {
+	color: #9ca3af;
+	min-height: 24px;
+	max-height: 24px;
+	min-width: 24px;
+	max-width: 24px;
+	margin-left: 8px;
+	margin-right: 4px;
+}
+
+/* 输入框 */
+QLineEdit {
+	background: transparent;
+	border: none;
+	padding: 8px 0px;
+	font-size: 16px;
+	color: #374151;
+}
+
+QLineEdit:focus {
+	color: #111827;
+}
+
+/* 主要按钮 */
+QPushButton#PrimaryLoginBtn {
+	background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+		stop: 0 #667eea, stop: 1 #764ba2);
+	border: none;
+	border-radius: 24px;
+	color: #ffffff;
+	font-weight: bold;
+	font-size: 16px;
+	padding: 16px 24px;
+	min-height: 20px;
+}
+
+QPushButton#PrimaryLoginBtn:hover {
+	background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+		stop: 0 #7c8df8, stop: 1 #8b5fbf);
+}
+
+QPushButton#PrimaryLoginBtn:pressed {
+	background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+		stop: 0 #5568dc, stop: 1 #634085);
+}
+
+/* 注册链接 */
+QPushButton#RegisterLink {
+	background: transparent;
+	border: none;
+	color: #667eea;
+	font-weight: bold;
+	text-decoration: underline;
+}
+
+QPushButton#RegisterLink:hover {
+	color: #5568dc;
+}
+
+/* 返回按钮 */
+QPushButton#BackIconBtn {
+	background: rgba(255, 255, 255, 0.2);
+	border: none;
+	border-radius: 20px;
+	padding: 8px;
+}
+
+QPushButton#BackIconBtn:hover {
+	background: rgba(255, 255, 255, 0.3);
+}
+
+QPushButton#BackIconBtn:pressed {
+	background: rgba(255, 255, 255, 0.1);
+}
+
+/* 确保所有标签背景透明 */
+QLabel {
+	background: transparent;
+}
+
+/* 特别确保选择区域内标签无背景 */
+QWidget#SelectionGroup QLabel,
+QWidget#RoleCard QLabel,
+QWidget#LoginFormCard QLabel {
+	background: transparent;
 }
 
 /* 按钮与输入 */
@@ -46,12 +452,19 @@ QLabel#RoleCircle {
 QWidget#SelectionGroup {
 	background: #ffffff;
 	border: 1px solid #e5e7eb; /* 灰色细边 */
-	border-radius: 12px;
+	border-radius: 14px;
 }
 
 QWidget#RoleCard {
-	background: transparent; /* 去掉身份卡片自身灰色背景 */
-	border: none;
+	background: #ffffff;
+	border: 1px solid #eef2f7;
+	border-radius: 12px;
+	transition: all 120ms ease; /* 兼容性有限，仅部分 Qt 支持 */
+}
+QWidget#RoleCard:hover {
+	border-color: #dbe4f3;
+	/* 简易悬浮高亮：用更浅背景模拟阴影 */
+	background: #fbfdff;
 }
 
 QLabel#UserTypeLabel {
@@ -60,6 +473,13 @@ QLabel#UserTypeLabel {
 	font-weight: 600;
 	background: transparent; /* 去掉灰底条 */
 	border: none;
+}
+QLabel#UserTypeSubLabel {
+	color: #6b7280;
+	font-size: 14px;
+	margin-top: -6px;
+	margin-bottom: 10px;
+	background: transparent;
 }
 
 QPushButton#RoleBtnDoctor, QPushButton#RoleBtnPatient {
@@ -79,6 +499,21 @@ QPushButton#RoleBtnDoctor:hover {
 QPushButton#RoleBtnPatient { /* 蓝青系 */
 	background: #7ab3ff;
 }
+QLabel#RoleName {
+	color: #0f172a;
+	font-size: 18px;
+	font-weight: 700;
+	background: transparent;
+}
+QLabel#RoleDesc {
+	color: #6b7280;
+	font-size: 13px;
+	background: transparent;
+}
+
+/* 确保选择区域内的所有标签无灰底 */
+QWidget#SelectionGroup QLabel { background: transparent; }
+QWidget#RoleCard QLabel { background: transparent; }
 
 /* 登录页：左图右卡片布局样式 */
 QLabel#LoginIllustration {
@@ -94,6 +529,12 @@ QWidget#UnderRow {
 }
 QWidget#UnderRow QLabel#InputIcon {
 	color: #6b7280;
+	min-height: 24px;
+	max-height: 24px;
+	min-width: 24px;
+	max-width: 24px;
+	margin-left: 8px;
+	margin-right: 4px;
 }
 
 QPushButton#RegisterLink {
@@ -147,4 +588,17 @@ QPushButton#BackIconBtn {
 }
 QPushButton#BackIconBtn:hover {
 	background: rgba(0,0,0,0.04);
+}
+
+/* 登录表单卡片内的标题特殊样式 */
+QWidget#LoginFormCard QLabel#LoginTitle {
+	color: #ffffff !important;
+	font-size: 24px !important;
+	font-weight: bold !important;
+	padding: 12px 20px !important;
+	background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+		stop: 0 #667eea, stop: 0.5 #764ba2, stop: 1 #667eea) !important;
+	border-radius: 12px !important;
+	border: 2px solid rgba(255, 255, 255, 0.2) !important;
+	min-height: 20px !important;
 }

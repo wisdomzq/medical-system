@@ -96,13 +96,17 @@ AttendanceWidget::AttendanceWidget(const QString& doctorName, CommunicationClien
         auto* lbDate = new QLabel(tr("日期:"), card);
         auto* deDate = new QDateEdit(QDate::currentDate(), card);
         deDate->setDisplayFormat("yyyy-MM-dd");
-        deDate->setCalendarPopup(true);
-        auto* lbTime = new QLabel(tr("时间:"), card);
+    deDate->setCalendarPopup(true);
+    // 加粗显示：仅标签“日期”“时间”
+    QFont boldFont = lbDate->font();
+    boldFont.setBold(true);
+    lbDate->setFont(boldFont);
+    auto* lbTime = new QLabel(tr("时间:"), card);
+    lbTime->setFont(boldFont);
         auto* teTime = new QTimeEdit(QTime::currentTime(), card);
         teTime->setDisplayFormat("HH:mm:ss");
     btnDoCheckIn_ = new QPushButton(tr("打卡"), card);
-    btnDoCheckIn_->setIcon(QIcon(":/icons/打卡.svg"));
-    btnDoCheckIn_->setIconSize(QSize(18, 18));
+    btnDoCheckIn_->setProperty("class", "PrimaryBtn");
     btnHistory_ = new QPushButton(tr("查看历史打卡"), card);
     btnHistory_->setProperty("class", "SecondaryBtn");
 
@@ -172,6 +176,12 @@ AttendanceWidget::AttendanceWidget(const QString& doctorName, CommunicationClien
         auto* row1 = new QHBoxLayout();
         row1->setSpacing(12);
         auto* lb = new QLabel(tr("请假日期:"), card);
+        // 加粗显示：仅“请假日期”标签
+        {
+            QFont f = lb->font();
+            f.setBold(true);
+            lb->setFont(f);
+        }
         auto* de = new QDateEdit(QDate::currentDate(), card);
         de->setDisplayFormat("yyyy-MM-dd");
         de->setCalendarPopup(true);
@@ -183,7 +193,8 @@ AttendanceWidget::AttendanceWidget(const QString& doctorName, CommunicationClien
         teReason_ = new QTextEdit(card);
         teReason_->setPlaceholderText(tr("请假原因..."));
         cardLay->addWidget(teReason_);
-        btnSubmitLeave_ = new QPushButton(tr("保存请假"), card);
+    btnSubmitLeave_ = new QPushButton(tr("保存请假"), card);
+    btnSubmitLeave_->setProperty("class", "PrimaryBtn");
         cardLay->addWidget(btnSubmitLeave_);
         l->addWidget(card);
 
@@ -206,6 +217,7 @@ AttendanceWidget::AttendanceWidget(const QString& doctorName, CommunicationClien
     btnRefreshLeaves_ = new QPushButton(tr("刷新请假记录"), card);
     btnRefreshLeaves_->setProperty("class", "SecondaryBtn");
     btnCancelLeave_ = new QPushButton(tr("销选中假"), card);
+    btnCancelLeave_->setProperty("class", "DangerBtn");
     bar->addWidget(btnRefreshLeaves_);
     bar->addWidget(btnCancelLeave_);
     bar->addStretch();
